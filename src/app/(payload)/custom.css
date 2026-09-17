@@ -1,0 +1,456 @@
+/* Zirka brand styling for the Payload admin.
+   Scoped to colour, type, the login screen and our own dashboard panel.
+   Payload's layout rules are left alone so version upgrades don't break the UI. */
+
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Libre+Franklin:wght@400;500;600;700&display=swap");
+
+:root {
+  --zk-green: #0a2c1f;
+  --zk-green-deep: #071e16;
+  --zk-green-mid: #114a35;
+  --zk-copper: #b87333;
+  --zk-copper-light: #dfa473;
+  --zk-paper: #f6f3ea;
+  --zk-ink: #0e2a20;
+  --zk-line: rgba(14, 42, 32, 0.12);
+
+  --theme-success-500: var(--zk-copper);
+  --theme-success-600: #9c5c33;
+}
+
+html[data-theme="light"] {
+  --theme-bg: var(--zk-paper);
+}
+
+html[data-theme="dark"] {
+  --theme-bg: var(--zk-green-deep);
+  --zk-ink: #f0ede4;
+  --zk-line: rgba(240, 237, 228, 0.14);
+}
+
+body {
+  font-family: "Libre Franklin", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+h1,
+h2,
+h3,
+.doc-header__title,
+.collection-list__header h1 {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- Actions ---------- */
+.btn--style-primary,
+.btn--style-primary .btn__content {
+  background-color: var(--zk-copper);
+  border-color: var(--zk-copper);
+  color: #1c1305;
+}
+
+.btn--style-primary:hover {
+  background-color: var(--zk-copper-light);
+  border-color: var(--zk-copper-light);
+}
+
+.btn {
+  transition: background-color 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+/* ---------- Sidebar ---------- */
+.nav {
+  background-color: var(--zk-green);
+}
+
+.nav *,
+.nav a,
+.nav__link,
+.nav-group__toggle,
+.nav__label {
+  color: rgba(242, 239, 230, 0.8);
+}
+
+.nav a:hover,
+.nav__link:hover {
+  color: #fff;
+}
+
+.nav__link--active {
+  color: #fff;
+  border-left: 2px solid var(--zk-copper);
+}
+
+.nav-group__label {
+  color: var(--zk-copper-light);
+  font-family: "Libre Franklin", sans-serif;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.zirka-admin-icon {
+  width: 30px;
+  height: auto;
+  display: block;
+}
+
+/* ---------- Login ---------- */
+.login {
+  background:
+    radial-gradient(1.5px 1.5px at 14% 26%, rgba(242, 239, 230, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 38% 68%, rgba(242, 239, 230, 0.32), transparent),
+    radial-gradient(1px 1px at 61% 22%, rgba(242, 239, 230, 0.45), transparent),
+    radial-gradient(1.5px 1.5px at 82% 58%, rgba(242, 239, 230, 0.38), transparent),
+    radial-gradient(1px 1px at 92% 31%, rgba(242, 239, 230, 0.4), transparent),
+    radial-gradient(1200px 600px at 50% -10%, rgba(17, 74, 53, 0.9), transparent),
+    linear-gradient(150deg, var(--zk-green) 0%, var(--zk-green-deep) 100%);
+  min-height: 100vh;
+}
+
+.login__form,
+.login__wrap {
+  background: rgba(255, 253, 247, 0.98);
+  border-radius: 16px;
+  padding: 34px 32px 30px;
+  box-shadow: 0 34px 80px -30px rgba(0, 0, 0, 0.75);
+  border: 1px solid rgba(184, 115, 51, 0.22);
+}
+
+html[data-theme="dark"] .login__form,
+html[data-theme="dark"] .login__wrap {
+  background: rgba(14, 50, 37, 0.98);
+}
+
+.zirka-admin-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.zirka-admin-logo img {
+  width: auto;
+  height: 104px;
+  max-width: 100%;
+}
+
+.zirka-admin-logo span {
+  font-family: "Fraunces", Georgia, serif;
+  font-style: italic;
+  font-size: 13.5px;
+  letter-spacing: 0.02em;
+  color: var(--zk-copper-light);
+}
+
+/* ---------- Inputs ---------- */
+.field-type input,
+.field-type textarea,
+.field-type .rs__control {
+  border-radius: 7px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.field-type input:focus,
+.field-type textarea:focus {
+  border-color: var(--zk-copper);
+  box-shadow: 0 0 0 3px rgba(184, 115, 51, 0.16);
+  outline: none;
+}
+
+/* ---------- Dashboard panel ---------- */
+.zk-dash {
+  margin-bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.zk-dash__head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.zk-dash__title {
+  margin: 0;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--zk-ink);
+}
+
+.zk-dash__role {
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--zk-line);
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+/* One banner, only when something actually needs doing. */
+.zk-alert {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 14px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--zk-copper);
+  background: rgba(184, 115, 51, 0.09);
+  text-decoration: none;
+  color: var(--zk-ink);
+}
+
+.zk-alert strong {
+  font-size: 15px;
+  color: var(--zk-copper);
+}
+
+.zk-alert span {
+  font-size: 13px;
+  opacity: 0.75;
+}
+
+.zk-alert:hover {
+  background: rgba(184, 115, 51, 0.15);
+}
+
+.zk-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+.zk-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 16px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--zk-line);
+  text-decoration: none;
+  color: var(--zk-ink);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.zk-tile:hover {
+  border-color: var(--zk-copper);
+  background: rgba(184, 115, 51, 0.05);
+}
+
+.zk-tile__num {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1.7rem;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+  color: var(--zk-copper);
+}
+
+.zk-tile__label {
+  font-size: 12.5px;
+  opacity: 0.72;
+}
+
+.zk-tile--static {
+  cursor: default;
+}
+
+.zk-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ---------- Charts ----------
+   Single-series throughout, so no legend is needed — each card's title names
+   the measure. Colours validated for >=3:1 against both admin surfaces. */
+.zk-charts {
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  gap: 14px;
+}
+
+.zk-card {
+  --viz-series: #b87333;
+  --viz-grid: #e4e0d4;
+  --viz-axis: #857f74;
+  border: 1px solid var(--zk-line);
+  border-radius: 12px;
+  padding: 18px 20px 14px;
+  background: #fffdf7;
+  min-width: 0;
+}
+
+html[data-theme="dark"] .zk-card {
+  --viz-series: #bd7d38;
+  --viz-grid: #1c3f31;
+  --viz-axis: #8ea295;
+  background: #0e3225;
+}
+
+.zk-card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.zk-card__head h3 {
+  margin: 0;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--zk-ink);
+}
+
+.zk-card__note {
+  font-size: 12px;
+  opacity: 0.65;
+  font-variant-numeric: tabular-nums;
+}
+
+.zk-empty {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.6;
+  padding-block: 18px;
+}
+
+.zk-chart {
+  width: 100%;
+  height: 200px;
+  display: block;
+  overflow: visible;
+}
+
+.zk-grid {
+  stroke: var(--viz-grid);
+  stroke-width: 1;
+}
+
+.zk-axis {
+  fill: var(--viz-axis);
+  font-size: 10.5px;
+  font-family: "Libre Franklin", sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+.zk-area {
+  fill: var(--viz-series);
+  opacity: 0.14;
+}
+
+.zk-line {
+  fill: none;
+  stroke: var(--viz-series);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.zk-dot {
+  fill: var(--viz-series);
+  stroke: #fffdf7;
+  stroke-width: 2;
+}
+
+html[data-theme="dark"] .zk-dot {
+  stroke: #0e3225;
+}
+
+/* Horizontal bars */
+.zk-bars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.zk-bars li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "label value" "track track";
+  gap: 4px 10px;
+  align-items: center;
+}
+
+.zk-bars__label {
+  grid-area: label;
+  font-size: 12.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.85;
+}
+
+.zk-bars__value {
+  grid-area: value;
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--viz-series);
+}
+
+.zk-bars__track {
+  grid-area: track;
+  display: block;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--viz-grid);
+  overflow: hidden;
+}
+
+.zk-bars__fill {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: var(--viz-series);
+}
+
+@media (max-width: 1000px) {
+  .zk-charts {
+    grid-template-columns: 1fr;
+  }
+}
+
+.zk-chip {
+  font-size: 13px;
+  padding: 8px 15px;
+  border-radius: 20px;
+  border: 1px solid var(--zk-line);
+  text-decoration: none;
+  color: var(--zk-ink);
+  transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+}
+
+.zk-chip:hover {
+  border-color: var(--zk-copper);
+  color: var(--zk-copper);
+  background: rgba(184, 115, 51, 0.07);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .zk-tile,
+  .zk-chip,
+  .field-type input,
+  .field-type textarea {
+    transition: none;
+  }
+}

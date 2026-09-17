@@ -1,0 +1,12 @@
+import type { NextConfig } from "next";
+import { withPayload } from "@payloadcms/next/withPayload";
+
+const nextConfig: NextConfig = {
+  experimental: {
+    // The site and the admin each have their own root layout, so unmatched URLs
+    // need a standalone 404 page rather than one composed from a shared layout.
+    globalNotFound: true,
+  },
+};
+
+export default withPayload(nextConfig);
