@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getSettings } from "@/lib/cms";
+import { getSettings, getFeatures } from "@/lib/cms";
 import { WhatsAppIcon } from "./Icons";
 
 export default async function CtaBand({
@@ -7,7 +7,7 @@ export default async function CtaBand({
 }: {
   heading?: string;
 }) {
-  const settings = await getSettings();
+  const [settings, features] = await Promise.all([getSettings(), getFeatures()]);
 
   return (
     <section className="section--flow">
@@ -16,9 +16,10 @@ export default async function CtaBand({
           <h2>{heading}</h2>
           <div className="right">
             <div className="cta-actions">
-              <Link className="btn btn-gold" href="/contact">
-                Start a project
+              <Link className="btn btn-gold" href="/quote">
+                Get started
               </Link>
+              {features.showWhatsApp && (
               <a
                 className="btn btn-ghost"
                 href={`https://wa.me/${settings.whatsapp}`}
@@ -28,6 +29,7 @@ export default async function CtaBand({
                 <WhatsAppIcon />
                 WhatsApp
               </a>
+              )}
             </div>
             <span className="contact">
               {[settings.phoneDisplay, settings.socialHandle].filter(Boolean).join("  ·  ")}

@@ -1,4 +1,4 @@
-import type { Access, FieldAccess } from "payload";
+import type { Access, FieldAccess, Where } from "payload";
 
 export type Role = "superadmin" | "admin" | "worker";
 
@@ -37,6 +37,44 @@ export const isSuperAdminOrSelf: Access = ({ req }) => {
   return { id: { equals: req.user.id } };
 };
 
-/** Only super admins may change a role — stops privilege escalation. */
-export const superAdminFieldOnly: FieldAccess = ({ req }) =>
-  roleOf(req.user as UserWithRole) === "superadmin";
+/**
+ * Account management. Super admins manage everyone. Admins manage workers and
+ * their own account — never another admin's, and never a super admin's.
+ * Everyone else sees only themselves.
+ */
+export const canReadUsers: Access = ({ req }) => {
+  const role = roleOf(req.user as UserWithRole);
+  if (role === "superadmin") return true;
+  if (!req.user) return false;
+  if (role === "admin") {
+    const ownOrWorkers: Where = {
+      or: [{ role: { equals: "worker" } }, { id: { equals: req.user.id } }],
+    };
+    return ownOrWorkers;
+  }
+  return { id: { equals: req.user.id } };
+};
+
+export const canUpdateUsers: Access = canReadUsers;
+
+export const canCreateUsers: Access = ({ req }) => {
+  const role = roleOf(req.user as UserWithRole);
+  return role === "superadmin" || role === "admin";
+};
+
+export const canDeleteUsers: Access = ({ req }) => {
+  const role = roleOf(req.user as UserWithRole);
+  if (role === "superadmin") return true;
+  // An admin may remove workers, but not themselves or anyone at their level.
+  if (role === "admin") return { role: { equals: "worker" } };
+  return false;
+};
+
+/**
+ * Who may set the role field at all. Admins are allowed so they can create
+ * workers; the collection hook then refuses any value other than "worker".
+ */
+export const canSetRole: FieldAccess = ({ req }) => {
+  const role = roleOf(req.user as UserWithRole);
+  return role === "superadmin" || role === "admin";
+};

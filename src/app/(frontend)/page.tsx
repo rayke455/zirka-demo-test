@@ -7,10 +7,11 @@ import ServiceCard from "@/components/ServiceCard";
 import WorkCard from "@/components/WorkCard";
 import WorkFeature from "@/components/WorkFeature";
 import Testimonial from "@/components/Testimonial";
+import VideoSection from "@/components/VideoSection";
 import Engagements from "@/components/Engagements";
 import Faq from "@/components/Faq";
 import CtaBand from "@/components/CtaBand";
-import { getServices, getCaseStudies, getSettings, getProcessSteps } from "@/lib/cms";
+import { getServices, getCaseStudies, getSettings, getProcessSteps, getFeatures } from "@/lib/cms";
 
 /** Split the headline so the emphasised word can carry the accent colour. */
 function Headline({ text, emphasis }: { text: string; emphasis: string }) {
@@ -26,12 +27,15 @@ function Headline({ text, emphasis }: { text: string; emphasis: string }) {
 }
 
 export default async function Home() {
-  const [settings, services, work, steps] = await Promise.all([
+  const [settings, services, work, steps, features] = await Promise.all([
     getSettings(),
     getServices(),
     getCaseStudies(),
     getProcessSteps(),
+    getFeatures(),
   ]);
+
+  const coreServices = services.filter((s) => s.core);
 
   return (
     <>
@@ -56,20 +60,22 @@ export default async function Home() {
             <Headline text={settings.heroHeadline} emphasis={settings.heroEmphasis} />
             <p className="lede">{settings.heroLede}</p>
             <div className="hero-ctas">
-              <Link className="btn btn-gold" href="/contact">
-                Book a strategy call
+              <Link className="btn btn-gold" href={features.bookingEnabled ? "/book" : "/contact"}>
+                Get free advice
               </Link>
-              <a
-                className="btn btn-ghost"
-                href={`https://wa.me/${settings.whatsapp}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <WhatsAppIcon />
-                Message us on WhatsApp
-              </a>
+              {features.showWhatsApp && (
+                <a
+                  className="btn btn-ghost"
+                  href={`https://wa.me/${settings.whatsapp}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <WhatsAppIcon />
+                  Message us on WhatsApp
+                </a>
+              )}
             </div>
-            {settings.stats.length > 0 && (
+            {features.showStats && settings.stats.length > 0 && (
               <div className="stat-strip">
                 {settings.stats.map((s) => (
                   <div className="stat" key={s.label}>
@@ -84,7 +90,7 @@ export default async function Home() {
       </div>
 
       {/* 2 — Credibility */}
-      {settings.trustedBy.length > 0 && (
+      {features.showTrustedBy && settings.trustedBy.length > 0 && (
         <div className="trusted">
           <div className="wrap trusted-row">
             <span className="trusted-label">Trusted by growing brands &mdash;</span>
@@ -98,30 +104,37 @@ export default async function Home() {
       )}
 
       {/* 3 — What we do */}
-      {services.length > 0 && (
+      {features.showServices && coreServices.length > 0 && (
         <section id="services">
           <div className="wrap">
             <div className="section-head">
               <div>
                 <span className="eyebrow">What we do</span>
-                <h2>Four disciplines, one trajectory.</h2>
+                <h2>Ten services, one growth plan.</h2>
               </div>
               <p>
-                Every engagement starts with the same question: what actually moves revenue for
-                this brand? The service mix follows the answer.
+                Everything from paid ads and websites to WhatsApp, SEO and automation — mixed to
+                fit what your business actually needs.
               </p>
             </div>
             <div className="service-grid">
-              {services.map((service) => (
+              {coreServices.map((service) => (
                 <ServiceCard service={service} key={service.slug} />
               ))}
             </div>
+            {services.length > coreServices.length && (
+              <div style={{ marginTop: 32 }}>
+                <Link className="btn btn-outline" href="/services">
+                  See all {services.length} services
+                </Link>
+              </div>
+            )}
           </div>
         </section>
       )}
 
       {/* 4 — Proof that it works */}
-      {work.length > 0 && (
+      {features.showWork && work.length > 0 && (
         <section id="work" className="section--flow">
           <div className="wrap">
             <div className="section-head">
@@ -146,11 +159,14 @@ export default async function Home() {
         </section>
       )}
 
-      {/* 5 — Proof in a client's own words */}
-      <Testimonial />
+      {/* 5 — See it explained */}
+      <VideoSection />
+
+      {/* 6 — Proof in a client's own words */}
+      {features.showTestimonial && <Testimonial />}
 
       {/* 6 — How the work actually runs */}
-      {steps.length > 0 && (
+      {features.showProcess && steps.length > 0 && (
         <section id="approach" className="section--panel">
           <div className="wrap">
             <div className="section-head">
@@ -177,10 +193,10 @@ export default async function Home() {
       )}
 
       {/* 7 — What it costs */}
-      <Engagements />
+      {features.showPricing && <Engagements />}
 
       {/* 8 — The objections that stop people calling */}
-      <Faq />
+      {features.showFaq && <Faq />}
 
       {/* 9 — Act */}
       <CtaBand />

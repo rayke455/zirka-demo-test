@@ -49,6 +49,128 @@ export const SiteSettings: GlobalConfig = {
           ],
         },
         {
+          label: "Legal pages",
+          description:
+            "Terms of service and refund policy. These are starting points — edit them to match how you actually work, and have someone qualified check them before you rely on them.",
+          fields: [
+            {
+              name: "legalEntity",
+              label: "Legal business name",
+              type: "text",
+              admin: { description: 'e.g. "Zirka Digital Solutions LLC". Used in both documents.' },
+            },
+            {
+              name: "legalJurisdiction",
+              label: "Governing law / country",
+              type: "text",
+              admin: { description: 'e.g. "the State of Georgia, USA" or "Kenya".' },
+            },
+            {
+              name: "termsIntro",
+              label: "Terms — intro",
+              type: "textarea",
+              defaultValue:
+                "These terms cover the work we do for you and what each of us can expect. By asking us to start work, you agree to them.",
+            },
+            {
+              name: "terms",
+              label: "Terms — sections",
+              type: "array",
+              labels: { singular: "Section", plural: "Sections" },
+              fields: [
+                { name: "heading", type: "text", required: true },
+                { name: "body", type: "textarea", required: true },
+              ],
+            },
+            {
+              name: "refundsIntro",
+              label: "Refunds — intro",
+              type: "textarea",
+              defaultValue:
+                "We want you to be happy with the work. This page explains when money is refundable and when it isn't.",
+            },
+            {
+              name: "refunds",
+              label: "Refunds — sections",
+              type: "array",
+              labels: { singular: "Section", plural: "Sections" },
+              fields: [
+                { name: "heading", type: "text", required: true },
+                { name: "body", type: "textarea", required: true },
+              ],
+            },
+          ],
+        },
+        {
+          label: "Homepage video",
+          description: "An optional video section on the homepage. Leave the link and file empty to hide it.",
+          fields: [
+            {
+              name: "videoHeading",
+              type: "text",
+              defaultValue: "Social media marketing in five minutes",
+            },
+            {
+              name: "videoIntro",
+              type: "textarea",
+              defaultValue:
+                "A short explainer on what social media marketing actually involves, and where it pays off.",
+            },
+            {
+              name: "videoUrl",
+              label: "Video link",
+              type: "text",
+              admin: { description: "A YouTube or Vimeo link. Leave blank if you upload a file below." },
+            },
+            {
+              name: "videoFile",
+              label: "Or upload a video file",
+              type: "upload",
+              relationTo: "media",
+            },
+            {
+              name: "videoPoster",
+              label: "Cover image (for uploaded files)",
+              type: "upload",
+              relationTo: "media",
+            },
+          ],
+        },
+        {
+          label: "About page",
+          fields: [
+            {
+              name: "aboutTitle",
+              type: "text",
+              defaultValue: "Named for a star.",
+              admin: { description: "The headline at the top of the about page." },
+            },
+            {
+              name: "aboutLede",
+              type: "textarea",
+              defaultValue:
+                "Zirka means star — a fixed point to navigate by. That's what we aim to be for the businesses we work with.",
+            },
+            {
+              name: "storyHeading",
+              type: "text",
+              defaultValue: "Who we are",
+            },
+            {
+              name: "story",
+              label: "Your story",
+              type: "array",
+              labels: { singular: "Paragraph", plural: "Paragraphs" },
+              admin: {
+                description:
+                  "Tell visitors who you are and why you started. Leave empty to hide this section.",
+              },
+              fields: [{ name: "text", type: "textarea", required: true }],
+            },
+            { name: "storyImage", type: "upload", relationTo: "media" },
+          ],
+        },
+        {
           label: "Contact",
           fields: [
             {

@@ -14,14 +14,17 @@ export default function ServiceCard({ service }: { service: ServiceView }) {
         <h3>{service.name}</h3>
         <p>{service.short}</p>
         <div className="tags">
-          {service.capabilities.map((cap) => (
+          {service.capabilities.slice(0, 4).map((cap) => (
             <span className="tag" key={cap}>
               {cap}
             </span>
           ))}
+          {service.capabilities.length > 4 && (
+            <span className="tag tag--more">+{service.capabilities.length - 4} more</span>
+          )}
         </div>
         <Link className="explore" href={`/services#${service.slug}`}>
-          Explore {service.name.split(" ")[0].toLowerCase()}
+          Explore this service
           <ArrowIcon />
         </Link>
       </div>

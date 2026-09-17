@@ -65,6 +65,11 @@ export default async function PrivacyPage() {
             Buttons that open WhatsApp take you to a service run by WhatsApp, whose own privacy
             policy then applies.
           </p>
+          <p>
+            Where we show a video hosted on YouTube or Vimeo, the player loads from their servers.
+            We use YouTube&rsquo;s no-cookie option, so nothing is stored until you press play; once
+            you do, that provider&rsquo;s own privacy policy applies.
+          </p>
 
           <h2>How long we keep it</h2>
           <p>

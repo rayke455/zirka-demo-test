@@ -9,7 +9,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/work`, changeFrequency: "weekly", priority: 0.9 },
     { url: `${SITE_URL}/about`, changeFrequency: "monthly", priority: 0.7 },
     { url: `${SITE_URL}/contact`, changeFrequency: "yearly", priority: 0.8 },
+    { url: `${SITE_URL}/book`, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${SITE_URL}/quote`, changeFrequency: "monthly", priority: 0.9 },
     { url: `${SITE_URL}/privacy`, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${SITE_URL}/terms`, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${SITE_URL}/refunds`, changeFrequency: "yearly", priority: 0.2 },
   ];
 
   const studies = await getCaseStudySitemap();

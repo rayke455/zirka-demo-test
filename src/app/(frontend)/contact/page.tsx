@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import PageHeader from "@/components/PageHeader";
 import ContactForm from "@/components/ContactForm";
-import { getSettings } from "@/lib/cms";
+import { getSettings, getFeatures } from "@/lib/cms";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Start a project with Zirka Digital Solutions — tell us what you're trying to solve.",
+  description: "Get in touch with Zirka Digital Solutions — tell us what you're trying to solve.",
 };
 
 export default async function ContactPage() {
-  const settings = await getSettings();
+  const [settings, features] = await Promise.all([getSettings(), getFeatures()]);
 
   return (
     <>
@@ -21,7 +21,17 @@ export default async function ContactPage() {
 
       <section>
         <div className="wrap contact-grid">
-          <ContactForm />
+          {features.contactFormEnabled ? (
+            <ContactForm />
+          ) : (
+            <div className="success-note">
+              <h3>Message us directly</h3>
+              <p>
+                The easiest way to reach a strategist is on WhatsApp or by using the details
+                alongside. Tell us about the business and the number you&rsquo;re trying to move.
+              </p>
+            </div>
+          )}
           <div className="contact-info">
             <div className="info-block">
               <h3>WhatsApp</h3>

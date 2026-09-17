@@ -48,3 +48,9 @@ zirka.db*
 
 # the example env file documents settings and holds no secrets
 !.env.example
+
+# local database backups
+backups/
+
+# local editor/tool settings
+.claude/

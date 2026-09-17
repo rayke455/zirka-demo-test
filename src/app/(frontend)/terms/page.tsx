@@ -1,0 +1,28 @@
+import type { Metadata } from "next";
+import PageHeader from "@/components/PageHeader";
+import LegalBody from "@/components/LegalBody";
+import { getLegal } from "@/lib/cms";
+
+export const metadata: Metadata = {
+  title: "Terms of service",
+  description: "The terms that cover work carried out by Zirka Digital Solutions.",
+};
+
+export default async function TermsPage() {
+  const legal = await getLegal();
+
+  return (
+    <>
+      <PageHeader
+        eyebrow="Terms of service"
+        title="How we work together."
+        lede={legal.termsIntro}
+      />
+      <section>
+        <div className="wrap prose">
+          <LegalBody sections={legal.terms} entity={legal.entity} jurisdiction={legal.jurisdiction} />
+        </div>
+      </section>
+    </>
+  );
+}

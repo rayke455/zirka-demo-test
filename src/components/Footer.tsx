@@ -30,7 +30,8 @@ export default async function Footer() {
         </ul>
         <span className="copyright">
           &copy; {new Date().getFullYear()} {settings.companyName} &middot;{" "}
-          <Link href="/privacy">Privacy</Link>
+          <Link href="/privacy">Privacy</Link> &middot; <Link href="/terms">Terms</Link> &middot;{" "}
+          <Link href="/refunds">Refunds</Link>
         </span>
       </div>
     </footer>

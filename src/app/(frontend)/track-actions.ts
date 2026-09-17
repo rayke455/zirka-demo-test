@@ -1,6 +1,6 @@
 "use server";
 
-import { getCms } from "@/lib/cms";
+import { getCms, getFeatures } from "@/lib/cms";
 import { allow, clientIp } from "@/lib/rate-limit";
 
 /** Only the host, never the full referring URL with its query string. */
@@ -21,6 +21,7 @@ export async function trackView(path: string, referrer: string, session: string)
   if (!allow(`view:${await clientIp()}`, 30, 60 * 1000)) return;
 
   try {
+    if (!(await getFeatures()).analyticsEnabled) return;
     const payload = await getCms();
     await payload.create({
       collection: "page-views",

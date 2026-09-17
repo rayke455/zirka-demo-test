@@ -1,6 +1,7 @@
 import { getPayload } from "payload";
 import config from "@payload-config";
 import type { Service, CaseStudy, TeamMember, Faq, Engagement, Testimonial } from "@/payload-types";
+import { services as seedServices } from "@/lib/data";
 
 export const getCms = async () => getPayload({ config });
 
@@ -16,12 +17,9 @@ const altOf = (media: MediaLike, fallback: string): string =>
  * Until the team uploads their own photography, fall back to the images that
  * already ship with the project so the site never renders an empty frame.
  */
-const SERVICE_FALLBACK: Record<string, string> = {
-  "performance-marketing": "/images/svc-performance.jpg",
-  "seo-organic-growth": "/images/svc-seo.jpg",
-  "social-content": "/images/svc-social.jpg",
-  "brand-web-experience": "/images/svc-brand.jpg",
-};
+const SERVICE_FALLBACK: Record<string, string> = Object.fromEntries(
+  seedServices.map((s) => [s.slug, s.image])
+);
 
 const WORK_FALLBACK: Record<string, string> = {
   "Solace Skincare": "/images/work-skincare.jpg",
@@ -62,6 +60,8 @@ export type ServiceView = {
   description: string;
   outcomes: string;
   capabilities: string[];
+  core: boolean;
+  video: { url: string | null; file: string | null; title: string };
   plate: string;
   icon: "target" | "compass" | "network" | "prism";
   image: string;
@@ -76,6 +76,12 @@ export const getServices = async (): Promise<ServiceView[]> => {
     short: s.short,
     description: s.description,
     outcomes: s.outcomes ?? "",
+    core: Boolean(s.core),
+    video: {
+      url: s.videoUrl ?? null,
+      file: urlOf(s.videoFile as MediaLike, "") || null,
+      title: s.videoTitle || s.name,
+    },
     capabilities: (s.capabilities ?? []).map((c) => c.label),
     plate: s.accent ?? "plate-1",
     icon: (s.icon ?? "target") as ServiceView["icon"],
@@ -227,6 +233,72 @@ export const getFeaturedTestimonial = async () => {
   return { quote: t.quote, name: t.name, role: t.role ?? "", company: t.company };
 };
 
+const FEATURE_DEFAULTS = {
+  showStats: true,
+  showTrustedBy: true,
+  showServices: true,
+  showWork: true,
+  showTestimonial: true,
+  showProcess: true,
+  showPricing: true,
+  showFaq: true,
+  showVideo: true,
+  showValues: true,
+  showLeadership: true,
+  showWhatsApp: true,
+  contactFormEnabled: true,
+  quotesEnabled: true,
+  bookingEnabled: true,
+  analyticsEnabled: true,
+  alertsEnabled: false,
+};
+
+export type FeatureFlags = typeof FEATURE_DEFAULTS;
+
+/**
+ * Until the Features page is first saved its values are empty, so an unset
+ * switch must mean "default" — otherwise every section would vanish on day one.
+ * Read through the local API, which is how the public site reads this
+ * super-admin-only global without exposing it.
+ */
+export const getFeatures = async (): Promise<FeatureFlags> => {
+  const payload = await getCms();
+  const f = (await payload.findGlobal({ slug: "features", depth: 0 })) as unknown as Record<string, unknown>;
+  const flags = { ...FEATURE_DEFAULTS };
+  for (const key of Object.keys(FEATURE_DEFAULTS) as (keyof FeatureFlags)[]) {
+    if (typeof f[key] === "boolean") flags[key] = f[key] as boolean;
+  }
+  return flags;
+};
+
+export type LegalContent = {
+  entity: string;
+  jurisdiction: string;
+  termsIntro: string;
+  refundsIntro: string;
+  terms: { heading: string; body: string }[];
+  refunds: { heading: string; body: string }[];
+};
+
+export const getLegal = async (): Promise<LegalContent> => {
+  const payload = await getCms();
+  const s = await payload.findGlobal({ slug: "site-settings", depth: 0 });
+  const list = (rows: unknown) =>
+    Array.isArray(rows)
+      ? (rows as { heading?: string; body?: string }[])
+          .filter((r) => r.heading && r.body)
+          .map((r) => ({ heading: r.heading as string, body: r.body as string }))
+      : [];
+  return {
+    entity: s.legalEntity || "",
+    jurisdiction: s.legalJurisdiction || "",
+    termsIntro: s.termsIntro || "",
+    refundsIntro: s.refundsIntro || "",
+    terms: list(s.terms),
+    refunds: list(s.refunds),
+  };
+};
+
 export const getSettings = async () => {
   const payload = await getCms();
   const s = await payload.findGlobal({ slug: "site-settings", depth: 1 });
@@ -242,6 +314,21 @@ export const getSettings = async () => {
       s.heroImage as MediaLike,
       "Zirka strategists reviewing campaign performance together"
     ),
+    video: {
+      heading: s.videoHeading || "",
+      intro: s.videoIntro || "",
+      url: s.videoUrl ?? null,
+      file: urlOf(s.videoFile as MediaLike, "") || null,
+      poster: urlOf(s.videoPoster as MediaLike, "") || null,
+    },
+    aboutTitle: s.aboutTitle || "Named for a star.",
+    aboutLede:
+      s.aboutLede ||
+      "Zirka means star — a fixed point to navigate by. That's what we aim to be for the businesses we work with.",
+    storyHeading: s.storyHeading || "Who we are",
+    story: (s.story ?? []).map((p) => p.text).filter(Boolean),
+    storyImage: urlOf(s.storyImage as MediaLike, "/images/about-office.jpg"),
+    storyAlt: altOf(s.storyImage as MediaLike, "The Zirka team at work"),
     whatsapp: s.whatsapp ?? "16787994634",
     phoneDisplay: s.phoneDisplay ?? "",
     email: s.email ?? "",

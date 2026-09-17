@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { MenuIcon, CloseIcon } from "./Icons";
+import ThemeToggle from "./ThemeToggle";
 
 const NAV_LINKS = [
   { href: "/services", label: "Services" },
@@ -42,8 +43,9 @@ export default function Header() {
           ))}
         </ul>
         <div className="nav-right">
-          <Link className="btn btn-gold" href="/contact">
-            Start a project
+          <ThemeToggle />
+          <Link className="btn btn-gold" href="/quote">
+            Get started
           </Link>
           <button
             type="button"
@@ -65,10 +67,10 @@ export default function Header() {
           ))}
           <Link
             className="btn btn-gold mobile-cta"
-            href="/contact"
+            href="/quote"
             onClick={() => setOpen(false)}
           >
-            Start a project
+            Get started
           </Link>
         </nav>
       )}

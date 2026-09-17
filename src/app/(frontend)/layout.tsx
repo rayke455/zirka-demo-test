@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Urbanist } from "next/font/google";
 import Footer from "@/components/Footer";
 import PageTracker from "@/components/PageTracker";
+import CookieConsent from "@/components/CookieConsent";
 import { SITE_URL } from "@/lib/site";
+import { themeScript } from "@/components/ThemeToggle";
 import "./globals.css";
 
 // One family throughout: its geometric caps echo the ZIRKA wordmark in the logo.
@@ -45,10 +47,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={urbanist.variable}
       suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body suppressHydrationWarning>
         {children}
         <Footer />
         <PageTracker />
+        <CookieConsent />
       </body>
     </html>
   );

@@ -76,6 +76,8 @@ export interface Config {
     faqs: Faq;
     engagements: Engagement;
     submissions: Submission;
+    bookings: Booking;
+    quotes: Quote;
     'page-views': PageView;
     media: Media;
     users: User;
@@ -95,6 +97,8 @@ export interface Config {
     faqs: FaqsSelect<false> | FaqsSelect<true>;
     engagements: EngagementsSelect<false> | EngagementsSelect<true>;
     submissions: SubmissionsSelect<false> | SubmissionsSelect<true>;
+    bookings: BookingsSelect<false> | BookingsSelect<true>;
+    quotes: QuotesSelect<false> | QuotesSelect<true>;
     'page-views': PageViewsSelect<false> | PageViewsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
@@ -109,9 +113,13 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     'site-settings': SiteSetting;
+    features: Feature;
+    'booking-settings': BookingSetting;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+    features: FeaturesSelect<false> | FeaturesSelect<true>;
+    'booking-settings': BookingSettingsSelect<false> | BookingSettingsSelect<true>;
   };
   locale: null;
   widgets: {
@@ -158,6 +166,19 @@ export interface Service {
    * Lower numbers appear first.
    */
   order?: number | null;
+  /**
+   * A YouTube or Vimeo link. Leave blank if you upload a file below.
+   */
+  videoUrl?: string | null;
+  videoFile?: (number | null) | Media;
+  /**
+   * Used as the player title for screen readers.
+   */
+  videoTitle?: string | null;
+  /**
+   * Every published service appears on the Services page; ticked ones also appear on the homepage.
+   */
+  core?: boolean | null;
   /**
    * One or two lines, shown on the homepage card.
    */
@@ -456,6 +477,63 @@ export interface Submission {
   createdAt: string;
 }
 /**
+ * Consultations booked through the website. Times are stored in UTC and shown in your browser's timezone.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bookings".
+ */
+export interface Booking {
+  id: number;
+  start: string;
+  end: string;
+  status: 'confirmed' | 'completed' | 'no-show' | 'cancelled';
+  name: string;
+  email: string;
+  phone?: string | null;
+  company?: string | null;
+  /**
+   * What they want to talk about.
+   */
+  topic?: string | null;
+  /**
+   * The timezone they booked from.
+   */
+  visitorTimezone?: string | null;
+  /**
+   * Internal only.
+   */
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Quote requests from the website, including the services each person asked about.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quotes".
+ */
+export interface Quote {
+  id: number;
+  name: string;
+  email: string;
+  phone?: string | null;
+  company?: string | null;
+  /**
+   * What they asked us to quote for.
+   */
+  services?: (number | Service)[] | null;
+  budget?: string | null;
+  timeline?: string | null;
+  details?: string | null;
+  status?: ('new' | 'quoted' | 'won' | 'closed') | null;
+  /**
+   * Internal only.
+   */
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Anonymous traffic log. No IP addresses or cookies are stored.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -477,7 +555,7 @@ export interface User {
   id: number;
   name: string;
   /**
-   * Only a super admin can change this.
+   * Super admins can set any role. Admins can only create and manage Workers.
    */
   role: 'superadmin' | 'admin' | 'worker';
   /**
@@ -564,6 +642,14 @@ export interface PayloadLockedDocument {
         value: number | Submission;
       } | null)
     | ({
+        relationTo: 'bookings';
+        value: number | Booking;
+      } | null)
+    | ({
+        relationTo: 'quotes';
+        value: number | Quote;
+      } | null)
+    | ({
         relationTo: 'page-views';
         value: number | PageView;
       } | null)
@@ -625,6 +711,10 @@ export interface ServicesSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
   order?: T;
+  videoUrl?: T;
+  videoFile?: T;
+  videoTitle?: T;
+  core?: T;
   short?: T;
   description?: T;
   outcomes?: T;
@@ -763,6 +853,42 @@ export interface SubmissionsSelect<T extends boolean = true> {
   company?: T;
   budget?: T;
   message?: T;
+  status?: T;
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bookings_select".
+ */
+export interface BookingsSelect<T extends boolean = true> {
+  start?: T;
+  end?: T;
+  status?: T;
+  name?: T;
+  email?: T;
+  phone?: T;
+  company?: T;
+  topic?: T;
+  visitorTimezone?: T;
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quotes_select".
+ */
+export interface QuotesSelect<T extends boolean = true> {
+  name?: T;
+  email?: T;
+  phone?: T;
+  company?: T;
+  services?: T;
+  budget?: T;
+  timeline?: T;
+  details?: T;
   status?: T;
   notes?: T;
   updatedAt?: T;
@@ -918,6 +1044,54 @@ export interface SiteSetting {
   heroLede: string;
   heroImage?: (number | null) | Media;
   /**
+   * e.g. "Zirka Digital Solutions LLC". Used in both documents.
+   */
+  legalEntity?: string | null;
+  /**
+   * e.g. "the State of Georgia, USA" or "Kenya".
+   */
+  legalJurisdiction?: string | null;
+  termsIntro?: string | null;
+  terms?:
+    | {
+        heading: string;
+        body: string;
+        id?: string | null;
+      }[]
+    | null;
+  refundsIntro?: string | null;
+  refunds?:
+    | {
+        heading: string;
+        body: string;
+        id?: string | null;
+      }[]
+    | null;
+  videoHeading?: string | null;
+  videoIntro?: string | null;
+  /**
+   * A YouTube or Vimeo link. Leave blank if you upload a file below.
+   */
+  videoUrl?: string | null;
+  videoFile?: (number | null) | Media;
+  videoPoster?: (number | null) | Media;
+  /**
+   * The headline at the top of the about page.
+   */
+  aboutTitle?: string | null;
+  aboutLede?: string | null;
+  storyHeading?: string | null;
+  /**
+   * Tell visitors who you are and why you started. Leave empty to hide this section.
+   */
+  story?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  storyImage?: (number | null) | Media;
+  /**
    * Digits only, including country code — used for the wa.me link.
    */
   whatsapp?: string | null;
@@ -945,6 +1119,156 @@ export interface SiteSetting {
   createdAt?: string | null;
 }
 /**
+ * Turn parts of the website on or off. Changes apply as soon as you save.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "features".
+ */
+export interface Feature {
+  id: number;
+  /**
+   * The four figures under the homepage headline.
+   */
+  showStats?: boolean | null;
+  /**
+   * The row of client names below the hero.
+   */
+  showTrustedBy?: boolean | null;
+  /**
+   * The service cards on the homepage.
+   */
+  showServices?: boolean | null;
+  /**
+   * The case studies on the homepage.
+   */
+  showWork?: boolean | null;
+  /**
+   * The large client quote (only appears if one is published).
+   */
+  showTestimonial?: boolean | null;
+  /**
+   * The numbered process steps.
+   */
+  showProcess?: boolean | null;
+  /**
+   * The engagement tiers and prices.
+   */
+  showPricing?: boolean | null;
+  /**
+   * Common questions.
+   */
+  showFaq?: boolean | null;
+  /**
+   * The homepage video. Only appears when a video is set under Site Settings → Homepage video.
+   */
+  showVideo?: boolean | null;
+  /**
+   * The operating principles.
+   */
+  showValues?: boolean | null;
+  /**
+   * The team members and their photos.
+   */
+  showLeadership?: boolean | null;
+  /**
+   * WhatsApp buttons in the hero and closing banners.
+   */
+  showWhatsApp?: boolean | null;
+  /**
+   * When off, the contact page shows your WhatsApp and details only.
+   */
+  contactFormEnabled?: boolean | null;
+  /**
+   * Let visitors pick services and request a quote from the website.
+   */
+  quotesEnabled?: boolean | null;
+  /**
+   * Let people book a free consultation from the website. Set your hours under Bookings → Booking Availability.
+   */
+  bookingEnabled?: boolean | null;
+  /**
+   * Anonymous page-view counting for the dashboard charts. Turning this off stops new data; existing data is kept.
+   */
+  analyticsEnabled?: boolean | null;
+  /**
+   * Email a notification for every new enquiry.
+   */
+  alertsEnabled?: boolean | null;
+  /**
+   * The inbox that receives new-enquiry alerts.
+   */
+  notifyEmail?: string | null;
+  /**
+   * e.g. smtp.gmail.com
+   */
+  smtpHost?: string | null;
+  /**
+   * 465 (SSL) or 587
+   */
+  smtpPort?: number | null;
+  /**
+   * Usually the full email address that sends.
+   */
+  smtpUser?: string | null;
+  /**
+   * For Gmail, an App Password — never your normal password. Visible only to super admins.
+   */
+  smtpPass?: string | null;
+  /**
+   * Leave blank to use the username.
+   */
+  fromAddress?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * When people can book a free consultation. Visitors see these times in their own timezone.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "booking-settings".
+ */
+export interface BookingSetting {
+  id: number;
+  /**
+   * Your working hours' timezone, e.g. "America/New_York" or "Africa/Nairobi".
+   */
+  timezone: string;
+  callMinutes: number;
+  bufferMinutes?: number | null;
+  /**
+   * No bookings sooner than this.
+   */
+  minNoticeHours?: number | null;
+  daysAhead?: number | null;
+  /**
+   * Shown to the person booking, e.g. how the call happens.
+   */
+  meetingDetails?: string | null;
+  /**
+   * Add a row per block of availability. Use two rows for one day to leave a lunch break.
+   */
+  weeklyHours?:
+    | {
+        day: '1' | '2' | '3' | '4' | '5' | '6' | '0';
+        start: string;
+        end: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Holidays or days you're unavailable. No slots are offered on these dates.
+   */
+  blockedDates?:
+    | {
+        date: string;
+        reason?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings_select".
  */
@@ -956,6 +1280,39 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   heroEmphasis?: T;
   heroLede?: T;
   heroImage?: T;
+  legalEntity?: T;
+  legalJurisdiction?: T;
+  termsIntro?: T;
+  terms?:
+    | T
+    | {
+        heading?: T;
+        body?: T;
+        id?: T;
+      };
+  refundsIntro?: T;
+  refunds?:
+    | T
+    | {
+        heading?: T;
+        body?: T;
+        id?: T;
+      };
+  videoHeading?: T;
+  videoIntro?: T;
+  videoUrl?: T;
+  videoFile?: T;
+  videoPoster?: T;
+  aboutTitle?: T;
+  aboutLede?: T;
+  storyHeading?: T;
+  story?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  storyImage?: T;
   whatsapp?: T;
   phoneDisplay?: T;
   email?: T;
@@ -972,6 +1329,68 @@ export interface SiteSettingsSelect<T extends boolean = true> {
     | T
     | {
         name?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "features_select".
+ */
+export interface FeaturesSelect<T extends boolean = true> {
+  showStats?: T;
+  showTrustedBy?: T;
+  showServices?: T;
+  showWork?: T;
+  showTestimonial?: T;
+  showProcess?: T;
+  showPricing?: T;
+  showFaq?: T;
+  showVideo?: T;
+  showValues?: T;
+  showLeadership?: T;
+  showWhatsApp?: T;
+  contactFormEnabled?: T;
+  quotesEnabled?: T;
+  bookingEnabled?: T;
+  analyticsEnabled?: T;
+  alertsEnabled?: T;
+  notifyEmail?: T;
+  smtpHost?: T;
+  smtpPort?: T;
+  smtpUser?: T;
+  smtpPass?: T;
+  fromAddress?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "booking-settings_select".
+ */
+export interface BookingSettingsSelect<T extends boolean = true> {
+  timezone?: T;
+  callMinutes?: T;
+  bufferMinutes?: T;
+  minNoticeHours?: T;
+  daysAhead?: T;
+  meetingDetails?: T;
+  weeklyHours?:
+    | T
+    | {
+        day?: T;
+        start?: T;
+        end?: T;
+        id?: T;
+      };
+  blockedDates?:
+    | T
+    | {
+        date?: T;
+        reason?: T;
         id?: T;
       };
   updatedAt?: T;

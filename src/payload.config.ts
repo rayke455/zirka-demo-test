@@ -18,6 +18,11 @@ import { PageViews } from "./payload/collections/PageViews";
 import { ProcessSteps } from "./payload/collections/ProcessSteps";
 import { Values } from "./payload/collections/Values";
 import { SiteSettings } from "./payload/globals/SiteSettings";
+import { Features } from "./payload/globals/Features";
+import { BookingSettings } from "./payload/globals/BookingSettings";
+import { Bookings } from "./payload/collections/Bookings";
+import { Quotes } from "./payload/collections/Quotes";
+import { emailAdapter } from "./payload/email";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -47,17 +52,24 @@ export default buildConfig({
     Faqs,
     Engagements,
     Submissions,
+    Bookings,
+    Quotes,
     PageViews,
     Media,
     Users,
   ],
-  globals: [SiteSettings],
+  globals: [SiteSettings, Features, BookingSettings],
+  email: emailAdapter,
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {
     outputFile: path.resolve(dirname, "payload-types.ts"),
   },
   db: sqliteAdapter({
+    // Automatic schema push generates duplicate CREATE INDEX statements for this
+    // schema and fails. Schema changes go through migrations instead:
+    //   npm run migrate:create   then   npm run migrate
+    push: false,
     client: {
       url: process.env.DATABASE_URI || "file:./zirka.db",
     },

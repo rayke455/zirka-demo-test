@@ -33,6 +33,33 @@ export const Services: CollectionConfig = {
       admin: { description: "Lower numbers appear first." },
     },
     {
+      type: "collapsible",
+      label: "Video (optional)",
+      admin: { description: "Shown inside this service on the services page." },
+      fields: [
+        {
+          name: "videoUrl",
+          label: "Video link",
+          type: "text",
+          admin: { description: "A YouTube or Vimeo link. Leave blank if you upload a file below." },
+        },
+        {
+          name: "videoFile",
+          label: "Or upload a video file",
+          type: "upload",
+          relationTo: "media",
+        },
+        { name: "videoTitle", type: "text", admin: { description: "Used as the player title for screen readers." } },
+      ],
+    },
+    {
+      name: "core",
+      label: "Core service — promote on the homepage",
+      type: "checkbox",
+      defaultValue: false,
+      admin: { description: "Every published service appears on the Services page; ticked ones also appear on the homepage." },
+    },
+    {
       name: "short",
       type: "textarea",
       required: true,

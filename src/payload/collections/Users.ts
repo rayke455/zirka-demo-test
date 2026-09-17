@@ -1,6 +1,12 @@
 import type { CollectionConfig, PayloadRequest } from "payload";
 import { APIError } from "payload";
-import { isSuperAdmin, isSuperAdminOrSelf, superAdminFieldOnly } from "../access";
+import {
+  canCreateUsers,
+  canDeleteUsers,
+  canReadUsers,
+  canSetRole,
+  canUpdateUsers,
+} from "../access";
 
 const countSuperAdmins = async (req: PayloadRequest): Promise<number> => {
   const { totalDocs } = await req.payload.find({
@@ -21,16 +27,30 @@ export const Users: CollectionConfig = {
     group: "Team",
   },
   access: {
-    read: isSuperAdminOrSelf,
-    create: isSuperAdmin,
-    update: isSuperAdminOrSelf,
-    delete: isSuperAdmin,
+    read: canReadUsers,
+    create: canCreateUsers,
+    update: canUpdateUsers,
+    delete: canDeleteUsers,
     admin: ({ req }) => Boolean(req.user),
   },
   hooks: {
-    // Without these, the last super admin can lock everyone out of the admin
-    // by demoting or deleting their own account.
     beforeChange: [
+      // An admin may only ever create or keep workers. Without this an admin
+      // could promote themselves, or make another admin, through the API.
+      async ({ req, originalDoc, data, operation }) => {
+        if ((req.user as { role?: string } | null)?.role === "admin") {
+          const target = data.role ?? originalDoc?.role;
+          if (target !== "worker") {
+            throw new APIError("Admins can only create and manage Worker accounts.", 403);
+          }
+          if (operation === "update" && originalDoc?.role && originalDoc.role !== "worker") {
+            throw new APIError("Admins cannot change an Admin or Super Admin account.", 403);
+          }
+        }
+        return data;
+      },
+      // Without this, the last super admin can lock everyone out of the admin
+      // by demoting or deleting their own account.
       async ({ req, originalDoc, data, operation }) => {
         if (operation !== "update") return data;
         const wasSuper = originalDoc?.role === "superadmin";
@@ -68,11 +88,12 @@ export const Users: CollectionConfig = {
       required: true,
       defaultValue: "worker",
       access: {
-        create: superAdminFieldOnly,
-        update: superAdminFieldOnly,
+        create: canSetRole,
+        update: canSetRole,
       },
       admin: {
-        description: "Only a super admin can change this.",
+        description:
+          "Super admins can set any role. Admins can only create and manage Workers.",
       },
       options: [
         { label: "Super Admin — full control, manages user accounts", value: "superadmin" },

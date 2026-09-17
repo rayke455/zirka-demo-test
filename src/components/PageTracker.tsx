@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { trackView } from "@/app/(frontend)/track-actions";
+import { useConsent } from "./CookieConsent";
 
 /** Session id lives in sessionStorage, so it disappears when the tab closes. */
 const getSession = (): string => {
@@ -19,10 +20,13 @@ const getSession = (): string => {
 
 export default function PageTracker() {
   const pathname = usePathname();
+  const consent = useConsent();
 
   useEffect(() => {
+    // No counting at all until the visitor has said yes.
+    if (consent !== "accepted") return;
     void trackView(pathname, document.referrer, getSession());
-  }, [pathname]);
+  }, [pathname, consent]);
 
   return null;
 }

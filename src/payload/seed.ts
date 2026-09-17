@@ -5,6 +5,7 @@
  */
 import { getPayload } from "payload";
 import config from "../payload.config";
+import { seedServices } from "./seed-services";
 import {
   services,
   work,
@@ -33,23 +34,7 @@ import {
   const published = { _status: "published" as const };
 
   if ((await count("services")) === 0) {
-    for (const [i, s] of services.entries()) {
-      await payload.create({
-        collection: "services",
-        data: {
-          ...published,
-          name: s.name,
-          slug: s.slug,
-          order: i,
-          short: s.short,
-          description: s.description,
-          outcomes: s.outcomes,
-          capabilities: s.capabilities.map((label) => ({ label })),
-          accent: s.plate,
-          icon: s.icon,
-        },
-      });
-    }
+    await seedServices(payload);
     console.log(`seeded ${services.length} services`);
   }
 

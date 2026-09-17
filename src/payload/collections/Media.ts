@@ -12,7 +12,7 @@ export const Media: CollectionConfig = {
   },
   upload: {
     staticDir: "public/uploads",
-    mimeTypes: ["image/*"],
+    mimeTypes: ["image/*", "video/*"],
     imageSizes: [
       { name: "thumb", width: 400, height: 400, position: "centre" },
       { name: "card", width: 900, height: 1200, position: "centre" },

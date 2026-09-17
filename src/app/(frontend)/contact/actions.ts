@@ -1,6 +1,6 @@
 "use server";
 
-import { getCms } from "@/lib/cms";
+import { getCms, getFeatures } from "@/lib/cms";
 import { allow, clientIp } from "@/lib/rate-limit";
 
 export type ContactResult = { ok: boolean; error?: string };
@@ -17,6 +17,11 @@ export async function submitEnquiry(formData: FormData): Promise<ContactResult> 
   // the bot has no signal to adapt to.
   if (String(formData.get("website") ?? "").trim() !== "") {
     return { ok: true };
+  }
+
+  // Enforced here as well as hidden on the page, so a direct call can't bypass it.
+  if (!(await getFeatures()).contactFormEnabled) {
+    return { ok: false, error: "The contact form is currently closed. Please reach us on WhatsApp." };
   }
 
   const ip = await clientIp();
