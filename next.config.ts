@@ -2,6 +2,14 @@ import type { NextConfig } from "next";
 import { withPayload } from "@payloadcms/next/withPayload";
 
 const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.public.blob.vercel-storage.com",
+      },
+    ],
+  },
   experimental: {
     // The site and the admin each have their own root layout, so unmatched URLs
     // need a standalone 404 page rather than one composed from a shared layout.

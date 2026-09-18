@@ -14,6 +14,14 @@ const urbanist = Urbanist({
   weight: ["300", "400", "500", "600"],
 });
 
+/**
+ * Every page reads its content from the CMS, so a page built once at deploy
+ * would show whatever was in the database that day and never change again.
+ * Rebuilding at most once a minute means edits made in admin appear on the live
+ * site shortly after saving, without a page hitting the database on every visit.
+ */
+export const revalidate = 60;
+
 const description =
   "Zirka Digital Solutions is a digital marketing agency running performance media, SEO, social, and web experience for growing brands.";
 

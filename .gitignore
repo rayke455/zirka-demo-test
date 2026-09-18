@@ -52,5 +52,13 @@ zirka.db*
 # local database backups
 backups/
 
+# generated login details — never commit
+ADMIN-LOGIN.txt
+
 # local editor/tool settings
 .claude/
+.agents/
+skills-lock.json
+
+.vercel
+.env*

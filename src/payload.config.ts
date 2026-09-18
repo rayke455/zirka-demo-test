@@ -1,7 +1,8 @@
 import path from "path";
 import { fileURLToPath } from "url";
 import { buildConfig } from "payload";
-import { sqliteAdapter } from "@payloadcms/db-sqlite";
+import { db } from "./payload/db";
+import { storage } from "./payload/storage";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import sharp from "sharp";
 
@@ -65,14 +66,7 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, "payload-types.ts"),
   },
-  db: sqliteAdapter({
-    // Automatic schema push generates duplicate CREATE INDEX statements for this
-    // schema and fails. Schema changes go through migrations instead:
-    //   npm run migrate:create   then   npm run migrate
-    push: false,
-    client: {
-      url: process.env.DATABASE_URI || "file:./zirka.db",
-    },
-  }),
+  db,
   sharp,
+  plugins: storage,
 });
