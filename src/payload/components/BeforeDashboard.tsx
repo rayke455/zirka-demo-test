@@ -244,49 +244,13 @@ export default async function BeforeDashboard({ user }: Props) {
         </div>
       )}
 
-      {/* Refined Quick Operations Hub */}
-      <div className="zk-quick-hub">
-        <div className="zk-quick-group">
-          <span className="zk-quick-label">Content Creation</span>
-          <div className="zk-actions">
-            <Link className="zk-chip" href="/admin/collections/services/create">
-              + New Service
-            </Link>
-            <Link className="zk-chip" href="/admin/collections/case-studies/create">
-              + New Case Study
-            </Link>
-            <Link className="zk-chip" href="/admin/collections/testimonials/create">
-              + New Testimonial
-            </Link>
-            <Link className="zk-chip" href="/admin/collections/team-members/create">
-              + Team Member
-            </Link>
-            <Link className="zk-chip" href="/admin/collections/media">
-              📁 Media Library
-            </Link>
-          </div>
-        </div>
-
-        <div className="zk-quick-group">
-          <span className="zk-quick-label">System & Settings</span>
-          <div className="zk-actions">
-            {isAdmin && (
-              <Link className="zk-chip" href="/admin/globals/site-settings">
-                ⚙️ Site Settings
-              </Link>
-            )}
-            <Link className="zk-chip" href="/admin/globals/booking-settings">
-              📅 Booking Settings
-            </Link>
-            <Link className="zk-chip" href="/admin/collections/users">
-              👥 Users & Staff
-            </Link>
-            <Link className="zk-chip" href="/admin/account">
-              👤 My Account
-            </Link>
-          </div>
-        </div>
-      </div>
+      {/*
+       * No shortcut chips here. Payload's own dashboard below already lists
+       * every collection and global with a create button, and the sidebar lists
+       * them a third time — three copies of the same links is what made this
+       * page feel complicated. This panel keeps only what the sidebar cannot
+       * show: who is signed in, what is waiting, and how the site is doing.
+       */}
     </div>
   );
 }
