@@ -86,7 +86,7 @@ export default async function ServicePage({ params }: Props) {
             {/* The audit is the primary action (brief §21); a quote stays available for
                 someone who already knows they want this service. */}
             <div className="hero-ctas">
-              <Link className="btn btn-gold" href="/free-marketing-audit">
+              <Link className="btn btn-gold" href="/free-marketing-audit" data-track="main_cta_click">
                 Get a Free Marketing Audit
               </Link>
               <Link className="btn btn-ghost" href={`/quote?service=${service.slug}`}>

@@ -18,10 +18,6 @@ export async function requestQuote(formData: FormData): Promise<QuoteResult> {
     return { ok: false, error: "Quote requests are closed at the moment. Please reach us on WhatsApp." };
   }
 
-  if (!allow(`quote:${await clientIp()}`, 5, 30 * 60 * 1000)) {
-    return { ok: false, error: "Too many requests in a short time. Please wait a little, or message us on WhatsApp." };
-  }
-
   const name = field(formData, "name");
   const email = field(formData, "email");
   const phone = field(formData, "phone");
@@ -54,6 +50,12 @@ export async function requestQuote(formData: FormData): Promise<QuoteResult> {
 
   if (services.length === 0) {
     return { ok: false, error: "Please choose at least one service you'd like quoted." };
+  }
+
+  // Counted only once the details are valid, so someone correcting typos is
+  // never locked out; a flood of well-formed requests still is.
+  if (!allow(`quote:${await clientIp()}`, 5, 30 * 60 * 1000)) {
+    return { ok: false, error: "Too many requests in a short time. Please wait a little, or message us on WhatsApp." };
   }
 
   try {

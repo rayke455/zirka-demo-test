@@ -2363,7 +2363,8 @@ section {
 
 .form-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* minmax(0, …) so a dropdown's natural width cannot widen its column. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 16px;
 }
 
@@ -2445,6 +2446,10 @@ section {
 }
 
 /* ---------- FREE MARKETING AUDIT ---------- */
+.section--flow.audit {
+  padding-top: 64px;
+}
+
 .audit__grid {
   display: grid;
   grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);

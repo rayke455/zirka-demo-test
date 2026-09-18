@@ -3,6 +3,7 @@
 import { useState, useTransition, type FormEvent } from "react";
 import { requestQuote } from "@/app/(frontend)/quote/actions";
 import { budgetRanges as BUDGETS } from "@/lib/data";
+import { trackEvent } from "@/lib/analytics";
 
 export type QuoteService = { id: number; name: string; short: string };
 
@@ -32,8 +33,12 @@ export default function QuoteForm({
 
     startTransition(async () => {
       const result = await requestQuote(form);
-      if (result.ok) setSent(String(form.get("name") ?? ""));
-      else setError(result.error ?? "Something went wrong.");
+      if (result.ok) {
+        trackEvent("quote_submit");
+        setSent(String(form.get("name") ?? ""));
+      } else {
+        setError(result.error ?? "Something went wrong.");
+      }
     });
   }
 

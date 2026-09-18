@@ -49,13 +49,6 @@ export async function requestAudit(formData: FormData): Promise<AuditResult> {
     return { ok: false, error: "Audit requests are paused at the moment. Please reach us on WhatsApp." };
   }
 
-  if (!allow(`audit:${await clientIp()}`, 5, 10 * 60 * 1000)) {
-    return {
-      ok: false,
-      error: "Several requests came from you in a short time. Please wait a few minutes, or message us on WhatsApp.",
-    };
-  }
-
   const name = read(formData, "name");
   const company = read(formData, "company");
   const email = read(formData, "email");
@@ -79,7 +72,16 @@ export async function requestAudit(formData: FormData): Promise<AuditResult> {
   else if (!(AUDIT_GOALS as readonly string[]).includes(goal)) fieldErrors.goal = "Please choose one of the listed goals.";
 
   if (Object.keys(fieldErrors).length > 0) {
-    return { ok: false, fieldErrors, error: "A few details need attention — they're marked below." };
+    return { ok: false, fieldErrors, error: "A few details need attention — see the highlighted fields." };
+  }
+
+  // Counted only once the details are valid, so someone correcting typos is
+  // never locked out; a flood of well-formed requests still is.
+  if (!allow(`audit:${await clientIp()}`, 5, 10 * 60 * 1000)) {
+    return {
+      ok: false,
+      error: "Several requests came from you in a short time. Please wait a few minutes, or message us on WhatsApp.",
+    };
   }
 
   try {

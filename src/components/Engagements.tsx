@@ -47,7 +47,7 @@ export default async function Engagements({ withProjects = false }: { withProjec
                       ))}
                     </ul>
                   )}
-                  <Link className="explore" href="/quote">
+                  <Link className="explore" href="/quote" data-track="pricing_cta_click">
                     {tier.price.toLowerCase().includes("custom")
                       ? "Request a quote"
                       : `Start with ${tier.name.replace(/^Zirka\s+/, "")}`}

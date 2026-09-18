@@ -3,6 +3,7 @@
 import { useMemo, useState, useSyncExternalStore, useTransition, type FormEvent } from "react";
 import { createBooking, refreshAvailability } from "@/app/(frontend)/book/actions";
 import type { DayAvailability } from "@/lib/booking";
+import { trackEvent } from "@/lib/analytics";
 
 type Props = {
   initialDays: DayAvailability[];
@@ -71,6 +72,7 @@ export default function BookingWidget({ initialDays, businessTz, callMinutes, me
     startTransition(async () => {
       const result = await createBooking(form);
       if (result.ok) {
+        trackEvent("booking_submit");
         setDone({ start: result.start, end: result.end, name: String(form.get("name") ?? "") });
         return;
       }

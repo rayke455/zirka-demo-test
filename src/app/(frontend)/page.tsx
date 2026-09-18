@@ -68,7 +68,7 @@ export default async function Home() {
             <p className="lede">{settings.heroLede}</p>
             {/* One filled button, one quiet one; WhatsApp is a link, not a rival CTA (brief §2). */}
             <div className="hero-ctas">
-              <Link className="btn btn-gold" href="/free-marketing-audit">
+              <Link className="btn btn-gold" href="/free-marketing-audit" data-track="main_cta_click">
                 Get a Free Marketing Audit
               </Link>
               <Link className="btn btn-ghost" href="/work">

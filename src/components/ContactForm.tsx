@@ -3,6 +3,7 @@
 import { useState, useTransition, type FormEvent } from "react";
 import { submitEnquiry } from "@/app/(frontend)/contact/actions";
 import { budgetRanges as BUDGETS } from "@/lib/data";
+import { trackEvent } from "@/lib/analytics";
 
 export default function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
@@ -19,6 +20,7 @@ export default function ContactForm() {
     startTransition(async () => {
       const result = await submitEnquiry(formData);
       if (result.ok) {
+        trackEvent("contact_form_submit");
         setSubmitted(true);
       } else {
         setError(result.error ?? "Something went wrong. Please try again.");

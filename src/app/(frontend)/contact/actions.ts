@@ -24,14 +24,6 @@ export async function submitEnquiry(formData: FormData): Promise<ContactResult> 
     return { ok: false, error: "The contact form is currently closed. Please reach us on WhatsApp." };
   }
 
-  const ip = await clientIp();
-  if (!allow(`enquiry:${ip}`, 5, 10 * 60 * 1000)) {
-    return {
-      ok: false,
-      error: "You've sent several messages in a short time. Please wait a few minutes, or reach us on WhatsApp.",
-    };
-  }
-
   const name = str(formData, "name");
   const email = str(formData, "email");
   const message = str(formData, "message");
@@ -41,6 +33,16 @@ export async function submitEnquiry(formData: FormData): Promise<ContactResult> 
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return { ok: false, error: "That email address doesn't look right." };
+  }
+
+  // Counted only once the details are valid, so someone correcting typos is
+  // never locked out; a flood of well-formed requests still is.
+  const ip = await clientIp();
+  if (!allow(`enquiry:${ip}`, 5, 10 * 60 * 1000)) {
+    return {
+      ok: false,
+      error: "You've sent several messages in a short time. Please wait a few minutes, or reach us on WhatsApp.",
+    };
   }
 
   try {

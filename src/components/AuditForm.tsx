@@ -1,11 +1,21 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition, type FormEvent } from "react";
+import { useEffect, useState, useTransition, type FormEvent } from "react";
 import { requestAudit, type AuditField } from "@/app/(frontend)/free-marketing-audit/actions";
 import { AUDIT_GOALS } from "@/lib/audit";
 import { trackEvent } from "@/lib/analytics";
 
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"] as const;
+type Attribution = Record<(typeof UTM_KEYS)[number] | "landing_page" | "referrer_host", string>;
+const EMPTY: Attribution = {
+  utm_source: "",
+  utm_medium: "",
+  utm_campaign: "",
+  utm_content: "",
+  utm_term: "",
+  landing_page: "",
+  referrer_host: "",
+};
 
 /**
  * The free-audit request form (brief §9).
@@ -16,29 +26,27 @@ const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "ut
  * hidden fields — nothing is stored in their browser to do it.
  */
 export default function AuditForm() {
-  const formRef = useRef<HTMLFormElement>(null);
   const [errors, setErrors] = useState<Partial<Record<AuditField, string>>>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [sentTo, setSentTo] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [attribution, setAttribution] = useState<Attribution>(EMPTY);
 
-  // Attribution from the landing URL. Read after mount, because the server
-  // render has no window to read it from.
+  // Attribution from the landing URL, read after mount because the server
+  // render has no window. It is held in state rather than written straight into
+  // the hidden inputs: React re-renders the form after a validation error, and
+  // that resets a hidden input's value — so anyone who made a typo first would
+  // otherwise lose their campaign tags.
   useEffect(() => {
-    const form = formRef.current;
-    if (!form) return;
     const params = new URLSearchParams(window.location.search);
-    const set = (name: string, value: string) => {
-      const input = form.elements.namedItem(name);
-      if (input instanceof HTMLInputElement) input.value = value;
-    };
-    for (const key of UTM_KEYS) set(key, params.get(key) ?? "");
-    set("landing_page", window.location.pathname);
+    let referrer = "";
     try {
-      set("referrer_host", document.referrer ? new URL(document.referrer).hostname : "");
-    } catch {
-      set("referrer_host", "");
-    }
+      referrer = document.referrer ? new URL(document.referrer).hostname : "";
+    } catch {}
+    const next = { ...EMPTY, landing_page: window.location.pathname, referrer_host: referrer };
+    for (const key of UTM_KEYS) next[key] = params.get(key) ?? "";
+    // Deferred so the read-from-window step does not run inside render.
+    queueMicrotask(() => setAttribution(next));
   }, []);
 
   function submit(e: FormEvent<HTMLFormElement>) {
@@ -91,16 +99,14 @@ export default function AuditForm() {
   }
 
   return (
-    <form ref={formRef} className="audit-form" onSubmit={submit} noValidate>
+    <form className="audit-form" onSubmit={submit} noValidate>
       <div className="hp-field" aria-hidden="true">
         <label htmlFor="audit-hp">Leave this empty</label>
         <input id="audit-hp" name="hp_confirm" type="text" tabIndex={-1} autoComplete="off" />
       </div>
-      {UTM_KEYS.map((key) => (
-        <input key={key} type="hidden" name={key} defaultValue="" />
+      {Object.entries(attribution).map(([key, value]) => (
+        <input key={key} type="hidden" name={key} value={value} readOnly />
       ))}
-      <input type="hidden" name="landing_page" defaultValue="" />
-      <input type="hidden" name="referrer_host" defaultValue="" />
 
       <div className="form-row">
         <div className="field">

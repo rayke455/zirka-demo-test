@@ -30,7 +30,7 @@ export default async function CtaBand({
           <h2>{heading}</h2>
           <div className="right">
             <div className="cta-actions">
-              <Link className="btn btn-gold" href="/free-marketing-audit">
+              <Link className="btn btn-gold" href="/free-marketing-audit" data-track="main_cta_click">
                 Get a Free Marketing Audit
               </Link>
               {external ? (
