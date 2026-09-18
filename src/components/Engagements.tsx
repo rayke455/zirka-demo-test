@@ -18,11 +18,11 @@ export default async function Engagements() {
             <div className="section-head">
               <div>
                 <span className="eyebrow">Monthly plans</span>
-                <h2>Marketing that scales with you.</h2>
+                <h2>Simple pricing, no surprises.</h2>
               </div>
               <p>
-                Start where your business is today and move up when the results justify it. Every
-                plan is a starting point — we scope the detail around your goals.
+                Pick the plan that sounds like your business. Prices start from the figure shown —
+                we confirm the exact number with you before any work begins.
               </p>
             </div>
 
@@ -42,12 +42,20 @@ export default async function Engagements() {
                     ))}
                   </ul>
                   <Link className="explore" href="/quote">
-                    Get started
+                    {tier.price.toLowerCase().includes("custom")
+                      ? "Request a quote"
+                      : `Start with ${tier.name.replace(/^Zirka\s+/, "")}`}
                     <ArrowIcon />
                   </Link>
                 </article>
               ))}
             </div>
+
+            <p className="tier-note">
+              Not sure which one fits? Tell us what you sell and what you want more of, and
+              we&rsquo;ll tell you which plan to start on — free, and with no obligation.{" "}
+              <Link href="/contact">Ask us</Link>.
+            </p>
           </>
         )}
 

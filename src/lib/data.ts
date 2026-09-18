@@ -447,7 +447,7 @@ export const engagements: Engagement[] = [
     price: "From $950",
     cadence: "per month",
     summary:
-      "A consistent, well-run presence on the two platforms that matter most to you — the right first step for a small business getting serious about marketing.",
+      "Best for a small business that needs a steady, professional presence but has nobody running it.",
     includes: [
       "2 social media platforms",
       "12 custom posts per month",
@@ -462,7 +462,7 @@ export const engagements: Engagement[] = [
     price: "From $1,850",
     cadence: "per month",
     summary:
-      "Content and paid advertising working together, with the tracking in place to show which of them is bringing you customers.",
+      "Best for a business ready to spend on ads and see exactly what comes back.",
     includes: [
       "Up to 3 social platforms",
       "16–20 content pieces per month",
@@ -479,8 +479,7 @@ export const engagements: Engagement[] = [
     name: "Zirka Scale",
     price: "From $3,500",
     cadence: "per month",
-    summary:
-      "Multi-channel marketing run as one programme, from the ads through to the landing pages they point at.",
+    summary: "Best for a business growing on several channels at once.",
     includes: [
       "Multi-channel digital marketing",
       "20–30 content assets per month",
@@ -497,7 +496,7 @@ export const engagements: Engagement[] = [
     price: "Custom Quote",
     cadence: "tailored scope",
     summary:
-      "For larger companies requiring extensive marketing, automation, websites, multiple campaigns or custom solutions.",
+      "Best for larger companies needing websites, automation or several campaigns together.",
     includes: [
       "Scoped around your goals",
       "Automation and custom builds",

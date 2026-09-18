@@ -2051,11 +2051,25 @@ section {
   color: var(--slate);
 }
 
+/*
+ * This line is how a visitor decides which plan is theirs, so it reads ahead of
+ * the feature list rather than as small print beneath the price.
+ */
 .tier-summary {
   margin: 0;
-  color: var(--slate);
-  font-size: 0.93rem;
-  line-height: 1.55;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--gold) 8%, transparent);
+  color: var(--ink);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Side by side, give these a common height so the feature lists start level. */
+@media (min-width: 861px) {
+  .tier-summary {
+    min-height: 108px;
+  }
 }
 
 .tier-list {
