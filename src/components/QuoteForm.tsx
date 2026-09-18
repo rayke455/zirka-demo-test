@@ -66,8 +66,16 @@ export default function QuoteForm({
   return (
     <form className="quote" onSubmit={submit}>
       <div className="quote__step">
-        <h2 className="booking__label">1. What do you need?</h2>
-        <p className="booking__tz">Pick as many as you like.</p>
+        <div className="quote__step-head">
+          <h2 className="booking__label">1. What do you need?</h2>
+          {/* Announced politely so a screen reader hears the count change too. */}
+          <span className="quote__count" aria-live="polite">
+            {picked.length === 0
+              ? "Nothing selected yet"
+              : `${picked.length} service${picked.length === 1 ? "" : "s"} selected`}
+          </span>
+        </div>
+        <p className="booking__tz">Pick as many as you like — we price each one separately.</p>
         <div className="quote__services">
           {services.map((s) => {
             const on = picked.includes(s.id);
@@ -95,6 +103,30 @@ export default function QuoteForm({
       <div className="quote__step booking__form">
         <h2 className="booking__label">2. About you</h2>
 
+        {/* So nobody sends a request without seeing what they actually asked for. */}
+        {picked.length > 0 && (
+          <div className="quote__chosen">
+            <span className="quote__chosen-label">We&rsquo;ll quote you for</span>
+            <ul>
+              {services
+                .filter((s) => picked.includes(s.id))
+                .map((s) => (
+                  <li key={s.id}>
+                    {s.name}
+                    <button
+                      type="button"
+                      onClick={() => toggle(s.id)}
+                      aria-label={`Remove ${s.name}`}
+                      title={`Remove ${s.name}`}
+                    >
+                      ×
+                    </button>
+                  </li>
+                ))}
+            </ul>
+          </div>
+        )}
+
         <div className="hp-field" aria-hidden="true">
           <label htmlFor="q-website">Leave this empty</label>
           <input id="q-website" name="website" type="text" tabIndex={-1} autoComplete="off" />
@@ -112,8 +144,8 @@ export default function QuoteForm({
         </div>
         <div className="form-row">
           <div className="field">
-            <label htmlFor="q-phone">Phone or WhatsApp (optional)</label>
-            <input id="q-phone" name="phone" type="tel" autoComplete="tel" />
+            <label htmlFor="q-phone">Phone or WhatsApp</label>
+            <input id="q-phone" name="phone" type="tel" autoComplete="tel" required />
           </div>
           <div className="field">
             <label htmlFor="q-company">Business name (optional)</label>

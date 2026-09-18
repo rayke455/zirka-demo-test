@@ -1342,10 +1342,86 @@ section {
   gap: 12px;
 }
 
+.quote__step-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.quote__count {
+  font-family: var(--font-mono), monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
 .quote__services {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 12px;
+}
+
+/* A read-back of the chosen services, so the request is confirmed before it is sent. */
+.quote__chosen {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  padding: 14px 16px;
+  margin-bottom: 4px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--gold) 8%, transparent);
+}
+
+.quote__chosen-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--slate);
+}
+
+.quote__chosen ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+}
+
+.quote__chosen li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 6px 5px 12px;
+  border-radius: 20px;
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  font-size: 13px;
+}
+
+.quote__chosen li button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--slate);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.quote__chosen li button:hover {
+  background: var(--gold);
+  color: #fff;
 }
 
 .quote-chip {
@@ -1397,6 +1473,8 @@ section {
 .quote-chip.is-selected {
   border-color: var(--gold-soft);
   background: rgba(184, 115, 51, 0.07);
+  /* Doubles the border weight without resizing the card and nudging the grid. */
+  box-shadow: 0 0 0 1px var(--gold-soft);
 }
 
 .quote-chip.is-selected .quote-chip__tick {

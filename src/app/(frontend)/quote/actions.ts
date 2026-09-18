@@ -24,8 +24,16 @@ export async function requestQuote(formData: FormData): Promise<QuoteResult> {
 
   const name = field(formData, "name");
   const email = field(formData, "email");
-  if (!name || !email) return { ok: false, error: "Please add your name and email." };
+  const phone = field(formData, "phone");
+  if (!name || !email || !phone) {
+    return { ok: false, error: "Please add your name, email and phone number." };
+  }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { ok: false, error: "That email address doesn't look right." };
+  // Checked here as well as in the browser, since the required attribute only
+  // stops an honest mistake — it is not a constraint anyone has to obey.
+  if (phone.replace(/\D/g, "").length < 7) {
+    return { ok: false, error: "That phone number doesn't look right. Please include the area code." };
+  }
 
   // Only accept ids that match real, published services.
   const payload = await getCms();
@@ -54,7 +62,7 @@ export async function requestQuote(formData: FormData): Promise<QuoteResult> {
       data: {
         name,
         email,
-        phone: field(formData, "phone"),
+        phone,
         company: field(formData, "company"),
         services,
         budget: field(formData, "budget"),
