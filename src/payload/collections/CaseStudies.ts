@@ -73,25 +73,43 @@ export const CaseStudies: CollectionConfig = {
         },
         {
           label: "Full story",
-          description: "Shown on the case study's own page. Leave blank to show the card details only.",
+          description:
+            "Shown on the case study's own page, in this order: challenge, solution, services, timeframe, results, testimonial. Leave blank to show the card details only.",
           fields: [
             {
               name: "challenge",
+              label: "Client challenge",
               type: "textarea",
               admin: { description: "Where the client was stuck when they came to you." },
             },
             {
+              // Kept as "approach" so the existing saved copy is not lost to a rename.
               name: "approach",
+              label: "Zirka solution",
               type: "textarea",
               admin: { description: "What you did, and why that and not something else." },
             },
             {
+              name: "servicesUsed",
+              label: "Services provided",
+              type: "relationship",
+              relationTo: "services",
+              hasMany: true,
+            },
+            {
+              name: "timeframe",
+              type: "text",
+              admin: { description: 'How long the work ran, e.g. "3 months" or "Jan – Apr 2026".' },
+            },
+            {
               name: "outcome",
+              label: "Results summary",
               type: "textarea",
-              admin: { description: "What changed for the business." },
+              admin: { description: "What changed for the business, in words." },
             },
             {
               name: "results",
+              label: "Results figures",
               type: "array",
               maxRows: 4,
               labels: { singular: "Result", plural: "Results" },
@@ -102,10 +120,16 @@ export const CaseStudies: CollectionConfig = {
               ],
             },
             {
-              name: "servicesUsed",
-              type: "relationship",
-              relationTo: "services",
-              hasMany: true,
+              name: "testimonialQuote",
+              label: "Client testimonial",
+              type: "textarea",
+              admin: { description: "In the client's own words. Only use a quote they actually gave you." },
+            },
+            {
+              name: "testimonialAttribution",
+              label: "Testimonial — who said it",
+              type: "text",
+              admin: { description: 'e.g. "Priya Raman, Marketing Director"' },
             },
           ],
         },
@@ -139,6 +163,17 @@ export const CaseStudies: CollectionConfig = {
       admin: {
         position: "sidebar",
         description: "Lower numbers appear first. The first one is the featured card.",
+      },
+    },
+    {
+      name: "sample",
+      label: "Sample / demo project",
+      type: "checkbox",
+      defaultValue: false,
+      admin: {
+        position: "sidebar",
+        description:
+          "Tick this for any project that is not a verified Zirka client result. The site then labels it publicly as a sample, so a placeholder can never read as a real client outcome.",
       },
     },
   ],

@@ -872,6 +872,69 @@ section {
   align-self: flex-start;
 }
 
+/*
+ * Marks a card that is a demonstration rather than a real client engagement, so
+ * a placeholder can never be read as a Zirka result. Deliberately high contrast
+ * — this is a disclosure, not decoration.
+ */
+.work-sample {
+  position: absolute;
+  z-index: 3;
+  top: 18px;
+  right: 18px;
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+  border-radius: 20px;
+  background: rgba(7, 30, 22, 0.82);
+  color: var(--gold-soft);
+  border: 1px solid rgba(223, 164, 115, 0.5);
+}
+
+.work-sample--inline {
+  position: static;
+  align-self: flex-start;
+  margin-bottom: 4px;
+}
+
+/* A full-width disclosure above a sample case study. */
+.sample-banner {
+  background: rgba(184, 115, 51, 0.12);
+  border-bottom: 1px solid rgba(184, 115, 51, 0.3);
+  padding-block: 14px;
+  font-size: 0.92rem;
+  color: var(--ink);
+}
+
+.sample-banner strong {
+  font-weight: 600;
+}
+
+/* A client's own words, kept visually distinct from our description of the work. */
+.case-quote {
+  margin: 0;
+  padding: 24px 28px;
+  border-left: 2px solid var(--gold-soft);
+  background: var(--paper-raised);
+  border-radius: 0 12px 12px 0;
+}
+
+.case-quote p {
+  margin: 0 0 12px;
+  font-size: 1.08rem;
+  line-height: 1.7;
+  font-style: italic;
+  color: var(--ink);
+}
+
+.case-quote cite {
+  font-style: normal;
+  font-size: 0.88rem;
+  color: var(--slate);
+}
+
 .work-info {
   position: relative;
   z-index: 2;
@@ -1925,9 +1988,10 @@ section {
 /* ---------- ENGAGEMENT TIERS ---------- */
 .tier-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  /* Four plans: two rows of two on a laptop rather than four cramped columns. */
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 20px;
-  align-items: start;
+  align-items: stretch;
 }
 
 .tier {
@@ -2031,6 +2095,49 @@ section {
   font-size: 0.92rem;
   color: var(--slate);
   max-width: 60ch;
+}
+
+/* ---------- One-off project pricing ---------- */
+.project-pricing {
+  margin-top: 72px;
+}
+
+.project-price-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 0 48px;
+}
+
+.project-price-list li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.project-price-list__name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 1.02rem;
+  color: var(--ink);
+}
+
+.project-price-list__note {
+  font-size: 0.84rem;
+  color: var(--slate);
+}
+
+.project-price-list__price {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.95rem;
+  color: var(--gold);
+  white-space: nowrap;
 }
 
 /* ---------- FAQ ---------- */

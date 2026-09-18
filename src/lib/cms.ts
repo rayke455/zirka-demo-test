@@ -101,6 +101,8 @@ export type WorkView = {
   plate: string;
   image: string;
   alt: string;
+  /** Not a verified client result — the card and page say so publicly. */
+  sample: boolean;
 };
 
 const toWorkView = (w: CaseStudy): WorkView => ({
@@ -112,6 +114,7 @@ const toWorkView = (w: CaseStudy): WorkView => ({
   plate: w.accent ?? "w1",
   image: urlOf(w.image as MediaLike, WORK_FALLBACK[w.name] ?? PLACEHOLDER),
   alt: altOf(w.image as MediaLike, `${w.name} — ${w.category}`),
+  sample: Boolean(w.sample),
 });
 
 export const getCaseStudies = async (): Promise<WorkView[]> => {
@@ -138,8 +141,10 @@ export type CaseStudyView = WorkView & {
   challenge: string;
   approach: string;
   outcome: string;
+  timeframe: string;
   results: { value: string; label: string }[];
   servicesUsed: { name: string; slug: string }[];
+  testimonial: { quote: string; attribution: string } | null;
 };
 
 export const getCaseStudy = async (slug: string): Promise<CaseStudyView | null> => {
@@ -158,6 +163,10 @@ export const getCaseStudy = async (slug: string): Promise<CaseStudyView | null> 
     challenge: w.challenge ?? "",
     approach: w.approach ?? "",
     outcome: w.outcome ?? "",
+    timeframe: w.timeframe ?? "",
+    testimonial: w.testimonialQuote
+      ? { quote: w.testimonialQuote, attribution: w.testimonialAttribution ?? "" }
+      : null,
     results: (w.results ?? []).map((r) => ({ value: r.value, label: r.label })),
     servicesUsed: (w.servicesUsed ?? [])
       .filter((s): s is Service => typeof s === "object" && s !== null)
@@ -265,6 +274,13 @@ export const getEngagements = async () => {
     includes: (e.includes ?? []).map((i) => i.label),
     featured: Boolean(e.featured),
   }));
+};
+
+export const getProjectPricing = async () => {
+  const docs = await findAll<{ name: string; price: string; note?: string | null }>(
+    "project-pricing"
+  );
+  return docs.map((p) => ({ name: p.name, price: p.price, note: p.note ?? "" }));
 };
 
 export const getFeaturedTestimonial = async () => {
@@ -383,5 +399,7 @@ export const getSettings = async () => {
     hours: s.hours ?? "",
     stats: (s.stats ?? []).map((x) => ({ num: x.value, label: x.label })),
     trustedBy: (s.trustedBy ?? []).map((x) => x.name),
+    projectPricingNote:
+      s.projectPricingNote || "Final pricing depends on project scope and requirements.",
   };
 };

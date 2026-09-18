@@ -75,6 +75,7 @@ export interface Config {
     values: Value;
     faqs: Faq;
     engagements: Engagement;
+    'project-pricing': ProjectPricing;
     submissions: Submission;
     bookings: Booking;
     quotes: Quote;
@@ -96,6 +97,7 @@ export interface Config {
     values: ValuesSelect<false> | ValuesSelect<true>;
     faqs: FaqsSelect<false> | FaqsSelect<true>;
     engagements: EngagementsSelect<false> | EngagementsSelect<true>;
+    'project-pricing': ProjectPricingSelect<false> | ProjectPricingSelect<true>;
     submissions: SubmissionsSelect<false> | SubmissionsSelect<true>;
     bookings: BookingsSelect<false> | BookingsSelect<true>;
     quotes: QuotesSelect<false> | QuotesSelect<true>;
@@ -292,8 +294,13 @@ export interface CaseStudy {
    * What you did, and why that and not something else.
    */
   approach?: string | null;
+  servicesUsed?: (number | Service)[] | null;
   /**
-   * What changed for the business.
+   * How long the work ran, e.g. "3 months" or "Jan – Apr 2026".
+   */
+  timeframe?: string | null;
+  /**
+   * What changed for the business, in words.
    */
   outcome?: string | null;
   /**
@@ -312,7 +319,14 @@ export interface CaseStudy {
         id?: string | null;
       }[]
     | null;
-  servicesUsed?: (number | Service)[] | null;
+  /**
+   * In the client's own words. Only use a quote they actually gave you.
+   */
+  testimonialQuote?: string | null;
+  /**
+   * e.g. "Priya Raman, Marketing Director"
+   */
+  testimonialAttribution?: string | null;
   /**
    * The page address, e.g. /work/solace-skincare. Filled in from the name automatically.
    */
@@ -321,6 +335,10 @@ export interface CaseStudy {
    * Lower numbers appear first. The first one is the featured card.
    */
   order?: number | null;
+  /**
+   * Tick this for any project that is not a verified Zirka client result. The site then labels it publicly as a sample, so a placeholder can never read as a real client outcome.
+   */
+  sample?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -451,6 +469,31 @@ export interface Engagement {
    * Highlights the tier and adds the "Most common" badge.
    */
   featured?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * One-off project prices. Restricted to admins and super admins.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "project-pricing".
+ */
+export interface ProjectPricing {
+  id: number;
+  /**
+   * e.g. "Business Websites"
+   */
+  name: string;
+  /**
+   * e.g. "from $1,500"
+   */
+  price: string;
+  /**
+   * Optional one-line clarification shown under the name.
+   */
+  note?: string | null;
+  order?: number | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -638,6 +681,10 @@ export interface PayloadLockedDocument {
         value: number | Engagement;
       } | null)
     | ({
+        relationTo: 'project-pricing';
+        value: number | ProjectPricing;
+      } | null)
+    | ({
         relationTo: 'submissions';
         value: number | Submission;
       } | null)
@@ -744,6 +791,8 @@ export interface CaseStudiesSelect<T extends boolean = true> {
   accent?: T;
   challenge?: T;
   approach?: T;
+  servicesUsed?: T;
+  timeframe?: T;
   outcome?: T;
   results?:
     | T
@@ -752,9 +801,11 @@ export interface CaseStudiesSelect<T extends boolean = true> {
         label?: T;
         id?: T;
       };
-  servicesUsed?: T;
+  testimonialQuote?: T;
+  testimonialAttribution?: T;
   slug?: T;
   order?: T;
+  sample?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -839,6 +890,19 @@ export interface EngagementsSelect<T extends boolean = true> {
       };
   order?: T;
   featured?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "project-pricing_select".
+ */
+export interface ProjectPricingSelect<T extends boolean = true> {
+  name?: T;
+  price?: T;
+  note?: T;
+  order?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1115,6 +1179,7 @@ export interface SiteSetting {
         id?: string | null;
       }[]
     | null;
+  projectPricingNote?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1331,6 +1396,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         name?: T;
         id?: T;
       };
+  projectPricingNote?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

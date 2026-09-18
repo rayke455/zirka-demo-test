@@ -12,6 +12,7 @@ import {
   team,
   faqs,
   engagements,
+  projectPricing,
   testimonial,
   stats,
   trustedNames,
@@ -50,10 +51,13 @@ import {
           summary: w.summary,
           order: i,
           accent: w.plate,
+          // These are illustrations of the format, not Zirka clients. They ship
+          // flagged so the site discloses that until real work replaces them.
+          sample: true,
         },
       });
     }
-    console.log(`seeded ${work.length} case studies`);
+    console.log(`seeded ${work.length} case studies (flagged as samples)`);
   }
 
   if ((await count("team-members")) === 0) {
@@ -113,6 +117,16 @@ import {
       });
     }
     console.log(`seeded ${engagements.length} pricing tiers`);
+  }
+
+  if ((await count("project-pricing")) === 0) {
+    for (const [i, p] of projectPricing.entries()) {
+      await payload.create({
+        collection: "project-pricing",
+        data: { ...published, name: p.name, price: p.price, order: i },
+      });
+    }
+    console.log(`seeded ${projectPricing.length} project prices`);
   }
 
   // Seeded as a DRAFT on purpose: this quote is placeholder copy and must not

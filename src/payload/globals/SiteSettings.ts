@@ -187,6 +187,8 @@ export const SiteSettings: GlobalConfig = {
         },
         {
           label: "Stats",
+          description:
+            "Only publish figures and client names you can evidence. These read as claims about real Zirka results.",
           fields: [
             {
               name: "stats",
@@ -203,6 +205,17 @@ export const SiteSettings: GlobalConfig = {
               type: "array",
               labels: { singular: "Brand", plural: "Brands" },
               fields: [{ name: "name", type: "text", required: true }],
+            },
+          ],
+        },
+        {
+          label: "Pricing",
+          fields: [
+            {
+              name: "projectPricingNote",
+              label: "Note under the one-off project prices",
+              type: "text",
+              defaultValue: "Final pricing depends on project scope and requirements.",
             },
           ],
         },

@@ -29,11 +29,22 @@ export default async function CaseStudyPage({ params }: Props) {
   const results =
     study.results.length > 0 ? study.results : [{ value: study.metric, label: study.category }];
 
-  const chapters = [
-    { heading: "The challenge", body: study.challenge },
-    { heading: "What we did", body: study.approach },
-    { heading: "What changed", body: study.outcome },
-  ].filter((c) => c.body.trim() !== "");
+  /** A prose section, skipped entirely when the team has not written that part yet. */
+  const chapter = (heading: string, body: string) => {
+    const paragraphs = body
+      .split(/\n\s*\n/)
+      .map((p) => p.trim())
+      .filter(Boolean);
+    if (paragraphs.length === 0) return null;
+    return (
+      <div className="case-chapter">
+        <h2>{heading}</h2>
+        {paragraphs.map((para, i) => (
+          <p key={i}>{para}</p>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <>
@@ -62,38 +73,25 @@ export default async function CaseStudyPage({ params }: Props) {
         </div>
       </div>
 
-      <section className="case-results-wrap">
-        <div className="wrap">
-          <dl className="case-results">
-            {results.map((r) => (
-              <div key={`${r.value}-${r.label}`}>
-                <dt>{r.label}</dt>
-                <dd>{r.value}</dd>
-              </div>
-            ))}
-          </dl>
+      {study.sample && (
+        <div className="sample-banner">
+          <div className="wrap">
+            <strong>Sample project.</strong> This is a demonstration of how Zirka presents its
+            work. It is not a real client engagement, and the figures below are illustrative.
+          </div>
         </div>
-      </section>
+      )}
 
-      {chapters.length > 0 && (
-        <section className="section--flow">
-          <div className="wrap case-body">
-            {chapters.map((c) => (
-              <div className="case-chapter" key={c.heading}>
-                <h2>{c.heading}</h2>
-                {c.body
-                  .split(/\n\s*\n/)
-                  .map((para) => para.trim())
-                  .filter(Boolean)
-                  .map((para, i) => (
-                    <p key={i}>{para}</p>
-                  ))}
-              </div>
-            ))}
+      {/* Challenge, solution, services, timeframe, results, testimonial — in that order. */}
+      <section className="section--flow">
+        <div className="wrap">
+          <div className="case-body">
+            {chapter("Client challenge", study.challenge)}
+            {chapter("Zirka solution", study.approach)}
 
             {study.servicesUsed.length > 0 && (
               <div className="case-chapter">
-                <h2>Services on this engagement</h2>
+                <h2>Services provided</h2>
                 <div className="tags">
                   {study.servicesUsed.map((s) => (
                     <Link className="tag" key={s.slug} href={`/services/${s.slug}`}>
@@ -103,11 +101,47 @@ export default async function CaseStudyPage({ params }: Props) {
                 </div>
               </div>
             )}
-          </div>
-        </section>
-      )}
 
-      <CtaBand heading="Want a result like this?" />
+            {study.timeframe && (
+              <div className="case-chapter">
+                <h2>Timeframe</h2>
+                <p>{study.timeframe}</p>
+              </div>
+            )}
+
+            <div className="case-chapter">
+              <h2>Results</h2>
+              {study.outcome
+                .split(/\n\s*\n/)
+                .map((para) => para.trim())
+                .filter(Boolean)
+                .map((para, i) => (
+                  <p key={i}>{para}</p>
+                ))}
+              <dl className="case-results">
+                {results.map((r) => (
+                  <div key={`${r.value}-${r.label}`}>
+                    <dt>{r.label}</dt>
+                    <dd>{r.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+
+            {study.testimonial && (
+              <div className="case-chapter">
+                <h2>In their words</h2>
+                <blockquote className="case-quote">
+                  <p>&ldquo;{study.testimonial.quote}&rdquo;</p>
+                  {study.testimonial.attribution && <cite>{study.testimonial.attribution}</cite>}
+                </blockquote>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <CtaBand heading={study.sample ? "Want work like this?" : "Want a result like this?"} />
     </>
   );
 }

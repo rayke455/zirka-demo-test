@@ -14,6 +14,7 @@
     "seed": "payload run src/payload/seed.ts",
     "seed:legal": "payload run src/payload/seed-legal.ts",
     "create:admin": "payload run src/payload/create-admin.ts",
+    "apply:pricing": "payload run src/payload/apply-pricing.ts",
     "migrate": "payload migrate",
     "migrate:create": "payload migrate:create",
     "migrate:status": "payload migrate:status"

@@ -13,6 +13,7 @@ import { CaseStudies } from "./payload/collections/CaseStudies";
 import { TeamMembers } from "./payload/collections/TeamMembers";
 import { Testimonials } from "./payload/collections/Testimonials";
 import { Engagements } from "./payload/collections/Engagements";
+import { ProjectPricing } from "./payload/collections/ProjectPricing";
 import { Faqs } from "./payload/collections/Faqs";
 import { Submissions } from "./payload/collections/Submissions";
 import { PageViews } from "./payload/collections/PageViews";
@@ -53,6 +54,7 @@ export default buildConfig({
     Values,
     Faqs,
     Engagements,
+    ProjectPricing,
     Submissions,
     Bookings,
     Quotes,

@@ -12,6 +12,7 @@ export default function WorkFeature({ item }: { item: WorkView }) {
       <div className="feature-body">
         <span className="eyebrow">Featured case study</span>
         <h3>{item.name}</h3>
+        {item.sample && <span className="work-sample work-sample--inline">Sample project</span>}
         <p className="feature-summary">{item.summary}</p>
         <div className="feature-metric">
           <span className="value">{item.metric}</span>

@@ -115,7 +115,7 @@ export default async function Home() {
             <div className="section-head">
               <div>
                 <span className="eyebrow">What we do</span>
-                <h2>Ten services, one growth plan.</h2>
+                <h2>Everything You Need to Grow Digitally.</h2>
               </div>
               <p>
                 Everything from paid ads and websites to WhatsApp, SEO and automation — mixed to

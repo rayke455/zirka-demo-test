@@ -443,48 +443,84 @@ export type Engagement = {
 
 export const engagements: Engagement[] = [
   {
-    name: "Project",
-    price: "From $3,500",
-    cadence: "one-off scope",
+    name: "Zirka Starter",
+    price: "From $950",
+    cadence: "per month",
     summary:
-      "A defined piece of work with a start and an end — useful when you know what you need built.",
+      "A consistent, well-run presence on the two platforms that matter most to you — the right first step for a small business getting serious about marketing.",
     includes: [
-      "Website design & build",
-      "Brand identity system",
-      "Technical SEO audit",
-      "Campaign launch setup",
+      "2 social media platforms",
+      "12 custom posts per month",
+      "Captions and scheduling",
+      "Google Business Profile support",
+      "Monthly performance report",
+      "1 strategy call per month",
     ],
   },
   {
-    name: "Growth Retainer",
-    price: "$5,000 – $12,000",
+    name: "Zirka Growth",
+    price: "From $1,850",
     cadence: "per month",
     summary:
-      "Two to three channels run properly month over month, with the strategy work that keeps them honest.",
+      "Content and paid advertising working together, with the tracking in place to show which of them is bringing you customers.",
     includes: [
-      "2–3 channels managed",
-      "Monthly strategy session",
-      "Live performance dashboard",
-      "Creative production included",
-      "Senior strategist on the account",
+      "Up to 3 social platforms",
+      "16–20 content pieces per month",
+      "Basic / local SEO",
+      "Meta Ads or Google Ads management",
+      "Lead and conversion tracking",
+      "Monthly strategy call",
+      "Detailed monthly reporting",
+      "Ad spend is separate",
     ],
     featured: true,
   },
   {
-    name: "Full Partnership",
-    price: "$15,000+",
+    name: "Zirka Scale",
+    price: "From $3,500",
     cadence: "per month",
     summary:
-      "All four disciplines running together, with a dedicated team treating your growth as the only brief.",
+      "Multi-channel marketing run as one programme, from the ads through to the landing pages they point at.",
     includes: [
-      "Full-funnel across all services",
-      "Dedicated pod, not shared hours",
-      "Weekly optimization cycles",
-      "Quarterly board-ready reporting",
-      "Priority creative turnaround",
+      "Multi-channel digital marketing",
+      "20–30 content assets per month",
+      "SEO",
+      "Meta and Google Ads management",
+      "Landing page and funnel optimization",
+      "Analytics dashboard",
+      "Ongoing growth strategy",
+      "Ad spend is separate",
+    ],
+  },
+  {
+    name: "Custom Partnership",
+    price: "Custom Quote",
+    cadence: "tailored scope",
+    summary:
+      "For larger companies requiring extensive marketing, automation, websites, multiple campaigns or custom solutions.",
+    includes: [
+      "Scoped around your goals",
+      "Automation and custom builds",
+      "Multiple concurrent campaigns",
+      "Dedicated senior team",
     ],
   },
 ];
+
+/** One-off pieces of work, priced per project rather than per month. */
+export const projectPricing = [
+  { name: "Landing Pages", price: "from $750" },
+  { name: "Business Websites", price: "from $1,500" },
+  { name: "E-commerce Websites", price: "from $2,500" },
+  { name: "Logo / Mini Brand Identity", price: "from $600" },
+  { name: "Full Brand Identity", price: "from $1,500" },
+  { name: "SEO Audit", price: "from $500" },
+  { name: "Ad Campaign Setup", price: "from $400" },
+  { name: "AI / WhatsApp Automation", price: "from $750" },
+];
+
+export const projectPricingNote =
+  "Final pricing depends on project scope and requirements.";
 
 export const faqs = [
   {
