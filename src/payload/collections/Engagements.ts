@@ -33,7 +33,8 @@ export const Engagements: CollectionConfig = {
     {
       name: "includes",
       type: "array",
-      minRows: 1,
+      // A tier described in a sentence rather than a list (Custom Partnership)
+      // has no line items, so this cannot be required.
       labels: { singular: "Line item", plural: "Line items" },
       fields: [{ name: "label", type: "text", required: true }],
     },

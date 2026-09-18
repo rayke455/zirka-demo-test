@@ -40,11 +40,13 @@ export default async function Engagements({ withProjects = false }: { withProjec
                     <span className="cadence">{tier.cadence}</span>
                   </div>
                   <p className="tier-summary">{tier.summary}</p>
-                  <ul className="tier-list">
-                    {tier.includes.map((line) => (
-                      <li key={line}>{line}</li>
-                    ))}
-                  </ul>
+                  {tier.includes.length > 0 && (
+                    <ul className="tier-list">
+                      {tier.includes.map((line) => (
+                        <li key={line}>{line}</li>
+                      ))}
+                    </ul>
+                  )}
                   <Link className="explore" href="/quote">
                     {tier.price.toLowerCase().includes("custom")
                       ? "Request a quote"

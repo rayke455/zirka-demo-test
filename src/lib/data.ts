@@ -450,11 +450,11 @@ export const engagements: Engagement[] = [
       "Best for a small business that needs a steady, professional presence but has nobody running it.",
     includes: [
       "2 social media platforms",
-      "12 custom posts per month",
+      "12 custom posts/month",
       "Captions and scheduling",
       "Google Business Profile support",
       "Monthly performance report",
-      "1 strategy call per month",
+      "1 strategy call/month",
     ],
   },
   {
@@ -465,10 +465,10 @@ export const engagements: Engagement[] = [
       "Best for a business ready to spend on ads and see exactly what comes back.",
     includes: [
       "Up to 3 social platforms",
-      "16–20 content pieces per month",
-      "Basic / local SEO",
-      "Meta Ads or Google Ads management",
-      "Lead and conversion tracking",
+      "16–20 content pieces/month",
+      "Basic/local SEO",
+      "Meta Ads OR Google Ads management",
+      "Lead/conversion tracking",
       "Monthly strategy call",
       "Detailed monthly reporting",
       "Ad spend is separate",
@@ -482,11 +482,11 @@ export const engagements: Engagement[] = [
     summary: "Best for a business growing on several channels at once.",
     includes: [
       "Multi-channel digital marketing",
-      "20–30 content assets per month",
+      "20–30 content assets/month",
       "SEO",
-      "Meta and Google Ads management",
-      "Landing page and funnel optimization",
-      "Analytics dashboard",
+      "Meta + Google Ads management",
+      "Landing page/funnel optimization",
+      "Analytics/dashboard",
       "Ongoing growth strategy",
       "Ad spend is separate",
     ],
@@ -496,13 +496,10 @@ export const engagements: Engagement[] = [
     price: "Custom Quote",
     cadence: "tailored scope",
     summary:
-      "Best for larger companies needing websites, automation or several campaigns together.",
-    includes: [
-      "Scoped around your goals",
-      "Automation and custom builds",
-      "Multiple concurrent campaigns",
-      "Dedicated senior team",
-    ],
+      "For larger companies requiring extensive marketing, automation, websites, multiple campaigns or custom solutions.",
+    // No line items: the owner supplied a description for this tier and no list,
+    // so inventing four would be putting words in their mouth.
+    includes: [],
   },
 ];
 
@@ -511,11 +508,11 @@ export const projectPricing = [
   { name: "Landing Pages", price: "from $750" },
   { name: "Business Websites", price: "from $1,500" },
   { name: "E-commerce Websites", price: "from $2,500" },
-  { name: "Logo / Mini Brand Identity", price: "from $600" },
+  { name: "Logo/Mini Brand Identity", price: "from $600" },
   { name: "Full Brand Identity", price: "from $1,500" },
   { name: "SEO Audit", price: "from $500" },
   { name: "Ad Campaign Setup", price: "from $400" },
-  { name: "AI / WhatsApp Automation", price: "from $750" },
+  { name: "AI/WhatsApp Automation", price: "from $750" },
 ];
 
 export const projectPricingNote =
