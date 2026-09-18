@@ -36,15 +36,17 @@ export default async function PrivacyPage() {
 
           <h2>When you browse the site</h2>
           <p>
-            We count page visits so we know which pages are useful. For each visit we record the
-            page address, the website that linked you here (the domain only, never the full link),
-            and a random visit ID.
+            We count page views so we know which pages are useful. For each view we record two
+            things: the page address, and the website that linked you here — the domain only, never
+            the full link.
           </p>
           <p>
-            That ID is stored in your browser&rsquo;s session storage and is deleted when you close
-            the tab. We do not store your IP address, we do not use tracking cookies, and we do not
-            use third-party analytics or advertising pixels. The visit data cannot be used to
-            identify you.
+            Nothing is written to your device. No cookie, no visit ID, nothing kept in your
+            browser&rsquo;s storage. We do not record your IP address and we use no third-party
+            analytics or advertising pixels. Because we store nothing on your device and hold
+            nothing that identifies you, the site does not ask you to accept anything before you
+            read it. The trade-off is ours: we cannot tell whether two page views came from the
+            same person.
           </p>
 
           <h2>Protecting the site from abuse</h2>
@@ -56,8 +58,13 @@ export default async function PrivacyPage() {
 
           <h2>Cookies</h2>
           <p>
-            Visitors to the public site receive no cookies from us. Our staff receive a login
-            cookie when they sign in to manage the site, which does not affect visitors.
+            Visitors to the public site receive no cookies from us at all. Our staff receive a
+            login cookie when they sign in to manage the site, which does not affect visitors.
+          </p>
+          <p>
+            One exception is in your hands: if a page shows a video, the player is not loaded until
+            you press play. Pressing it loads the player from the company hosting the video, which
+            may set its own cookies. Leave it unplayed and nothing loads.
           </p>
 
           <h2>Links to other services</h2>

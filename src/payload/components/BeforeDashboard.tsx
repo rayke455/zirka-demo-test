@@ -57,7 +57,9 @@ export default async function BeforeDashboard({ user }: Props) {
 
   let days: { date: string; label: string; views: number }[] = [];
   let topPages: { path: string; views: number }[] = [];
-  let sessions = 0;
+  // No session id is stored on a visitor's device any more, so this counts
+  // page views rather than unique people.
+  let views = 0;
 
   if (isAdmin) {
     try {
@@ -70,7 +72,6 @@ export default async function BeforeDashboard({ user }: Props) {
 
       const perDay = new Map<string, number>();
       const perPath = new Map<string, number>();
-      const seen = new Set<string>();
 
       for (let i = 0; i < DAYS; i++) {
         const d = new Date(since);
@@ -80,13 +81,11 @@ export default async function BeforeDashboard({ user }: Props) {
 
       for (const v of docs as {
         path: string;
-        session?: string | null;
         createdAt: string;
       }[]) {
         const key = v.createdAt.slice(0, 10);
         if (perDay.has(key)) perDay.set(key, (perDay.get(key) ?? 0) + 1);
         perPath.set(v.path, (perPath.get(v.path) ?? 0) + 1);
-        if (v.session) seen.add(v.session);
       }
 
       days = [...perDay.entries()].map(([date, views]) => ({
@@ -104,7 +103,7 @@ export default async function BeforeDashboard({ user }: Props) {
         .sort((a, b) => b.views - a.views)
         .slice(0, 5);
 
-      sessions = seen.size;
+      views = docs.length;
     } catch {
       // Gracefully handle any analytics query issues
     }
@@ -199,8 +198,8 @@ export default async function BeforeDashboard({ user }: Props) {
       <div className="zk-tiles">
         {isAdmin && (
           <div className="zk-tile zk-tile--static">
-            <span className="zk-tile__num">{sessions.toLocaleString()}</span>
-            <span className="zk-tile__label">30-Day Unique Visits</span>
+            <span className="zk-tile__num">{views.toLocaleString()}</span>
+            <span className="zk-tile__label">Page Views (30 Days)</span>
             <span className="zk-tile__hint">Website traffic</span>
           </div>
         )}

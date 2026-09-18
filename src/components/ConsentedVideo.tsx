@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useConsent } from "./CookieConsent";
 
 /**
- * A YouTube/Vimeo player loads code from that provider, so it waits until the
- * visitor has accepted — or presses play on this placeholder, which is consent
- * for this one video.
+ * A YouTube or Vimeo player loads code from that provider, which can set
+ * cookies, so the player is never loaded until the visitor presses play. That
+ * press is the permission — which is why the site needs no consent banner for
+ * it. Until then this is just an image and a button.
  */
 export default function ConsentedVideo({
   src,
@@ -17,10 +17,9 @@ export default function ConsentedVideo({
   title: string;
   poster?: string | null;
 }) {
-  const consent = useConsent();
   const [allowed, setAllowed] = useState(false);
 
-  if (consent === "accepted" || allowed) {
+  if (allowed) {
     return (
       <iframe
         src={src}

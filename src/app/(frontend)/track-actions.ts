@@ -13,7 +13,7 @@ const referrerHost = (referrer: string): string => {
   }
 };
 
-export async function trackView(path: string, referrer: string, session: string) {
+export async function trackView(path: string, referrer: string) {
   if (!path.startsWith("/") || path.startsWith("/admin")) return;
 
   // A real visitor browses a handful of pages a minute; beyond that it's noise
@@ -28,7 +28,6 @@ export async function trackView(path: string, referrer: string, session: string)
       data: {
         path: path.slice(0, 200),
         referrer: referrerHost(referrer),
-        session: session.slice(0, 40),
       },
     });
   } catch {
