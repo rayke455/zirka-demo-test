@@ -3,7 +3,8 @@ import Image from "next/image";
 import Header from "@/components/Header";
 import StarField from "@/components/StarField";
 import { WhatsAppIcon } from "@/components/Icons";
-import ServiceCard from "@/components/ServiceCard";
+import SolutionCategories from "@/components/SolutionCategories";
+import WhoWeHelp from "@/components/WhoWeHelp";
 import WorkCard from "@/components/WorkCard";
 import WorkFeature from "@/components/WorkFeature";
 import Testimonial from "@/components/Testimonial";
@@ -13,7 +14,14 @@ import Faq from "@/components/Faq";
 import CtaBand from "@/components/CtaBand";
 import JsonLd from "@/components/JsonLd";
 import { organizationSchema } from "@/lib/schema";
-import { getServices, getCaseStudies, getSettings, getProcessSteps, getFeatures } from "@/lib/cms";
+import {
+  getServices,
+  getCaseStudies,
+  getSettings,
+  getProcessSteps,
+  getFeatures,
+  getSolutionCategories,
+} from "@/lib/cms";
 
 /** Split the headline so the emphasised word can carry the accent colour. */
 function Headline({ text, emphasis }: { text: string; emphasis: string }) {
@@ -29,15 +37,15 @@ function Headline({ text, emphasis }: { text: string; emphasis: string }) {
 }
 
 export default async function Home() {
-  const [settings, services, work, steps, features] = await Promise.all([
+  const [settings, services, work, steps, features, categories] = await Promise.all([
     getSettings(),
     getServices(),
     getCaseStudies(),
     getProcessSteps(),
     getFeatures(),
+    getSolutionCategories(),
   ]);
 
-  const coreServices = services.filter((s) => s.core);
   // Only claim results when there is real, documented client work to show.
   const hasRealWork = work.some((w) => !w.sample);
 
@@ -100,7 +108,7 @@ export default async function Home() {
         </div>
       </div>
 
-      {/* 2 — Credibility */}
+      {/* 2 — Genuine proof only: switched off until there is real proof to show */}
       {features.showTrustedBy && settings.trustedBy.length > 0 && (
         <div className="trusted">
           <div className="wrap trusted-row">
@@ -114,8 +122,13 @@ export default async function Home() {
         </div>
       )}
 
-      {/* 3 — What we do */}
-      {features.showServices && coreServices.length > 0 && (
+      {/*
+       * Order follows brief §33: what we do → why trust us → what we offer →
+       * proof → process → pricing → objections → conversion.
+       */}
+
+      {/* 3 — Four solution categories (brief §5); the full catalogue is on /services */}
+      {features.showServices && categories.length > 0 && (
         <section id="services">
           <div className="wrap">
             <div className="section-head">
@@ -124,27 +137,21 @@ export default async function Home() {
                 <h2>Everything You Need to Grow Digitally.</h2>
               </div>
               <p>
-                Everything from paid ads and websites to WhatsApp, SEO and automation — mixed to
-                fit what your business actually needs.
+                Four ways we help, each built from the services underneath it. Take one, or combine
+                them into a single plan.
               </p>
             </div>
-            <div className="service-grid">
-              {coreServices.map((service) => (
-                <ServiceCard service={service} key={service.slug} />
-              ))}
+            <SolutionCategories categories={categories} />
+            <div style={{ marginTop: 32 }}>
+              <Link className="btn btn-outline" href="/services">
+                See all {services.length} services
+              </Link>
             </div>
-            {services.length > coreServices.length && (
-              <div style={{ marginTop: 32 }}>
-                <Link className="btn btn-outline" href="/services">
-                  See all {services.length} services
-                </Link>
-              </div>
-            )}
           </div>
         </section>
       )}
 
-      {/* 4 — Proof that it works */}
+      {/* 4 — Selected work: real client work, or clearly labelled concepts */}
       {features.showWork && work.length > 0 && (
         <section id="work" className="section--flow">
           <div className="wrap">
@@ -174,13 +181,19 @@ export default async function Home() {
         </section>
       )}
 
-      {/* 5 — See it explained */}
+      {/* Only renders when a video has been set. */}
       <VideoSection />
 
-      {/* 6 — Proof in a client's own words */}
-      {features.showTestimonial && <Testimonial />}
+      {/* 5 — Who we help */}
+      {features.showWhoWeHelp && (
+        <WhoWeHelp
+          heading={settings.whoWeHelp.heading}
+          body={settings.whoWeHelp.body}
+          industries={settings.whoWeHelp.industries}
+        />
+      )}
 
-      {/* 6 — How the work actually runs */}
+      {/* 6 — How we work */}
       {features.showProcess && steps.length > 0 && (
         <section id="approach" className="section--panel">
           <div className="wrap">
@@ -190,8 +203,8 @@ export default async function Home() {
                 <h2>The same route, every time.</h2>
               </div>
               <p>
-                Run in order on every engagement &mdash; from first audit to the optimization loop
-                that never really ends.
+                Five stages on every engagement &mdash; from the first audit to reporting clearly
+                and scaling what works.
               </p>
             </div>
             <div className="approach">
@@ -207,13 +220,16 @@ export default async function Home() {
         </section>
       )}
 
-      {/* 7 — What it costs */}
+      {/* 7 — Pricing */}
       {features.showPricing && <Engagements withProjects />}
 
-      {/* 8 — The objections that stop people calling */}
+      {/* 8 — Testimonials: only genuine ones, and only when one is published */}
+      {features.showTestimonial && <Testimonial />}
+
+      {/* 9 — FAQ */}
       {features.showFaq && <Faq />}
 
-      {/* 9 — Act */}
+      {/* 10 — Free Marketing Audit */}
       <CtaBand />
     </>
   );

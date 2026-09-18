@@ -1,4 +1,5 @@
 import type { GlobalConfig } from "payload";
+import { revalidatePath } from "next/cache";
 import { isSuperAdmin } from "../access";
 
 const toggle = (name: string, label: string, description: string, defaultValue = true) => ({
@@ -26,18 +27,59 @@ export const Features: GlobalConfig = {
     read: isSuperAdmin,
     update: isSuperAdmin,
   },
+  hooks: {
+    afterChange: [
+      // Pages are cached for up to a minute. A switch — maintenance above all —
+      // should take effect when it is saved, not a minute later.
+      () => {
+        try {
+          revalidatePath("/", "layout");
+          revalidatePath("/site-status");
+        } catch {
+          // Saved from a script outside the web server: nothing cached to clear.
+        }
+      },
+    ],
+  },
   fields: [
     {
       type: "tabs",
       tabs: [
         {
+          label: "Maintenance",
+          description:
+            "Close the public website while you work on it. Visitors see your logo, a short message and how to contact you. The admin keeps working, and signed-in admins can still preview the full site from the dashboard.",
+          fields: [
+            toggle(
+              "maintenanceMode",
+              "Maintenance mode",
+              "When on, every public page shows the maintenance notice instead. Search engines are told the site is temporarily unavailable, so your rankings are kept.",
+              false
+            ),
+            {
+              name: "maintenanceHeading",
+              label: "Heading",
+              type: "text",
+              defaultValue: "We're making some improvements.",
+            },
+            {
+              name: "maintenanceMessage",
+              label: "Message",
+              type: "textarea",
+              defaultValue:
+                "Our website is being updated and will be back shortly. We're still working in the meantime, and happy to help.",
+            },
+          ],
+        },
+        {
           label: "Homepage sections",
           fields: [
             toggle("showStats", "Stats strip", "The four figures under the homepage headline."),
             toggle("showTrustedBy", "Trusted by", "The row of client names below the hero."),
-            toggle("showServices", "Services", "The service cards on the homepage."),
+            toggle("showServices", "Solutions", "The four solution categories on the homepage."),
             toggle("showWork", "Selected work", "The case studies on the homepage."),
             toggle("showTestimonial", "Testimonial", "The large client quote (only appears if one is published)."),
+            toggle("showWhoWeHelp", "Who we help", "Who Zirka works with. Edit the wording under Site Settings → Who we help."),
             toggle("showProcess", "How we work", "The numbered process steps."),
             toggle("showPricing", "Pricing", "The engagement tiers and prices."),
             toggle("showFaq", "FAQ", "Common questions."),

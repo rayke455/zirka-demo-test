@@ -1907,7 +1907,8 @@ section {
 /* ---------- APPROACH / VALUES ---------- */
 .approach {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  /* Five process stages (brief §13) — one row on a laptop, wrapping below. */
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 24px;
 }
 
@@ -2777,4 +2778,358 @@ footer {
     animation: none !important;
     transition: none !important;
   }
+}
+
+/* ---------- SERVICES MENU (brief §26) ---------- */
+.nav-services {
+  position: relative;
+}
+
+.nav-services__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  color: var(--hero-paper);
+  opacity: 0.78;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.nav-services__toggle:hover,
+.nav-services__toggle[aria-expanded="true"] {
+  opacity: 1;
+}
+
+.nav-services__chevron {
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 0.15s ease;
+}
+
+.nav-services__toggle[aria-expanded="true"] .nav-services__chevron {
+  transform: translateY(1px) rotate(-135deg);
+}
+
+.nav-services__menu {
+  position: absolute;
+  top: calc(100% + 16px);
+  left: -20px;
+  z-index: 40;
+  width: 340px;
+  padding: 10px;
+  border-radius: 16px;
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.nav-services__menu[hidden] {
+  display: none;
+}
+
+.nav-services__menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-services__menu li a {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: var(--ink);
+  opacity: 1;
+  text-decoration: none;
+}
+
+.nav-services__menu li a:hover,
+.nav-services__menu li a:focus-visible {
+  background: color-mix(in srgb, var(--gold) 8%, transparent);
+}
+
+.nav-services__menu strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.nav-services__menu span {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--slate);
+}
+
+.nav-services__all {
+  display: block;
+  margin-top: 6px;
+  padding: 10px 12px 6px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gold) !important;
+  opacity: 1 !important;
+  text-decoration: none;
+}
+
+.mobile-panel a.mobile-sub {
+  padding: 10px 4px 10px 18px;
+  font-size: 15px;
+  border-top: 0;
+  opacity: 0.8;
+}
+
+/* ---------- SOLUTION CATEGORIES (brief §5) ---------- */
+.solutions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.solution-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 30px 30px 28px;
+  border-radius: 20px;
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+}
+
+.solution-card__index {
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--gold);
+}
+
+.solution-card h3 {
+  font-size: clamp(1.4rem, 2.2vw, 1.75rem);
+  font-weight: 300;
+  letter-spacing: -0.015em;
+}
+
+.solution-card p {
+  margin: 0;
+  font-size: 0.97rem;
+  line-height: 1.6;
+  color: var(--slate);
+}
+
+.solution-card__services {
+  list-style: none;
+  margin: 4px 0 8px;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.solution-card__services a {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.solution-card__services a:hover {
+  border-color: var(--gold-soft);
+}
+
+.solution-card .explore {
+  margin-top: auto;
+}
+
+/* ---------- WHO WE HELP (brief §6) ---------- */
+.who-we-help {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 760px;
+}
+
+.who-we-help h2 {
+  font-size: clamp(1.8rem, 3.4vw, 2.6rem);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+}
+
+.who-we-help p {
+  margin: 0;
+  font-size: 1.08rem;
+  line-height: 1.7;
+  color: var(--slate);
+}
+
+.who-we-help__industries {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.service-category + .service-category {
+  padding-top: 24px;
+}
+
+/* Scoped above the phone breakpoint so it cannot override the phone layout. */
+@media (min-width: 861px) and (max-width: 1100px) {
+  .approach {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 860px) {
+  .solutions-grid {
+    grid-template-columns: 1fr;
+  }
+  .solution-card {
+    padding: 24px 22px;
+  }
+}
+
+/* ---------- MAINTENANCE NOTICE ---------- */
+/* Always the brand's dark green, whatever theme the visitor prefers. */
+.maintenance-body {
+  margin: 0;
+  background: var(--hero-ink);
+}
+
+.maintenance {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 48px 20px;
+  color: var(--hero-paper);
+  background:
+    radial-gradient(900px 500px at 50% -10%, rgba(17, 74, 53, 0.9), transparent),
+    linear-gradient(160deg, var(--hero-ink) 0%, #071e16 100%);
+}
+
+.maintenance__card {
+  width: 100%;
+  max-width: 620px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.maintenance__logo {
+  width: 140px;
+  height: auto;
+}
+
+.maintenance__slogan {
+  margin: -6px 0 12px;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  color: var(--gold-soft);
+}
+
+.maintenance h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 300;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+}
+
+.maintenance__message {
+  margin: 0;
+  max-width: 48ch;
+  font-size: 1.08rem;
+  line-height: 1.65;
+  color: rgba(242, 239, 230, 0.82);
+}
+
+.maintenance__contact {
+  width: 100%;
+  margin-top: 16px;
+  padding: 26px 22px;
+  border-radius: 20px;
+  border: 1px solid var(--hero-line);
+  background: rgba(242, 239, 230, 0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.maintenance__contact h2 {
+  font-size: 1.15rem;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.maintenance__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.maintenance__hours {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(242, 239, 230, 0.6);
+}
+
+.maintenance__team {
+  font-size: 12px;
+  color: rgba(242, 239, 230, 0.45);
+  text-decoration: none;
+}
+
+.maintenance__team:hover {
+  color: rgba(242, 239, 230, 0.8);
+}
+
+@media (max-width: 520px) {
+  .maintenance__actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ---------- PREVIEW BADGE (team only, during maintenance) ---------- */
+.preview-badge {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  z-index: 70;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: calc(100vw - 32px);
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: #1c1305;
+  color: #f6e3cf;
+  font-size: 13px;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+.preview-badge a {
+  color: var(--gold-soft);
+  font-weight: 600;
+  white-space: nowrap;
 }

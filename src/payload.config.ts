@@ -9,6 +9,7 @@ import sharp from "sharp";
 import { Users } from "./payload/collections/Users";
 import { Media } from "./payload/collections/Media";
 import { Services } from "./payload/collections/Services";
+import { SolutionCategories } from "./payload/collections/SolutionCategories";
 import { CaseStudies } from "./payload/collections/CaseStudies";
 import { TeamMembers } from "./payload/collections/TeamMembers";
 import { Testimonials } from "./payload/collections/Testimonials";
@@ -47,6 +48,7 @@ export default buildConfig({
   },
   collections: [
     Services,
+    SolutionCategories,
     CaseStudies,
     TeamMembers,
     Testimonials,

@@ -302,6 +302,7 @@ const FEATURE_DEFAULTS = {
   showServices: true,
   showWork: true,
   showTestimonial: true,
+  showWhoWeHelp: true,
   showProcess: true,
   showPricing: true,
   showFaq: true,
@@ -314,6 +315,7 @@ const FEATURE_DEFAULTS = {
   bookingEnabled: true,
   analyticsEnabled: true,
   alertsEnabled: false,
+  maintenanceMode: false,
 };
 
 export type FeatureFlags = typeof FEATURE_DEFAULTS;
@@ -332,6 +334,45 @@ export const getFeatures = async (): Promise<FeatureFlags> => {
     if (typeof f[key] === "boolean") flags[key] = f[key] as boolean;
   }
   return flags;
+};
+
+/** What the maintenance notice says, as set under Features → Maintenance. */
+export const getMaintenance = async () => {
+  const payload = await getCms();
+  const f = (await payload.findGlobal({ slug: "features", depth: 0 })) as unknown as Record<string, unknown>;
+  return {
+    on: f.maintenanceMode === true,
+    heading: (f.maintenanceHeading as string) || "We're making some improvements.",
+    message:
+      (f.maintenanceMessage as string) ||
+      "Our website is being updated and will be back shortly. We're still working in the meantime, and happy to help.",
+  };
+};
+
+export type SolutionCategoryView = {
+  name: string;
+  slug: string;
+  description: string;
+  services: { name: string; slug: string; short: string }[];
+};
+
+/** The four solution categories (brief §5), each with its published services. */
+export const getSolutionCategories = async (): Promise<SolutionCategoryView[]> => {
+  const docs = await findAll<{
+    name: string;
+    slug: string;
+    description: string;
+    services?: (Service | number)[] | null;
+  }>("solution-categories");
+  return docs.map((c) => ({
+    name: c.name,
+    slug: c.slug,
+    description: c.description,
+    services: (c.services ?? [])
+      // An unpublished service comes back as a bare id at depth 1; skip it.
+      .filter((s): s is Service => typeof s === "object" && s !== null && s._status === "published")
+      .map((s) => ({ name: s.name, slug: s.slug, short: s.short })),
+  }));
 };
 
 export type LegalContent = {
@@ -399,6 +440,13 @@ export const getSettings = async () => {
     hours: s.hours ?? "",
     stats: (s.stats ?? []).map((x) => ({ num: x.value, label: x.label })),
     trustedBy: (s.trustedBy ?? []).map((x) => x.name),
+    whoWeHelp: {
+      heading: s.whoWeHelp?.heading || "Built for businesses ready to grow.",
+      body:
+        s.whoWeHelp?.body ||
+        "We work with growing businesses that want marketing tied to real business outcomes — more visibility, better leads, stronger conversion, and scalable growth.",
+      industries: (s.whoWeHelp?.industries ?? []).map((i) => i.name).filter(Boolean),
+    },
     projectPricingNote:
       s.projectPricingNote || "Final pricing depends on project scope and requirements.",
   };

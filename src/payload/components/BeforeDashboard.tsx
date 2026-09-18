@@ -110,10 +110,32 @@ export default async function BeforeDashboard({ user }: Props) {
   }
 
   const hasPendingItems = newEnquiries > 0 || newQuotes > 0 || confirmedBookings > 0;
+  const features = (await payload.findGlobal({ slug: "features", depth: 0 })) as { maintenanceMode?: boolean };
+  const maintenanceOn = features.maintenanceMode === true;
   const displayName = user?.name?.split(" ")[0] || user?.email?.split("@")[0] || "there";
 
   return (
     <div className="zk-dash">
+      {/* Impossible to miss while the public site is closed. */}
+      {maintenanceOn && (
+        <div className="zk-maintenance" role="status">
+          <div>
+            <strong>Maintenance mode is on.</strong> Visitors see the maintenance notice, not the
+            website.
+          </div>
+          <div className="zk-maintenance__actions">
+            <a className="zk-maintenance__btn" href="/maintenance/bypass" target="_blank" rel="noopener">
+              Preview the site
+            </a>
+            {user?.role === "superadmin" && (
+              <Link className="zk-maintenance__btn zk-maintenance__btn--quiet" href="/admin/globals/features">
+                Turn it off
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Executive Header Bar */}
       <div className="zk-dash__head">
         <div className="zk-dash__head-left">

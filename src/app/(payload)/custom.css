@@ -758,3 +758,39 @@ html[data-theme="dark"] .zk-dot {
     transition: none;
   }
 }
+
+/* ---------- Maintenance mode banner ---------- */
+.zk-maintenance {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: rgba(184, 115, 51, 0.12);
+  border: 1px solid rgba(184, 115, 51, 0.45);
+  color: var(--zk-ink);
+  font-size: 14px;
+}
+
+.zk-maintenance__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.zk-maintenance__btn {
+  padding: 7px 14px;
+  border-radius: 8px;
+  background: var(--zk-copper);
+  color: #1c1305 !important;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.zk-maintenance__btn--quiet {
+  background: transparent;
+  border: 1px solid rgba(184, 115, 51, 0.45);
+  color: var(--zk-ink) !important;
+}

@@ -36,12 +36,12 @@ export const SiteSettings: GlobalConfig = {
               name: "heroHeadline",
               type: "text",
               required: true,
-              defaultValue: "Where ideas become impact.",
+              defaultValue: "Turn clicks into customers.",
             },
             {
               name: "heroEmphasis",
               type: "text",
-              defaultValue: "impact",
+              defaultValue: "customers",
               admin: { description: "Which word in the headline is picked out in copper." },
             },
             { name: "heroLede", type: "textarea", required: true },
@@ -205,6 +205,37 @@ export const SiteSettings: GlobalConfig = {
               type: "array",
               labels: { singular: "Brand", plural: "Brands" },
               fields: [{ name: "name", type: "text", required: true }],
+            },
+          ],
+        },
+        {
+          label: "Who we help",
+          description:
+            "The homepage section on who Zirka works with (brief §6). Only name industries you genuinely work with — leave the list empty rather than invent a specialism.",
+          fields: [
+            {
+              name: "whoWeHelp",
+              type: "group",
+              fields: [
+                {
+                  name: "heading",
+                  type: "text",
+                  defaultValue: "Built for businesses ready to grow.",
+                },
+                {
+                  name: "body",
+                  type: "textarea",
+                  defaultValue:
+                    "We work with growing businesses that want marketing tied to real business outcomes — more visibility, better leads, stronger conversion, and scalable growth.",
+                },
+                {
+                  name: "industries",
+                  type: "array",
+                  labels: { singular: "Industry", plural: "Industries" },
+                  admin: { description: "Optional. Shown as a row of tags under the text." },
+                  fields: [{ name: "name", type: "text", required: true }],
+                },
+              ],
             },
           ],
         },

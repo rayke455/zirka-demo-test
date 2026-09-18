@@ -4,7 +4,7 @@ import PageHeader from "@/components/PageHeader";
 import CtaBand from "@/components/CtaBand";
 import ServiceCard from "@/components/ServiceCard";
 import JsonLd from "@/components/JsonLd";
-import { getServices } from "@/lib/cms";
+import { getServices, getSolutionCategories } from "@/lib/cms";
 import { breadcrumbSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
@@ -15,9 +15,12 @@ export const metadata: Metadata = {
 };
 
 export default async function ServicesPage() {
-  const services = await getServices();
-  const core = services.filter((s) => s.core);
-  const rest = services.filter((s) => !s.core);
+  const [services, categories] = await Promise.all([getServices(), getSolutionCategories()]);
+  const bySlug = new Map(services.map((s) => [s.slug, s]));
+  // Anything not placed in a category still gets listed — the full catalogue
+  // stays on this page (brief §5).
+  const placed = new Set(categories.flatMap((c) => c.services.map((s) => s.slug)));
+  const rest = services.filter((s) => !placed.has(s.slug));
 
   return (
     <>
@@ -53,23 +56,40 @@ export default async function ServicesPage() {
         </div>
       </section>
 
-      {core.length > 0 && (
-        <section className="section--flow">
-          <div className="wrap">
-            <h2 className="index-heading">What we&rsquo;re known for</h2>
-            <div className="service-grid">
-              {core.map((service) => (
-                <ServiceCard service={service} key={service.slug} />
-              ))}
+      {categories.map((c) => {
+        const inCategory = c.services
+          .map((ref) => bySlug.get(ref.slug))
+          .filter((svc): svc is NonNullable<typeof svc> => Boolean(svc));
+        if (inCategory.length === 0) return null;
+        return (
+          <section className="section--flow service-category" id={c.slug} key={c.slug}>
+            <div className="wrap">
+              <div className="section-head">
+                <div>
+                  <span className="eyebrow">Solution</span>
+                  <h2>{c.name}</h2>
+                </div>
+                <p>{c.description}</p>
+              </div>
+              <div className="service-grid">
+                {inCategory.map((service) => (
+                  <ServiceCard service={service} key={service.slug} />
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
-      )}
+          </section>
+        );
+      })}
 
       {rest.length > 0 && (
-        <section className="section--flow">
+        <section className="section--flow service-category" id="also-available">
           <div className="wrap">
-            <h2 className="index-heading">Also available</h2>
+            <div className="section-head">
+              <div>
+                <span className="eyebrow">Also available</span>
+                <h2>More ways we help.</h2>
+              </div>
+            </div>
             <div className="service-grid">
               {rest.map((service) => (
                 <ServiceCard service={service} key={service.slug} />

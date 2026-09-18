@@ -68,6 +68,7 @@ export interface Config {
   blocks: {};
   collections: {
     services: Service;
+    'solution-categories': SolutionCategory;
     'case-studies': CaseStudy;
     'team-members': TeamMember;
     testimonials: Testimonial;
@@ -90,6 +91,7 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     services: ServicesSelect<false> | ServicesSelect<true>;
+    'solution-categories': SolutionCategoriesSelect<false> | SolutionCategoriesSelect<true>;
     'case-studies': CaseStudiesSelect<false> | CaseStudiesSelect<true>;
     'team-members': TeamMembersSelect<false> | TeamMembersSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
@@ -259,6 +261,35 @@ export interface Media {
       filename?: string | null;
     };
   };
+}
+/**
+ * The four headline categories on the homepage, the Services page and the Services menu. Pick which services belong to each.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "solution-categories".
+ */
+export interface SolutionCategory {
+  id: number;
+  /**
+   * e.g. "Get Found"
+   */
+  name: string;
+  /**
+   * Used in links, e.g. "get-found" gives /services#get-found. Lowercase and hyphens only.
+   */
+  slug: string;
+  /**
+   * One or two sentences on the outcome, not the tasks.
+   */
+  description: string;
+  /**
+   * The services shown under this category. A service can sit in more than one.
+   */
+  services?: (number | Service)[] | null;
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * Client work shown on the homepage, the work page, and each case study's own page.
@@ -672,6 +703,10 @@ export interface PayloadLockedDocument {
         value: number | Service;
       } | null)
     | ({
+        relationTo: 'solution-categories';
+        value: number | SolutionCategory;
+      } | null)
+    | ({
         relationTo: 'case-studies';
         value: number | CaseStudy;
       } | null)
@@ -793,6 +828,20 @@ export interface ServicesSelect<T extends boolean = true> {
   image?: T;
   accent?: T;
   icon?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "solution-categories_select".
+ */
+export interface SolutionCategoriesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  description?: T;
+  services?: T;
+  order?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1213,6 +1262,19 @@ export interface SiteSetting {
         id?: string | null;
       }[]
     | null;
+  whoWeHelp?: {
+    heading?: string | null;
+    body?: string | null;
+    /**
+     * Optional. Shown as a row of tags under the text.
+     */
+    industries?:
+      | {
+          name: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
   projectPricingNote?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1226,6 +1288,12 @@ export interface SiteSetting {
 export interface Feature {
   id: number;
   /**
+   * When on, every public page shows the maintenance notice instead. Search engines are told the site is temporarily unavailable, so your rankings are kept.
+   */
+  maintenanceMode?: boolean | null;
+  maintenanceHeading?: string | null;
+  maintenanceMessage?: string | null;
+  /**
    * The four figures under the homepage headline.
    */
   showStats?: boolean | null;
@@ -1234,7 +1302,7 @@ export interface Feature {
    */
   showTrustedBy?: boolean | null;
   /**
-   * The service cards on the homepage.
+   * The four solution categories on the homepage.
    */
   showServices?: boolean | null;
   /**
@@ -1245,6 +1313,10 @@ export interface Feature {
    * The large client quote (only appears if one is published).
    */
   showTestimonial?: boolean | null;
+  /**
+   * Who Zirka works with. Edit the wording under Site Settings → Who we help.
+   */
+  showWhoWeHelp?: boolean | null;
   /**
    * The numbered process steps.
    */
@@ -1430,6 +1502,18 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         name?: T;
         id?: T;
       };
+  whoWeHelp?:
+    | T
+    | {
+        heading?: T;
+        body?: T;
+        industries?:
+          | T
+          | {
+              name?: T;
+              id?: T;
+            };
+      };
   projectPricingNote?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1440,11 +1524,15 @@ export interface SiteSettingsSelect<T extends boolean = true> {
  * via the `definition` "features_select".
  */
 export interface FeaturesSelect<T extends boolean = true> {
+  maintenanceMode?: T;
+  maintenanceHeading?: T;
+  maintenanceMessage?: T;
   showStats?: T;
   showTrustedBy?: T;
   showServices?: T;
   showWork?: T;
   showTestimonial?: T;
+  showWhoWeHelp?: T;
   showProcess?: T;
   showPricing?: T;
   showFaq?: T;

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Urbanist } from "next/font/google";
 import Footer from "@/components/Footer";
 import PageTracker from "@/components/PageTracker";
+import PreviewBadge from "@/components/PreviewBadge";
 import { SITE_URL } from "@/lib/site";
 import { themeScript } from "@/components/ThemeToggle";
 import "./globals.css";
@@ -61,6 +62,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {children}
         <Footer />
         <PageTracker />
+        <PreviewBadge />
       </body>
     </html>
   );
