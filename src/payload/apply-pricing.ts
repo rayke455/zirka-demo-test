@@ -51,6 +51,12 @@ console.log(`project prices: ${projectPricing.length}`);
 await payload.updateGlobal({ slug: "site-settings", data: { projectPricingNote } });
 
 // --- 3. Label every unverified case study as a sample -----------------------
+// Service slugs in data.ts have to become real relationship ids.
+const allServices = await payload.find({ collection: "services", limit: 200, depth: 0 });
+const idBySlug = new Map(
+  (allServices.docs as { id: number | string; slug: string }[]).map((s) => [s.slug, s.id])
+);
+
 const studies = await payload.find({ collection: "case-studies", limit: 200, depth: 0 });
 for (const s of studies.docs as { id: number | string; name: string }[]) {
   // The worked example, where data.ts carries one, shows the six-part format.
@@ -68,6 +74,10 @@ for (const s of studies.docs as { id: number | string; name: string }[]) {
             timeframe: story.timeframe,
             outcome: story.outcome,
             results: story.results,
+            servicesUsed: story.serviceSlugs
+              .map((slug) => idBySlug.get(slug))
+              .filter((id) => id !== undefined)
+              .map(Number),
           }
         : {}),
     },

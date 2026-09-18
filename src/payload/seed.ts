@@ -54,6 +54,8 @@ import {
           // These are illustrations of the format, not Zirka clients. They ship
           // flagged so the site discloses that until real work replaces them.
           sample: true,
+          // servicesUsed is linked separately by apply-pricing, once the
+          // service records exist and their ids are known.
           ...(w.story
             ? {
                 challenge: w.story.challenge,

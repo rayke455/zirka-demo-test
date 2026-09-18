@@ -361,6 +361,8 @@ export type WorkItem = {
   story?: {
     challenge: string;
     approach: string;
+    /** Slugs from `services` above — resolved to real records when written. */
+    serviceSlugs: string[];
     timeframe: string;
     outcome: string;
     results: { value: string; label: string }[];
@@ -381,6 +383,7 @@ export const work: WorkItem[] = [
         "The brand was spending steadily on paid social but could not say which of it worked. Every campaign pointed at the same cold audience, the same three images ran for months, and the only number anyone looked at was total sales for the month.\n\nSpend had doubled year on year without a matching rise in revenue, and nobody could tell whether that was the creative, the audience or the landing page.",
       approach:
         "We started by separating the audiences, so cold, warm and returning customers each had their own campaign and their own budget. That alone showed which spend was buying new customers and which was paying for people who would have bought anyway.\n\nWe then set up a fortnightly creative cycle: three new concepts tested against the best performer, with the loser retired rather than left running. Tracking was rebuilt so every sale could be traced to the ad that started it.",
+      serviceSlugs: ["digital-advertising", "content-creation", "analytics-reporting"],
       timeframe: "3 months",
       outcome:
         "Retargeting carried the conversions while cold campaigns did the job of finding people, and the reporting finally answered the question the team had been asking for a year: which advert brought this customer.",
