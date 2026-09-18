@@ -2,6 +2,7 @@
 
 import { useState, useTransition, type FormEvent } from "react";
 import { submitEnquiry } from "@/app/(frontend)/contact/actions";
+import { budgetRanges as BUDGETS } from "@/lib/data";
 
 export default function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
@@ -60,11 +61,10 @@ export default function ContactForm() {
         </div>
         <div className="field">
           <label htmlFor="budget">Monthly budget</label>
-          <select id="budget" name="budget" defaultValue="$5,000 – $10,000">
-            <option>Under $5,000</option>
-            <option>$5,000 &ndash; $10,000</option>
-            <option>$10,000 &ndash; $25,000</option>
-            <option>$25,000+</option>
+          <select id="budget" name="budget" defaultValue={BUDGETS[0]}>
+            {BUDGETS.map((b) => (
+              <option key={b}>{b}</option>
+            ))}
           </select>
         </div>
       </div>

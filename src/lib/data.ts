@@ -518,6 +518,23 @@ export const projectPricing = [
 export const projectPricingNote =
   "Final pricing depends on project scope and requirements.";
 
+/**
+ * Shared by the quote form and the contact form so the two can never disagree.
+ * The breaks line up with the plan boundaries ($950 Starter, $1,850 Growth,
+ * $3,500 Scale), so an answer says which plan the enquiry is really about.
+ * The last option is for one-off websites and logos, which have no monthly fee.
+ *
+ * If the plan prices change, change these with them.
+ */
+export const budgetRanges = [
+  "Not sure yet",
+  "Under $950 a month",
+  "$950 – $1,850 a month",
+  "$1,850 – $3,500 a month",
+  "$3,500+ a month",
+  "One-off project, not monthly",
+];
+
 export const faqs = [
   {
     q: "How quickly will we see results?",

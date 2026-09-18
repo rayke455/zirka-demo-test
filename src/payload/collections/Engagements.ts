@@ -20,8 +20,8 @@ export const Engagements: CollectionConfig = {
   versions: { drafts: true },
   defaultSort: "order",
   fields: [
-    { name: "name", type: "text", required: true, admin: { description: 'e.g. "Growth Retainer"' } },
-    { name: "price", type: "text", required: true, admin: { description: 'e.g. "$5,000 – $12,000"' } },
+    { name: "name", type: "text", required: true, admin: { description: 'e.g. "Zirka Growth"' } },
+    { name: "price", type: "text", required: true, admin: { description: 'e.g. "From $950" or "Custom Quote"' } },
     {
       name: "cadence",
       type: "text",

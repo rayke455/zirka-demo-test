@@ -2,23 +2,10 @@
 
 import { useState, useTransition, type FormEvent } from "react";
 import { requestQuote } from "@/app/(frontend)/quote/actions";
+import { budgetRanges as BUDGETS } from "@/lib/data";
 
 export type QuoteService = { id: number; name: string; short: string };
 
-/**
- * Ranges line up with the plan boundaries ($950 Starter, $1,850 Growth, $3,500
- * Scale) so an enquiry says which plan the person is really asking about. The
- * last option is here because this form also quotes one-off websites and logos,
- * which have no monthly figure at all.
- */
-const BUDGETS = [
-  "Not sure yet",
-  "Under $950 a month",
-  "$950 – $1,850 a month",
-  "$1,850 – $3,500 a month",
-  "$3,500+ a month",
-  "One-off project, not monthly",
-];
 const TIMELINES = ["As soon as possible", "Within a month", "In the next quarter", "Just exploring"];
 
 export default function QuoteForm({
