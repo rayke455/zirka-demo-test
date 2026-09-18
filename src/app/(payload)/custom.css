@@ -137,6 +137,17 @@ h3,
   color: #fff;
 }
 
+html[data-theme="dark"] .zk-header-btn {
+  color: var(--zk-ink);
+  border-color: rgba(240, 237, 228, 0.15);
+}
+
+html[data-theme="dark"] .zk-header-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--zk-copper);
+  color: #fff;
+}
+
 /* Global logout button in header */
 .zk-btn-logout {
   display: inline-flex;

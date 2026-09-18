@@ -1,8 +1,9 @@
+import Link from "next/link";
 import LogoutButton from "./LogoutButton";
 
 /**
  * Rendered in Payload's global admin top bar on every page.
- * Provides instant access to the live website and a quick logout action.
+ * Provides instant access to the live website, account settings, and logout.
  */
 export default function AdminHeaderActions() {
   return (
@@ -31,6 +32,29 @@ export default function AdminHeaderActions() {
         </svg>
         <span>Live Site</span>
       </a>
+
+      <Link
+        href="/admin/account"
+        className="zk-header-btn"
+        title="Manage your profile & credentials"
+      >
+        <svg
+          width="13"
+          height="13"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+        <span>Account</span>
+      </Link>
+
       <LogoutButton variant="header" />
     </div>
   );
