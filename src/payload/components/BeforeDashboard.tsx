@@ -4,8 +4,16 @@ import config from "../../payload.config";
 import Greeting from "./Greeting";
 import TrafficChart from "./TrafficChart";
 import TopPages from "./TopPages";
+import LogoutButton from "./LogoutButton";
 
-type Props = { user?: { name?: string | null; role?: string | null } | null };
+type Props = {
+  user?: {
+    id?: string | number;
+    name?: string | null;
+    email?: string | null;
+    role?: string | null;
+  } | null;
+};
 
 const ROLE_LABEL: Record<string, string> = {
   superadmin: "Super Admin",
@@ -19,139 +27,318 @@ export default async function BeforeDashboard({ user }: Props) {
   const payload = await getPayload({ config });
 
   const countOf = async (collection: string, where?: Where) => {
-    const { totalDocs } = await payload.find({
-      collection: collection as never,
-      limit: 0,
-      depth: 0,
-      ...(where ? { where } : {}),
-    });
-    return totalDocs;
+    try {
+      const { totalDocs } = await payload.find({
+        collection: collection as never,
+        limit: 0,
+        depth: 0,
+        ...(where ? { where } : {}),
+      });
+      return totalDocs;
+    } catch {
+      return 0;
+    }
   };
 
   const role = user?.role ? ROLE_LABEL[user.role] ?? user.role : null;
   const isAdmin = user?.role === "admin" || user?.role === "superadmin";
 
-  // Buckets and stored timestamps must use the same calendar, or the newest
-  // day falls outside the range. Payload stores UTC, so bucket in UTC too.
   const since = new Date();
   since.setUTCHours(0, 0, 0, 0);
   since.setUTCDate(since.getUTCDate() - (DAYS - 1));
 
-  const [newEnquiries, caseStudies, services] = await Promise.all([
-    countOf("submissions", { status: { equals: "new" } }),
-    countOf("case-studies", { _status: { equals: "published" } }),
-    countOf("services", { _status: { equals: "published" } }),
-  ]);
+  const [newEnquiries, newQuotes, confirmedBookings, caseStudies, services] =
+    await Promise.all([
+      countOf("submissions", { status: { equals: "new" } }),
+      countOf("quotes", { status: { equals: "new" } }),
+      countOf("bookings", { status: { equals: "confirmed" } }),
+      countOf("case-studies", { _status: { equals: "published" } }),
+      countOf("services", { _status: { equals: "published" } }),
+    ]);
 
-  // Analytics are admin-only, matching the collection's read access.
   let days: { date: string; label: string; views: number }[] = [];
   let topPages: { path: string; views: number }[] = [];
   let sessions = 0;
 
   if (isAdmin) {
-    const { docs } = await payload.find({
-      collection: "page-views",
-      limit: 20000,
-      depth: 0,
-      where: { createdAt: { greater_than_equal: since.toISOString() } },
-    });
+    try {
+      const { docs } = await payload.find({
+        collection: "page-views",
+        limit: 20000,
+        depth: 0,
+        where: { createdAt: { greater_than_equal: since.toISOString() } },
+      });
 
-    const perDay = new Map<string, number>();
-    const perPath = new Map<string, number>();
-    const seen = new Set<string>();
+      const perDay = new Map<string, number>();
+      const perPath = new Map<string, number>();
+      const seen = new Set<string>();
 
-    for (let i = 0; i < DAYS; i++) {
-      const d = new Date(since);
-      d.setUTCDate(since.getUTCDate() + i);
-      perDay.set(d.toISOString().slice(0, 10), 0);
+      for (let i = 0; i < DAYS; i++) {
+        const d = new Date(since);
+        d.setUTCDate(since.getUTCDate() + i);
+        perDay.set(d.toISOString().slice(0, 10), 0);
+      }
+
+      for (const v of docs as {
+        path: string;
+        session?: string | null;
+        createdAt: string;
+      }[]) {
+        const key = v.createdAt.slice(0, 10);
+        if (perDay.has(key)) perDay.set(key, (perDay.get(key) ?? 0) + 1);
+        perPath.set(v.path, (perPath.get(v.path) ?? 0) + 1);
+        if (v.session) seen.add(v.session);
+      }
+
+      days = [...perDay.entries()].map(([date, views]) => ({
+        date,
+        label: new Date(`${date}T00:00:00Z`).toLocaleDateString(undefined, {
+          month: "short",
+          day: "numeric",
+          timeZone: "UTC",
+        }),
+        views,
+      }));
+
+      topPages = [...perPath.entries()]
+        .map(([path, views]) => ({ path, views }))
+        .sort((a, b) => b.views - a.views)
+        .slice(0, 5);
+
+      sessions = seen.size;
+    } catch {
+      // Gracefully handle any analytics query issues
     }
-
-    for (const v of docs as { path: string; session?: string | null; createdAt: string }[]) {
-      const key = v.createdAt.slice(0, 10);
-      if (perDay.has(key)) perDay.set(key, (perDay.get(key) ?? 0) + 1);
-      perPath.set(v.path, (perPath.get(v.path) ?? 0) + 1);
-      if (v.session) seen.add(v.session);
-    }
-
-    days = [...perDay.entries()].map(([date, views]) => ({
-      date,
-      label: new Date(`${date}T00:00:00Z`).toLocaleDateString(undefined, {
-        month: "short",
-        day: "numeric",
-        timeZone: "UTC",
-      }),
-      views,
-    }));
-
-    topPages = [...perPath.entries()]
-      .map(([path, views]) => ({ path, views }))
-      .sort((a, b) => b.views - a.views)
-      .slice(0, 5);
-
-    sessions = seen.size;
   }
+
+  const hasPendingItems = newEnquiries > 0 || newQuotes > 0 || confirmedBookings > 0;
+  const displayName = user?.name?.split(" ")[0] || user?.email?.split("@")[0] || "there";
 
   return (
     <div className="zk-dash">
+      {/* Executive Header Bar */}
       <div className="zk-dash__head">
-        <h2 className="zk-dash__title">
-          <Greeting name={user?.name?.split(" ")[0] ?? "there"} />
-        </h2>
-        {role && <span className="zk-dash__role">{role}</span>}
+        <div className="zk-dash__head-left">
+          <div className="zk-dash__title-row">
+            <h1 className="zk-dash__title">
+              <Greeting name={displayName} />
+            </h1>
+            {role && <span className="zk-dash__role">{role}</span>}
+          </div>
+          <div className="zk-dash__subtitle-row">
+            <span className="zk-dash__status">
+              <span className="zk-dash__status-dot" />
+              zirkadigitalsolutions.com
+            </span>
+            <span className="zk-dash__sep">·</span>
+            <span className="zk-dash__date">
+              {new Date().toLocaleDateString(undefined, {
+                weekday: "short",
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </span>
+          </div>
+        </div>
+
+        <div className="zk-dash__head-actions">
+          <a
+            className="zk-btn-head zk-btn-head--site"
+            href="/"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Open live website in a new tab"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+              <polyline points="15 3 21 3 21 9" />
+              <line x1="10" y1="14" x2="21" y2="3" />
+            </svg>
+            <span>Live Site ↗</span>
+          </a>
+
+          <Link
+            className="zk-btn-head"
+            href="/admin/account"
+            title="Manage account settings and password"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+            <span>My Account</span>
+          </Link>
+
+          <LogoutButton variant="header" />
+        </div>
       </div>
 
-      {newEnquiries > 0 && (
-        <Link className="zk-alert" href="/admin/collections/submissions?where[status][equals]=new">
-          <strong>
-            {newEnquiries} new {newEnquiries === 1 ? "enquiry" : "enquiries"}
-          </strong>
-          <span>Waiting for a reply — open</span>
-        </Link>
+      {/* Priority Action Alerts */}
+      {hasPendingItems && (
+        <div className="zk-alerts">
+          {newEnquiries > 0 && (
+            <Link
+              className="zk-alert zk-alert--enquiry"
+              href="/admin/collections/submissions?where[status][equals]=new"
+            >
+              <span className="zk-alert__badge">{newEnquiries}</span>
+              <div className="zk-alert__content">
+                <strong>
+                  {newEnquiries} new {newEnquiries === 1 ? "contact enquiry" : "contact enquiries"}
+                </strong>
+                <span>Awaiting response — review in submissions</span>
+              </div>
+              <span className="zk-alert__arrow">→</span>
+            </Link>
+          )}
+
+          {newQuotes > 0 && (
+            <Link
+              className="zk-alert zk-alert--quote"
+              href="/admin/collections/quotes?where[status][equals]=new"
+            >
+              <span className="zk-alert__badge">{newQuotes}</span>
+              <div className="zk-alert__content">
+                <strong>
+                  {newQuotes} new {newQuotes === 1 ? "quote request" : "quote requests"}
+                </strong>
+                <span>Client looking for pricing proposal — review</span>
+              </div>
+              <span className="zk-alert__arrow">→</span>
+            </Link>
+          )}
+
+          {confirmedBookings > 0 && (
+            <Link
+              className="zk-alert zk-alert--booking"
+              href="/admin/collections/bookings?where[status][equals]=confirmed"
+            >
+              <span className="zk-alert__badge">{confirmedBookings}</span>
+              <div className="zk-alert__content">
+                <strong>
+                  {confirmedBookings} upcoming {confirmedBookings === 1 ? "consultation" : "consultations"}
+                </strong>
+                <span>Confirmed calendar bookings</span>
+              </div>
+              <span className="zk-alert__arrow">→</span>
+            </Link>
+          )}
+        </div>
       )}
 
+      {/* Business Metrics Grid */}
       <div className="zk-tiles">
         {isAdmin && (
           <div className="zk-tile zk-tile--static">
             <span className="zk-tile__num">{sessions.toLocaleString()}</span>
-            <span className="zk-tile__label">Visits, last 30 days</span>
+            <span className="zk-tile__label">30-Day Unique Visits</span>
+            <span className="zk-tile__hint">Website traffic</span>
           </div>
         )}
-        <Link className="zk-tile" href="/admin/collections/case-studies">
-          <span className="zk-tile__num">{caseStudies}</span>
-          <span className="zk-tile__label">Case studies live</span>
-        </Link>
-        <Link className="zk-tile" href="/admin/collections/services">
-          <span className="zk-tile__num">{services}</span>
-          <span className="zk-tile__label">Services live</span>
-        </Link>
+
         <Link className="zk-tile" href="/admin/collections/submissions">
           <span className="zk-tile__num">{newEnquiries}</span>
-          <span className="zk-tile__label">New enquiries</span>
+          <span className="zk-tile__label">New Inquiries</span>
+          <span className="zk-tile__hint">Contact form</span>
+        </Link>
+
+        <Link className="zk-tile" href="/admin/collections/quotes">
+          <span className="zk-tile__num">{newQuotes}</span>
+          <span className="zk-tile__label">Quote Requests</span>
+          <span className="zk-tile__hint">Project proposals</span>
+        </Link>
+
+        <Link className="zk-tile" href="/admin/collections/bookings">
+          <span className="zk-tile__num">{confirmedBookings}</span>
+          <span className="zk-tile__label">Booked Meetings</span>
+          <span className="zk-tile__hint">Consultations</span>
+        </Link>
+
+        <Link className="zk-tile" href="/admin/collections/services">
+          <span className="zk-tile__num">{services}</span>
+          <span className="zk-tile__label">Live Services</span>
+          <span className="zk-tile__hint">Offered solutions</span>
+        </Link>
+
+        <Link className="zk-tile" href="/admin/collections/case-studies">
+          <span className="zk-tile__num">{caseStudies}</span>
+          <span className="zk-tile__label">Case Studies</span>
+          <span className="zk-tile__hint">Published work</span>
         </Link>
       </div>
 
-      {isAdmin && (
+      {/* Traffic Analytics Section */}
+      {isAdmin && days.length > 0 && (
         <div className="zk-charts">
           <TrafficChart days={days} />
           <TopPages rows={topPages} />
         </div>
       )}
 
-      <div className="zk-actions">
-        <Link className="zk-chip" href="/admin/collections/case-studies/create">
-          + Case study
-        </Link>
-        <Link className="zk-chip" href="/admin/collections/testimonials/create">
-          + Testimonial
-        </Link>
-        <Link className="zk-chip" href="/admin/collections/media">
-          Upload photos
-        </Link>
-        {isAdmin && (
-          <Link className="zk-chip" href="/admin/globals/site-settings">
-            Site settings
-          </Link>
-        )}
+      {/* Refined Quick Operations Hub */}
+      <div className="zk-quick-hub">
+        <div className="zk-quick-group">
+          <span className="zk-quick-label">Content Creation</span>
+          <div className="zk-actions">
+            <Link className="zk-chip" href="/admin/collections/services/create">
+              + New Service
+            </Link>
+            <Link className="zk-chip" href="/admin/collections/case-studies/create">
+              + New Case Study
+            </Link>
+            <Link className="zk-chip" href="/admin/collections/testimonials/create">
+              + New Testimonial
+            </Link>
+            <Link className="zk-chip" href="/admin/collections/team-members/create">
+              + Team Member
+            </Link>
+            <Link className="zk-chip" href="/admin/collections/media">
+              📁 Media Library
+            </Link>
+          </div>
+        </div>
+
+        <div className="zk-quick-group">
+          <span className="zk-quick-label">System & Settings</span>
+          <div className="zk-actions">
+            {isAdmin && (
+              <Link className="zk-chip" href="/admin/globals/site-settings">
+                ⚙️ Site Settings
+              </Link>
+            )}
+            <Link className="zk-chip" href="/admin/globals/booking-settings">
+              📅 Booking Settings
+            </Link>
+            <Link className="zk-chip" href="/admin/collections/users">
+              👥 Users & Staff
+            </Link>
+            <Link className="zk-chip" href="/admin/account">
+              👤 My Account
+            </Link>
+            <LogoutButton variant="chip" />
+          </div>
+        </div>
       </div>
     </div>
   );

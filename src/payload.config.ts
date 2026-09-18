@@ -36,7 +36,9 @@ export default buildConfig({
         Logo: "/payload/components/Logo",
         Icon: "/payload/components/Icon",
       },
+      actions: ["/payload/components/AdminHeaderActions"],
       beforeDashboard: ["/payload/components/BeforeDashboard"],
+      afterNavLinks: ["/payload/components/AfterNavLinks"],
     },
     meta: {
       titleSuffix: " — Zirka Admin",
