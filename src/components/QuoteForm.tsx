@@ -5,7 +5,20 @@ import { requestQuote } from "@/app/(frontend)/quote/actions";
 
 export type QuoteService = { id: number; name: string; short: string };
 
-const BUDGETS = ["Not sure yet", "Under $500", "$500 – $1,500", "$1,500 – $5,000", "$5,000+"];
+/**
+ * Ranges line up with the plan boundaries ($950 Starter, $1,850 Growth, $3,500
+ * Scale) so an enquiry says which plan the person is really asking about. The
+ * last option is here because this form also quotes one-off websites and logos,
+ * which have no monthly figure at all.
+ */
+const BUDGETS = [
+  "Not sure yet",
+  "Under $950 a month",
+  "$950 – $1,850 a month",
+  "$1,850 – $3,500 a month",
+  "$3,500+ a month",
+  "One-off project, not monthly",
+];
 const TIMELINES = ["As soon as possible", "Within a month", "In the next quarter", "Just exploring"];
 
 export default function QuoteForm({
@@ -109,12 +122,20 @@ export default function QuoteForm({
         </div>
         <div className="form-row">
           <div className="field">
-            <label htmlFor="q-budget">Budget</label>
-            <select id="q-budget" name="budget" defaultValue={BUDGETS[0]}>
+            <label htmlFor="q-budget">Monthly budget</label>
+            <select
+              id="q-budget"
+              name="budget"
+              defaultValue={BUDGETS[0]}
+              aria-describedby="q-budget-hint"
+            >
               {BUDGETS.map((b) => (
                 <option key={b}>{b}</option>
               ))}
             </select>
+            <p className="field-hint" id="q-budget-hint">
+              Roughly what you can spend with us each month. Advertising budget is separate.
+            </p>
           </div>
           <div className="field">
             <label htmlFor="q-timeline">When do you want to start?</label>

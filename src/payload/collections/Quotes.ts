@@ -48,7 +48,7 @@ export const Quotes: CollectionConfig = {
                   ${row("Email", doc.email)}
                   ${row("Phone", doc.phone)}
                   ${row("Company", doc.company)}
-                  ${row("Budget", doc.budget)}
+                  ${row("Monthly budget", doc.budget)}
                   ${row("Timeline", doc.timeline)}
                   ${row("Services", picked.join(", "))}
                 </table>
@@ -75,7 +75,12 @@ export const Quotes: CollectionConfig = {
       hasMany: true,
       admin: { description: "What they asked us to quote for." },
     },
-    { name: "budget", type: "text" },
+    {
+      name: "budget",
+      label: "Monthly budget",
+      type: "text",
+      admin: { description: "The range they picked on the form, or a one-off project." },
+    },
     { name: "timeline", type: "text" },
     { name: "details", type: "textarea" },
     {

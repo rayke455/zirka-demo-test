@@ -565,6 +565,9 @@ export interface Quote {
    * What they asked us to quote for.
    */
   services?: (number | Service)[] | null;
+  /**
+   * The range they picked on the form, or a one-off project.
+   */
   budget?: string | null;
   timeline?: string | null;
   details?: string | null;
