@@ -68,26 +68,28 @@ export type ServiceView = {
   alt: string;
 };
 
+const toServiceView = (s: Service): ServiceView => ({
+  slug: s.slug,
+  name: s.name,
+  short: s.short,
+  description: s.description,
+  outcomes: s.outcomes ?? "",
+  core: Boolean(s.core),
+  video: {
+    url: s.videoUrl ?? null,
+    file: urlOf(s.videoFile as MediaLike, "") || null,
+    title: s.videoTitle || s.name,
+  },
+  capabilities: (s.capabilities ?? []).map((c) => c.label),
+  plate: s.accent ?? "plate-1",
+  icon: (s.icon ?? "target") as ServiceView["icon"],
+  image: urlOf(s.image as MediaLike, SERVICE_FALLBACK[s.slug] ?? PLACEHOLDER),
+  alt: altOf(s.image as MediaLike, s.name),
+});
+
 export const getServices = async (): Promise<ServiceView[]> => {
   const docs = await findAll<Service>("services");
-  return docs.map((s) => ({
-    slug: s.slug,
-    name: s.name,
-    short: s.short,
-    description: s.description,
-    outcomes: s.outcomes ?? "",
-    core: Boolean(s.core),
-    video: {
-      url: s.videoUrl ?? null,
-      file: urlOf(s.videoFile as MediaLike, "") || null,
-      title: s.videoTitle || s.name,
-    },
-    capabilities: (s.capabilities ?? []).map((c) => c.label),
-    plate: s.accent ?? "plate-1",
-    icon: (s.icon ?? "target") as ServiceView["icon"],
-    image: urlOf(s.image as MediaLike, SERVICE_FALLBACK[s.slug] ?? PLACEHOLDER),
-    alt: altOf(s.image as MediaLike, s.name),
-  }));
+  return docs.map(toServiceView);
 };
 
 export type WorkView = {
@@ -161,6 +163,51 @@ export const getCaseStudy = async (slug: string): Promise<CaseStudyView | null> 
       .filter((s): s is Service => typeof s === "object" && s !== null)
       .map((s) => ({ name: s.name, slug: s.slug })),
   };
+};
+
+export type ServiceDetailView = ServiceView & {
+  /** Case studies tagged with this service, so the page can prove the claim. */
+  relatedWork: WorkView[];
+};
+
+export const getService = async (slug: string): Promise<ServiceDetailView | null> => {
+  const payload = await getCms();
+  const { docs } = await payload.find({
+    collection: "services",
+    limit: 1,
+    depth: 1,
+    where: { and: [published, { slug: { equals: slug } }] },
+  });
+  const service = docs[0] as Service | undefined;
+  if (!service) return null;
+
+  const { docs: studies } = await payload.find({
+    collection: "case-studies",
+    limit: 3,
+    depth: 1,
+    where: { and: [published, { servicesUsed: { in: [service.id] } }] },
+  });
+
+  return {
+    ...toServiceView(service),
+    relatedWork: (studies as CaseStudy[]).map(toWorkView),
+  };
+};
+
+/** Slugs and edit dates for the sitemap and for prerendering every service page. */
+export const getServiceSitemap = async () => {
+  const payload = await getCms();
+  const { docs } = await payload.find({
+    collection: "services",
+    limit: 500,
+    depth: 0,
+    sort: "order",
+    where: published,
+    select: { slug: true, updatedAt: true },
+  });
+  return (docs as { slug?: string | null; updatedAt: string }[])
+    .filter((d) => d.slug)
+    .map((d) => ({ slug: d.slug as string, updatedAt: d.updatedAt }));
 };
 
 export type TeamView = { name: string; role: string; image: string };

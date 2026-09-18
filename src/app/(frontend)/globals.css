@@ -1568,8 +1568,10 @@ section {
   gap: 22px;
 }
 
-/* ---------- CASE STUDY PAGE ---------- */
-.case-hero {
+/* ---------- CASE STUDY AND SERVICE PAGES ---------- */
+/* Both open with the same full-bleed photo hero, so they share its rules. */
+.case-hero,
+.service-hero {
   position: relative;
   background: var(--hero-ink);
   color: var(--hero-paper);
@@ -1577,13 +1579,15 @@ section {
   border-radius: 0 0 18px 18px;
 }
 
-.case-hero__photo {
+.case-hero__photo,
+.service-hero__photo {
   object-fit: cover;
   z-index: 0;
 }
 
 /* Darken only where the text sits, so the photograph stays visible above it. */
-.case-hero::before {
+.case-hero::before,
+.service-hero::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -1593,7 +1597,8 @@ section {
     linear-gradient(to bottom, rgba(7, 30, 22, 0.55), transparent 22%);
 }
 
-.case-hero .wrap {
+.case-hero .wrap,
+.service-hero .wrap {
   position: relative;
   z-index: 2;
   min-height: min(78vh, 640px);
@@ -1601,7 +1606,24 @@ section {
   flex-direction: column;
 }
 
-.case-hero__inner {
+/* A service page is read, not admired — get to the detail sooner. */
+.service-hero .wrap {
+  min-height: min(62vh, 520px);
+}
+
+/*
+ * The shorter hero puts the headline over the middle of the photograph rather
+ * than its darkest part, so this adds a left-hand shade: the text side stays
+ * legible whatever photo the team uploads, and the right stays a photograph.
+ */
+.service-hero::before {
+  background:
+    linear-gradient(to top, rgba(7, 30, 22, 0.95) 0%, rgba(7, 30, 22, 0.78) 55%, rgba(7, 30, 22, 0.45) 100%),
+    linear-gradient(to right, rgba(7, 30, 22, 0.8) 0%, rgba(7, 30, 22, 0.35) 55%, transparent 80%);
+}
+
+.case-hero__inner,
+.service-hero__inner {
   margin-top: auto;
   display: flex;
   flex-direction: column;
@@ -1609,14 +1631,21 @@ section {
   padding-block: 80px 56px;
 }
 
-.case-hero h1 {
+.service-hero__inner .btn {
+  width: fit-content;
+  margin-top: 8px;
+}
+
+.case-hero h1,
+.service-hero h1 {
   font-size: clamp(2.4rem, 5.6vw, 4.4rem);
   font-weight: 300;
   letter-spacing: -0.025em;
   line-height: 1.02;
 }
 
-.case-hero .lede {
+.case-hero .lede,
+.service-hero .lede {
   max-width: 52ch;
   font-size: 1.08rem;
   line-height: 1.6;
@@ -1706,6 +1735,72 @@ section {
 
 .case-chapter .tag:hover {
   color: var(--ink);
+}
+
+/* ---------- SERVICE PAGE BODY ---------- */
+.service-page {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  /* Sits inside .wrap, so it lines up with the hero headline rather than centring. */
+  max-width: 820px;
+}
+
+.service-page__intro p {
+  margin: 0 0 16px;
+  font-size: 1.12rem;
+  line-height: 1.75;
+  color: var(--slate);
+  max-width: 65ch;
+}
+
+.service-page__block h2 {
+  font-size: clamp(1.5rem, 2.8vw, 2rem);
+  font-weight: 300;
+  letter-spacing: -0.015em;
+  margin-bottom: 24px;
+}
+
+.capability-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 32px;
+}
+
+.capability-list li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 1rem;
+  color: var(--ink);
+}
+
+.capability-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--gold) 14%, transparent);
+  color: var(--gold);
+}
+
+.capability-mark svg {
+  width: 14px;
+  height: 14px;
+}
+
+@media (max-width: 720px) {
+  .capability-list {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ---------- APPROACH / VALUES ---------- */

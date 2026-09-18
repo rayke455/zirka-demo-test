@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getCaseStudySitemap } from "@/lib/cms";
+import { getCaseStudySitemap, getServiceSitemap } from "@/lib/cms";
 import { SITE_URL } from "@/lib/site";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -16,9 +16,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/refunds`, changeFrequency: "yearly", priority: 0.2 },
   ];
 
-  const studies = await getCaseStudySitemap();
+  const [studies, services] = await Promise.all([getCaseStudySitemap(), getServiceSitemap()]);
   return [
     ...pages,
+    // Each service has its own page to rank for, so list them above case studies.
+    ...services.map((s) => ({
+      url: `${SITE_URL}/services/${s.slug}`,
+      lastModified: new Date(s.updatedAt),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })),
     ...studies.map((s) => ({
       url: `${SITE_URL}/work/${s.slug}`,
       lastModified: new Date(s.updatedAt),

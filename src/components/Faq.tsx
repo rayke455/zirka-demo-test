@@ -1,4 +1,6 @@
 import { getFaqs } from "@/lib/cms";
+import JsonLd from "./JsonLd";
+import { faqSchema } from "@/lib/schema";
 
 export default async function Faq() {
   const faqs = await getFaqs();
@@ -6,6 +8,8 @@ export default async function Faq() {
 
   return (
     <section id="faq" className="section--panel">
+      {/* Lets Google show these questions as drop-downs under the listing. */}
+      <JsonLd data={faqSchema(faqs)} />
       <div className="wrap">
         <div className="section-head">
           <div>

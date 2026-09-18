@@ -1,7 +1,13 @@
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { sqliteAdapter } from "@payloadcms/db-sqlite";
 
-const uri = process.env.DATABASE_URI || "file:./zirka.db";
+/**
+ * DATABASE_URI is what this project sets by hand. DATABASE_URL is what the
+ * Neon and Vercel Postgres integrations add to a project on their own, and
+ * missing it is how a deployment silently falls back to a SQLite file that the
+ * host wipes between requests. Accept either.
+ */
+const uri = process.env.DATABASE_URI || process.env.DATABASE_URL || "file:./zirka.db";
 const isPostgres = uri.startsWith("postgres");
 
 /**

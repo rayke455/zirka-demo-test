@@ -23,7 +23,7 @@ export default function ServiceCard({ service }: { service: ServiceView }) {
             <span className="tag tag--more">+{service.capabilities.length - 4} more</span>
           )}
         </div>
-        <Link className="explore" href={`/services#${service.slug}`}>
+        <Link className="explore" href={`/services/${service.slug}`}>
           Explore this service
           <ArrowIcon />
         </Link>

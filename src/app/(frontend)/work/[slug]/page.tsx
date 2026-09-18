@@ -96,7 +96,7 @@ export default async function CaseStudyPage({ params }: Props) {
                 <h2>Services on this engagement</h2>
                 <div className="tags">
                   {study.servicesUsed.map((s) => (
-                    <Link className="tag" key={s.slug} href={`/services#${s.slug}`}>
+                    <Link className="tag" key={s.slug} href={`/services/${s.slug}`}>
                       {s.name}
                     </Link>
                   ))}

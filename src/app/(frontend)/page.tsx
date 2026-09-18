@@ -11,6 +11,8 @@ import VideoSection from "@/components/VideoSection";
 import Engagements from "@/components/Engagements";
 import Faq from "@/components/Faq";
 import CtaBand from "@/components/CtaBand";
+import JsonLd from "@/components/JsonLd";
+import { organizationSchema } from "@/lib/schema";
 import { getServices, getCaseStudies, getSettings, getProcessSteps, getFeatures } from "@/lib/cms";
 
 /** Split the headline so the emphasised word can carry the accent colour. */
@@ -39,6 +41,9 @@ export default async function Home() {
 
   return (
     <>
+      {/* The business record every other page's schema points back at. */}
+      <JsonLd data={organizationSchema(settings)} />
+
       {/* 1 — Hook: who we are and the one line that matters */}
       <div className="hero">
         <Image
