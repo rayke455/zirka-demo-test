@@ -38,7 +38,6 @@ export default buildConfig({
       },
       actions: ["/payload/components/AdminHeaderActions"],
       beforeDashboard: ["/payload/components/BeforeDashboard"],
-      afterNavLinks: ["/payload/components/AfterNavLinks"],
     },
     meta: {
       titleSuffix: " — Zirka Admin",
