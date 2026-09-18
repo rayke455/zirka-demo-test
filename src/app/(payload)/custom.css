@@ -176,15 +176,19 @@ html[data-theme="dark"] .zk-header-btn:hover {
 }
 
 /* ---------- Sidebar Nav Footer & Logout ---------- */
+/*
+ * Sits after the last nav link. It used to be pinned with `position: sticky;
+ * bottom: 0`, which on any window shorter than the nav painted this card on top
+ * of the links behind it — Site Settings and Features disappeared underneath.
+ * `margin-top: auto` still drops it to the bottom when there is room to spare,
+ * and it simply scrolls into view when there is not.
+ */
 .zk-nav-footer {
-  position: sticky;
-  bottom: 0;
   background: var(--zk-green-deep);
   padding: 14px 18px 16px;
   border-top: 1px solid rgba(242, 239, 230, 0.12);
-  z-index: 20;
   margin-top: auto;
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -835,6 +839,20 @@ html[data-theme="dark"] .zk-dot {
   background: rgba(220, 80, 60, 0.08);
   border-color: rgba(220, 80, 60, 0.45);
   color: #dc503c;
+}
+
+/* ---------- Tabbed settings ---------- */
+/*
+ * Payload scrolls a long tab row sideways. The Features panel has five tabs, so
+ * on a laptop the last ones sat off-screen behind a horizontal scrollbar and
+ * looked like the page was broken. Wrapping shows every tab at once instead.
+ */
+.tabs-field__tabs-wrap {
+  overflow-x: visible;
+}
+
+.tabs-field__tabs {
+  flex-wrap: wrap;
 }
 
 @media (prefers-reduced-motion: reduce) {
