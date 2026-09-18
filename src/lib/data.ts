@@ -350,6 +350,21 @@ export type WorkItem = {
   plate: "w1" | "w2" | "w3" | "w4" | "w5" | "w6";
   image: string;
   alt: string;
+  /**
+   * The six-part story. Only the first entry carries one, as a worked example of
+   * the format for the team to copy — and only because every case study here is
+   * flagged as a sample and says so on the page. Real engagements get this
+   * filled in from the admin. No testimonial is written: a quote attributed to
+   * a named person is the one thing that should never be invented, even on a
+   * page that discloses itself as a demonstration.
+   */
+  story?: {
+    challenge: string;
+    approach: string;
+    timeframe: string;
+    outcome: string;
+    results: { value: string; label: string }[];
+  };
 };
 
 export const work: WorkItem[] = [
@@ -361,6 +376,20 @@ export const work: WorkItem[] = [
     plate: "w1",
     image: "/images/work-skincare.jpg",
     alt: "Minimal skincare serum bottle with a gold cap on a marble surface",
+    story: {
+      challenge:
+        "The brand was spending steadily on paid social but could not say which of it worked. Every campaign pointed at the same cold audience, the same three images ran for months, and the only number anyone looked at was total sales for the month.\n\nSpend had doubled year on year without a matching rise in revenue, and nobody could tell whether that was the creative, the audience or the landing page.",
+      approach:
+        "We started by separating the audiences, so cold, warm and returning customers each had their own campaign and their own budget. That alone showed which spend was buying new customers and which was paying for people who would have bought anyway.\n\nWe then set up a fortnightly creative cycle: three new concepts tested against the best performer, with the loser retired rather than left running. Tracking was rebuilt so every sale could be traced to the ad that started it.",
+      timeframe: "3 months",
+      outcome:
+        "Retargeting carried the conversions while cold campaigns did the job of finding people, and the reporting finally answered the question the team had been asking for a year: which advert brought this customer.",
+      results: [
+        { value: "3.2×", label: "Return on ad spend" },
+        { value: "−38%", label: "Cost per acquisition" },
+        { value: "90 days", label: "To reach target" },
+      ],
+    },
   },
   {
     name: "Northline Freight",

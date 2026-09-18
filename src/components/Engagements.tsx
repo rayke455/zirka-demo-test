@@ -61,13 +61,6 @@ export default async function Engagements({ withProjects = false }: { withProjec
               Not sure which one fits? Tell us what you sell and what you want more of, and
               we&rsquo;ll tell you which plan to start on — free, and with no obligation.{" "}
               <Link href="/contact">Ask us</Link>.
-              {!withProjects && (
-                <>
-                  {" "}
-                  Need a one-off website, logo or audit instead?{" "}
-                  <Link href="/pricing">See all pricing</Link>.
-                </>
-              )}
             </p>
           </>
         )}

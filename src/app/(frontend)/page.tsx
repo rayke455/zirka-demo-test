@@ -198,7 +198,7 @@ export default async function Home() {
       )}
 
       {/* 7 — What it costs */}
-      {features.showPricing && <Engagements />}
+      {features.showPricing && <Engagements withProjects />}
 
       {/* 8 — The objections that stop people calling */}
       {features.showFaq && <Faq />}

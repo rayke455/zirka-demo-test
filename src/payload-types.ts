@@ -446,11 +446,11 @@ export interface Faq {
 export interface Engagement {
   id: number;
   /**
-   * e.g. "Growth Retainer"
+   * e.g. "Zirka Growth"
    */
   name: string;
   /**
-   * e.g. "$5,000 – $12,000"
+   * e.g. "From $950" or "Custom Quote"
    */
   price: string;
   /**

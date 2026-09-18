@@ -54,6 +54,15 @@ import {
           // These are illustrations of the format, not Zirka clients. They ship
           // flagged so the site discloses that until real work replaces them.
           sample: true,
+          ...(w.story
+            ? {
+                challenge: w.story.challenge,
+                approach: w.story.approach,
+                timeframe: w.story.timeframe,
+                outcome: w.story.outcome,
+                results: w.story.results,
+              }
+            : {}),
         },
       });
     }

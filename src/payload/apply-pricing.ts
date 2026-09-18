@@ -8,7 +8,7 @@
  */
 import { getPayload } from "payload";
 import config from "../payload.config";
-import { engagements, projectPricing, projectPricingNote } from "../lib/data";
+import { engagements, projectPricing, projectPricingNote, work } from "../lib/data";
 
 const payload = await getPayload({ config });
 const published = { _status: "published" as const };
@@ -53,10 +53,24 @@ await payload.updateGlobal({ slug: "site-settings", data: { projectPricingNote }
 // --- 3. Label every unverified case study as a sample -----------------------
 const studies = await payload.find({ collection: "case-studies", limit: 200, depth: 0 });
 for (const s of studies.docs as { id: number | string; name: string }[]) {
+  // The worked example, where data.ts carries one, shows the six-part format.
+  const story = work.find((w) => w.name === s.name)?.story;
   await payload.update({
     collection: "case-studies",
     id: s.id,
-    data: { ...published, sample: true },
+    data: {
+      ...published,
+      sample: true,
+      ...(story
+        ? {
+            challenge: story.challenge,
+            approach: story.approach,
+            timeframe: story.timeframe,
+            outcome: story.outcome,
+            results: story.results,
+          }
+        : {}),
+    },
   });
 }
 console.log(`marked as sample: ${(studies.docs as { name: string }[]).map((s) => s.name).join(", ")}`);
