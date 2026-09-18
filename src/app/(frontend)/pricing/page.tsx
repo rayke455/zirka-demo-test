@@ -1,0 +1,75 @@
+import type { Metadata } from "next";
+import PageHeader from "@/components/PageHeader";
+import Engagements from "@/components/Engagements";
+import CtaBand from "@/components/CtaBand";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbSchema } from "@/lib/schema";
+import { getFeatures } from "@/lib/cms";
+import { notFound } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "Pricing",
+  description:
+    "Zirka Digital Solutions pricing: monthly marketing plans from $950, and one-off projects including websites, branding, SEO audits and automation.",
+  alternates: { canonical: "/pricing" },
+};
+
+export default async function PricingPage() {
+  // The same switch that hides pricing on the homepage hides this page, so the
+  // team never ends up with a live page the rest of the site no longer links to.
+  const features = await getFeatures();
+  if (!features.showPricing) notFound();
+
+  return (
+    <>
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Pricing", path: "/pricing" },
+        ])}
+      />
+
+      <PageHeader
+        eyebrow="Pricing"
+        title="What it costs to work with us."
+        lede="Monthly plans for ongoing marketing, and fixed starting prices for one-off pieces of work. No long forms to fill in before you can see a number."
+      />
+
+      <Engagements withProjects />
+
+      <section className="section--flow">
+        <div className="wrap">
+          <div className="pricing-notes">
+            <h2>How our pricing works</h2>
+            <dl>
+              <div>
+                <dt>Prices start from the figure shown</dt>
+                <dd>
+                  What you pay depends on how much work your goals actually need. Final pricing
+                  depends on project scope and requirements, and we agree the exact number with
+                  you before any work begins.
+                </dd>
+              </div>
+              <div>
+                <dt>Advertising budget is separate</dt>
+                <dd>
+                  On the Growth and Scale plans, what you spend with Meta or Google on advertising
+                  is separate from our fee. Our fee covers planning and running those campaigns.
+                </dd>
+              </div>
+              <div>
+                <dt>Not sure what you need?</dt>
+                <dd>
+                  Tell us what you sell and what you want more of, and we will tell you which plan
+                  to start on — free, and with no obligation.
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      <CtaBand heading="Ready to get started?" />
+    </>
+  );
+}

@@ -2,10 +2,14 @@ import Link from "next/link";
 import { getEngagements, getProjectPricing, getSettings } from "@/lib/cms";
 import { ArrowIcon } from "./Icons";
 
-export default async function Engagements() {
+/**
+ * The homepage shows the monthly plans and sends people to /pricing for the
+ * rest, so the two pages are not near-copies of each other.
+ */
+export default async function Engagements({ withProjects = false }: { withProjects?: boolean }) {
   const [engagements, projects, settings] = await Promise.all([
     getEngagements(),
-    getProjectPricing(),
+    withProjects ? getProjectPricing() : Promise.resolve([]),
     getSettings(),
   ]);
   if (engagements.length === 0 && projects.length === 0) return null;
@@ -55,6 +59,13 @@ export default async function Engagements() {
               Not sure which one fits? Tell us what you sell and what you want more of, and
               we&rsquo;ll tell you which plan to start on — free, and with no obligation.{" "}
               <Link href="/contact">Ask us</Link>.
+              {!withProjects && (
+                <>
+                  {" "}
+                  Need a one-off website, logo or audit instead?{" "}
+                  <Link href="/pricing">See all pricing</Link>.
+                </>
+              )}
             </p>
           </>
         )}

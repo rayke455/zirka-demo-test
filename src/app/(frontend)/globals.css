@@ -2154,6 +2154,35 @@ section {
   white-space: nowrap;
 }
 
+/* ---------- "How our pricing works" ---------- */
+.pricing-notes h2 {
+  font-size: clamp(1.5rem, 2.8vw, 2rem);
+  font-weight: 300;
+  letter-spacing: -0.015em;
+  margin-bottom: 28px;
+}
+
+.pricing-notes dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 28px 48px;
+  max-width: 980px;
+}
+
+.pricing-notes dt {
+  font-size: 1.02rem;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.pricing-notes dd {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--slate);
+}
+
 /* ---------- FAQ ---------- */
 .faq-list {
   display: flex;

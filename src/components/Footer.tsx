@@ -19,6 +19,9 @@ export default async function Footer() {
             <Link href="/services">Services</Link>
           </li>
           <li>
+            <Link href="/pricing">Pricing</Link>
+          </li>
+          <li>
             <Link href="/work">Work</Link>
           </li>
           <li>
