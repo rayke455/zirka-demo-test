@@ -16,6 +16,7 @@
     "create:admin": "payload run src/payload/create-admin.ts",
     "apply:pricing": "payload run src/payload/apply-pricing.ts",
     "backup": "payload run src/payload/backup.ts",
+    "apply:brief": "payload run src/payload/apply-brief.ts",
     "migrate": "payload migrate",
     "migrate:create": "payload migrate:create",
     "migrate:status": "payload migrate:status"

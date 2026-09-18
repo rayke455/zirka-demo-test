@@ -83,9 +83,16 @@ export default async function ServicePage({ params }: Props) {
             </span>
             <h1>{service.name}</h1>
             <p className="lede">{service.short}</p>
-            <Link className="btn btn-gold" href={`/quote?service=${service.slug}`}>
-              Get a quote for this
-            </Link>
+            {/* The audit is the primary action (brief §21); a quote stays available for
+                someone who already knows they want this service. */}
+            <div className="hero-ctas">
+              <Link className="btn btn-gold" href="/free-marketing-audit">
+                Get a Free Marketing Audit
+              </Link>
+              <Link className="btn btn-ghost" href={`/quote?service=${service.slug}`}>
+                Get a quote for this service
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -128,7 +135,11 @@ export default async function ServicePage({ params }: Props) {
       {service.relatedWork.length > 0 && (
         <section className="section--flow">
           <div className="wrap">
-            <h2 className="index-heading">Where we&rsquo;ve done this</h2>
+            <h2 className="index-heading">
+              {service.relatedWork.some((w) => !w.sample)
+                ? "Where we’ve done this"
+                : "Related concept projects"}
+            </h2>
             <div className="work-grid wide">
               {service.relatedWork.map((item) => (
                 <WorkCard item={item} key={item.slug} />

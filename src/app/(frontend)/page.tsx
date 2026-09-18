@@ -38,6 +38,8 @@ export default async function Home() {
   ]);
 
   const coreServices = services.filter((s) => s.core);
+  // Only claim results when there is real, documented client work to show.
+  const hasRealWork = work.some((w) => !w.sample);
 
   return (
     <>
@@ -64,22 +66,26 @@ export default async function Home() {
             </span>
             <Headline text={settings.heroHeadline} emphasis={settings.heroEmphasis} />
             <p className="lede">{settings.heroLede}</p>
+            {/* One filled button, one quiet one; WhatsApp is a link, not a rival CTA (brief §2). */}
             <div className="hero-ctas">
-              <Link className="btn btn-gold" href={features.bookingEnabled ? "/book" : "/contact"}>
-                Get free advice
+              <Link className="btn btn-gold" href="/free-marketing-audit">
+                Get a Free Marketing Audit
               </Link>
-              {features.showWhatsApp && (
-                <a
-                  className="btn btn-ghost"
-                  href={`https://wa.me/${settings.whatsapp}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <WhatsAppIcon />
-                  Message us on WhatsApp
-                </a>
-              )}
+              <Link className="btn btn-ghost" href="/work">
+                See Our Work
+              </Link>
             </div>
+            {features.showWhatsApp && (
+              <a
+                className="hero-direct"
+                href={`https://wa.me/${settings.whatsapp}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <WhatsAppIcon />
+                Or talk directly with a strategist on WhatsApp
+              </a>
+            )}
             {features.showStats && settings.stats.length > 0 && (
               <div className="stat-strip">
                 {settings.stats.map((s) => (
@@ -145,9 +151,13 @@ export default async function Home() {
             <div className="section-head">
               <div>
                 <span className="eyebrow">Selected work</span>
-                <h2>Results, not just reach.</h2>
+                <h2>{hasRealWork ? "Results, not just reach." : "How we approach the work."}</h2>
               </div>
-              <p>A sample of engagements and the numbers behind them.</p>
+              <p>
+                {hasRealWork
+                  ? "Client work and the numbers behind it. Anything marked Concept Project shows our thinking, not a client result."
+                  : "Concept projects showing the strategy and creative direction we bring. They are not client work and claim no results."}
+              </p>
             </div>
             <WorkFeature item={work[0]} />
             <div className="work-grid wide">

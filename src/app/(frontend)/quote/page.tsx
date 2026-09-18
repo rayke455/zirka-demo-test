@@ -23,7 +23,7 @@ export default async function QuotePage({ searchParams }: Props) {
     return (
       <>
         <PageHeader
-          eyebrow="Get started"
+          eyebrow="Request a quote"
           title="Let's talk about your project."
           lede="Online quote requests are paused. Message us on WhatsApp and we'll get you a price."
         />
@@ -63,7 +63,7 @@ export default async function QuotePage({ searchParams }: Props) {
   return (
     <>
       <PageHeader
-        eyebrow="Get started"
+        eyebrow="Request a quote"
         title="Tell us what you need."
         lede={`Pick the services you're interested in and we'll send you a quote — usually within one business day. ${services.length} services to choose from, and you can select more than one.`}
       />

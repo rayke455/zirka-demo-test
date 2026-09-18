@@ -389,6 +389,26 @@ textarea:focus-visible {
   flex-wrap: wrap;
 }
 
+/* Direct contact, deliberately a text link so it never competes with the audit. */
+.hero-direct {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin-top: -14px;
+  font-size: 14px;
+  color: var(--hero-paper);
+  opacity: 0.78;
+  text-decoration: underline;
+  text-decoration-color: rgba(242, 239, 230, 0.35);
+  text-underline-offset: 4px;
+}
+
+.hero-direct:hover {
+  opacity: 1;
+  text-decoration-color: var(--gold-soft);
+}
+
 .stat-strip {
   margin-top: 16px;
   display: grid;
@@ -2397,6 +2417,112 @@ section {
   border: 1px solid rgba(179, 38, 30, 0.25);
   border-radius: 12px;
   padding: 10px 12px;
+}
+
+/* The message under a single field, tied to it with aria-describedby. */
+.field-error {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: #b3261e;
+}
+
+.field input[aria-invalid="true"],
+.field select[aria-invalid="true"],
+.field textarea[aria-invalid="true"] {
+  border-color: #b3261e;
+  box-shadow: 0 0 0 3px rgba(179, 38, 30, 0.12);
+}
+
+:root[data-theme="dark"] .field-error {
+  color: #ffb4ab;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .field-error {
+    color: #ffb4ab;
+  }
+}
+
+/* ---------- FREE MARKETING AUDIT ---------- */
+.audit__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 56px;
+  align-items: start;
+}
+
+.audit__intro h2,
+.audit__form h2 {
+  font-size: clamp(1.4rem, 2.4vw, 1.8rem);
+  font-weight: 300;
+  letter-spacing: -0.015em;
+  margin-bottom: 20px;
+}
+
+.audit__covers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.audit__covers li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.audit__covers strong {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.audit__covers span {
+  font-size: 0.93rem;
+  line-height: 1.55;
+  color: var(--slate);
+}
+
+.audit__note {
+  margin: 20px 0 0;
+  font-size: 0.93rem;
+  line-height: 1.6;
+  color: var(--slate);
+}
+
+.audit__form {
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 32px;
+}
+
+.audit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.audit-form .btn {
+  align-self: flex-start;
+}
+
+@media (max-width: 860px) {
+  .audit__grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .audit__form {
+    padding: 22px 18px;
+  }
+  .audit-form .btn {
+    align-self: stretch;
+    justify-content: center;
+  }
 }
 
 @media (prefers-color-scheme: dark) {

@@ -159,10 +159,10 @@ import {
       companyName: "Zirka Digital Solutions",
       slogan: "Where Ideas Become Impact",
       descriptor: "Digital Marketing Agency",
-      heroHeadline: "Where ideas become impact.",
-      heroEmphasis: "impact",
+      heroHeadline: "Turn clicks into customers.",
+      heroEmphasis: "customers",
       heroLede:
-        "Zirka is the north star for brands navigating a noisy market. We plan the route, then drive the traffic, the rankings, and the revenue to prove it.",
+        "Zirka helps growing businesses generate more leads and revenue through paid advertising, SEO, high-converting websites, content, and smart automation.",
       whatsapp: "16787994634",
       phoneDisplay: "+1 (678) 799–4634",
       socialHandle: "zirka digital solutions",

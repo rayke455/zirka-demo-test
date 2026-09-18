@@ -277,7 +277,7 @@ export interface CaseStudy {
    */
   category: string;
   /**
-   * The headline result, e.g. "3.2× ROAS in 90 days"
+   * The headline result, e.g. "3.2× ROAS in 90 days". Real, documented results only — it is never shown on a Concept Project.
    */
   metric: string;
   /**
@@ -336,7 +336,7 @@ export interface CaseStudy {
    */
   order?: number | null;
   /**
-   * Tick this for any project that is not a verified Zirka client result. The site then labels it publicly as a sample, so a placeholder can never read as a real client outcome.
+   * Tick this for anything that is not genuine, documented client work. The site then labels it a Concept Project and hides every result, timeframe and testimonial, so a concept can never read as a client outcome.
    */
   sample?: boolean | null;
   updatedAt: string;
@@ -499,18 +499,34 @@ export interface ProjectPricing {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Messages sent through the website contact form.
+ * Everything sent through the website's contact and free-audit forms, in one list. Filter by Type to see audit requests alone.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "submissions".
  */
 export interface Submission {
   id: number;
+  kind?: ('enquiry' | 'audit') | null;
   name: string;
   email: string;
+  phone?: string | null;
   company?: string | null;
+  website?: string | null;
+  goal?: string | null;
   budget?: string | null;
-  message: string;
+  message?: string | null;
+  /**
+   * Where this lead came from, captured from the link they arrived on. Only campaign tags and the referring site — never anything personal.
+   */
+  attribution?: {
+    utmSource?: string | null;
+    utmMedium?: string | null;
+    utmCampaign?: string | null;
+    utmContent?: string | null;
+    utmTerm?: string | null;
+    landingPage?: string | null;
+    referrer?: string | null;
+  };
   status?: ('new' | 'open' | 'won' | 'closed') | null;
   /**
    * Internal only — never shown on the website.
@@ -915,11 +931,26 @@ export interface ProjectPricingSelect<T extends boolean = true> {
  * via the `definition` "submissions_select".
  */
 export interface SubmissionsSelect<T extends boolean = true> {
+  kind?: T;
   name?: T;
   email?: T;
+  phone?: T;
   company?: T;
+  website?: T;
+  goal?: T;
   budget?: T;
   message?: T;
+  attribution?:
+    | T
+    | {
+        utmSource?: T;
+        utmMedium?: T;
+        utmCampaign?: T;
+        utmContent?: T;
+        utmTerm?: T;
+        landingPage?: T;
+        referrer?: T;
+      };
   status?: T;
   notes?: T;
   updatedAt?: T;

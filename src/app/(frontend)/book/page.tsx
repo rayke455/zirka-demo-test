@@ -6,8 +6,8 @@ import { getCms, getFeatures, getSettings } from "@/lib/cms";
 import { getAvailability } from "@/lib/booking";
 
 export const metadata: Metadata = {
-  title: "Get free advice",
-  description: "Book a free 30-minute call with Zirka Digital Solutions — honest advice, no obligation.",
+  title: "Talk to a Strategist",
+  description: "Book a free 30-minute call with a Zirka strategist — honest advice, no obligation.",
 };
 
 // Availability changes with every booking, so never serve a cached page.
@@ -20,7 +20,7 @@ export default async function BookPage() {
     return (
       <>
         <PageHeader
-          eyebrow="Free advice"
+          eyebrow="Talk to a Strategist"
           title="Let's find a time."
           lede="Online booking is paused at the moment. The fastest way to reach a strategist is on WhatsApp."
         />
@@ -46,7 +46,7 @@ export default async function BookPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Free advice"
+        eyebrow="Talk to a Strategist"
         title="Pick a time that suits you."
         lede={`${config.callMinutes} free minutes with a marketing specialist, and no obligation afterwards. Tell us what you want to achieve and we'll tell you honestly how we'd approach it.`}
       />

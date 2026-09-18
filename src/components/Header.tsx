@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { MenuIcon, CloseIcon } from "./Icons";
 import ThemeToggle from "./ThemeToggle";
+import { trackEvent } from "@/lib/analytics";
 
 const NAV_LINKS = [
   { href: "/services", label: "Services" },
@@ -45,8 +46,12 @@ export default function Header() {
         </ul>
         <div className="nav-right">
           <ThemeToggle />
-          <Link className="btn btn-gold" href="/quote">
-            Get started
+          <Link
+            className="btn btn-gold nav-cta"
+            href="/free-marketing-audit"
+            onClick={() => trackEvent("main_cta_click", { location: "header" })}
+          >
+            Get a Free Marketing Audit
           </Link>
           <button
             type="button"
@@ -68,10 +73,13 @@ export default function Header() {
           ))}
           <Link
             className="btn btn-gold mobile-cta"
-            href="/quote"
-            onClick={() => setOpen(false)}
+            href="/free-marketing-audit"
+            onClick={() => {
+              trackEvent("main_cta_click", { location: "mobile_menu" });
+              setOpen(false);
+            }}
           >
-            Get started
+            Get a Free Marketing Audit
           </Link>
         </nav>
       )}
