@@ -41,7 +41,12 @@ const set = (value: Consent) => {
   notify();
 };
 
-export default function CookieConsent() {
+/**
+ * `hasVideo` comes from the server, because the video sentence should only
+ * appear when a video is actually set. Asking permission to load something the
+ * site never loads reads as boilerplate and makes the rest less believable.
+ */
+export default function CookieConsent({ hasVideo = false }: { hasVideo?: boolean }) {
   const consent = useConsent();
   if (consent !== "unset") return null;
 
@@ -49,8 +54,10 @@ export default function CookieConsent() {
     <div className="consent" role="dialog" aria-live="polite" aria-label="Privacy choices">
       <div className="consent__inner">
         <p className="consent__text">
-          We count anonymous page visits to see which pages are useful, and embedded videos load
-          from YouTube. Neither happens until you say yes.{" "}
+          We count anonymous page visits so we can see which pages are useful
+          {hasVideo ? ", and any embedded video loads from the service hosting it" : ""}.{" "}
+          {hasVideo ? "Neither happens" : "It does not happen"} until you accept, and we do not use
+          tracking cookies or advertising trackers.{" "}
           <Link href="/privacy">How we handle data</Link>.
         </p>
         <div className="consent__actions">

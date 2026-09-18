@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import PageTracker from "@/components/PageTracker";
 import CookieConsent from "@/components/CookieConsent";
 import { SITE_URL } from "@/lib/site";
+import { getSettings, getServices } from "@/lib/cms";
 import { themeScript } from "@/components/ThemeToggle";
 import "./globals.css";
 
@@ -48,7 +49,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  // Only promise what the site actually does: the consent notice mentions video
+  // only while a video is set, on the homepage or on any service.
+  const [settings, services] = await Promise.all([getSettings(), getServices()]);
+  const hasVideo =
+    Boolean(settings.video.url || settings.video.file) ||
+    services.some((s) => s.video.url || s.video.file);
+
   return (
     <html
       lang="en"
@@ -62,7 +70,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {children}
         <Footer />
         <PageTracker />
-        <CookieConsent />
+        <CookieConsent hasVideo={hasVideo} />
       </body>
     </html>
   );
