@@ -1,7 +1,8 @@
 /**
- * Schema.org records for search engines. Google reads these to show rich
- * results — the FAQ drop-downs, breadcrumb trails and business panels that make
- * a listing take up more of the page.
+ * Schema.org records for search engines: the business, each service, and
+ * breadcrumb trails. They describe the page accurately; they are not there to
+ * chase rich results, which Google may or may not show (brief §20). FAQPage is
+ * deliberately absent for that reason (brief §14).
  *
  * Only state what the CMS actually holds. An invented address or rating is
  * worse than none: it is a policy violation and it can get rich results pulled
@@ -82,15 +83,5 @@ export const breadcrumbSchema = (trail: { name: string; path: string }[]) => ({
     position: i + 1,
     name: step.name,
     item: `${SITE_URL}${step.path}`,
-  })),
-});
-
-export const faqSchema = (faqs: { q: string; a: string }[]) => ({
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: faqs.map((f) => ({
-    "@type": "Question",
-    name: f.q,
-    acceptedAnswer: { "@type": "Answer", text: f.a },
   })),
 });

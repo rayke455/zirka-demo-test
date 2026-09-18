@@ -67,13 +67,17 @@ for (const s of studies.docs as { id: number | string; name: string }[]) {
     data: {
       ...published,
       sample: true,
+      // Concept projects claim no outcome (brief §4), so anything that reads
+      // as a result — figures, timeframe, a quote — is cleared, not just hidden.
+      timeframe: "",
+      outcome: "",
+      results: [],
+      testimonialQuote: "",
+      testimonialAttribution: "",
       ...(story
         ? {
             challenge: story.challenge,
             approach: story.approach,
-            timeframe: story.timeframe,
-            outcome: story.outcome,
-            results: story.results,
             servicesUsed: story.serviceSlugs
               .map((slug) => idBySlug.get(slug))
               .filter((id) => id !== undefined)
@@ -83,7 +87,7 @@ for (const s of studies.docs as { id: number | string; name: string }[]) {
     },
   });
 }
-console.log(`marked as sample: ${(studies.docs as { name: string }[]).map((s) => s.name).join(", ")}`);
+console.log(`marked as concept projects: ${(studies.docs as { name: string }[]).map((s) => s.name).join(", ")}`);
 
 // --- 4. Hide the claims that cannot honestly be labelled --------------------
 // A fabricated "94% client retention" cannot be shown with a sample badge — it

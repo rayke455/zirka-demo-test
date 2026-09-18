@@ -351,21 +351,16 @@ export type WorkItem = {
   image: string;
   alt: string;
   /**
-   * The six-part story. Only the first entry carries one, as a worked example of
-   * the format for the team to copy — and only because every case study here is
-   * flagged as a sample and says so on the page. Real engagements get this
-   * filled in from the admin. No testimonial is written: a quote attributed to
-   * a named person is the one thing that should never be invented, even on a
-   * page that discloses itself as a demonstration.
+   * A concept brief and the strategy Zirka would propose for it. Only the first
+   * entry carries one, so the Work page shows the concept format rather than an
+   * empty page. Concept projects claim no timeframe, results or testimonial
+   * (brief §4) — there was no engagement for any of those to come from.
    */
   story?: {
     challenge: string;
     approach: string;
     /** Slugs from `services` above — resolved to real records when written. */
     serviceSlugs: string[];
-    timeframe: string;
-    outcome: string;
-    results: { value: string; label: string }[];
   };
 };
 
@@ -380,18 +375,10 @@ export const work: WorkItem[] = [
     alt: "Minimal skincare serum bottle with a gold cap on a marble surface",
     story: {
       challenge:
-        "The brand was spending steadily on paid social but could not say which of it worked. Every campaign pointed at the same cold audience, the same three images ran for months, and the only number anyone looked at was total sales for the month.\n\nSpend had doubled year on year without a matching rise in revenue, and nobody could tell whether that was the creative, the audience or the landing page.",
+        "An illustrative brief: a skincare brand spends steadily on paid social but cannot say which of it works. Every campaign targets the same cold audience, the same few images run for months, and the only figure anyone reviews is total monthly sales.",
       approach:
-        "We started by separating the audiences, so cold, warm and returning customers each had their own campaign and their own budget. That alone showed which spend was buying new customers and which was paying for people who would have bought anyway.\n\nWe then set up a fortnightly creative cycle: three new concepts tested against the best performer, with the loser retired rather than left running. Tracking was rebuilt so every sale could be traced to the ad that started it.",
+        "We would start by separating audiences, so new, returning and lapsed customers each get their own campaigns and budgets. That shows which spend finds new customers and which pays for people who would have bought anyway.\n\nWe would then set a fortnightly creative cycle — new concepts tested against the current best, with weaker ads retired rather than left running — and rebuild tracking so each sale can be traced back to the ad that started it.",
       serviceSlugs: ["digital-advertising", "content-creation", "analytics-reporting"],
-      timeframe: "3 months",
-      outcome:
-        "Retargeting carried the conversions while cold campaigns did the job of finding people, and the reporting finally answered the question the team had been asking for a year: which advert brought this customer.",
-      results: [
-        { value: "3.2×", label: "Return on ad spend" },
-        { value: "−38%", label: "Cost per acquisition" },
-        { value: "90 days", label: "To reach target" },
-      ],
     },
   },
   {

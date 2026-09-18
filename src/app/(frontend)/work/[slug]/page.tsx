@@ -14,7 +14,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const study = await getCaseStudy(slug);
   if (!study) return { title: "Case study not found" };
   return {
-    title: `${study.name} — ${study.metric}`,
+    // A concept's metric is illustrative, so it must never reach a search result.
+    title: study.sample ? `${study.name} — Concept Project` : `${study.name} — ${study.metric}`,
     description: study.summary,
     openGraph: { images: [{ url: study.heroImage }] },
   };
@@ -26,8 +27,11 @@ export default async function CaseStudyPage({ params }: Props) {
   if (!study) notFound();
 
   // Show the stored result strip, or fall back to the card's headline number.
-  const results =
-    study.results.length > 0 ? study.results : [{ value: study.metric, label: study.category }];
+  const results = study.sample
+    ? []
+    : study.results.length > 0
+      ? study.results
+      : [{ value: study.metric, label: study.category }];
 
   /** A prose section, skipped entirely when the team has not written that part yet. */
   const chapter = (heading: string, body: string) => {
@@ -76,22 +80,27 @@ export default async function CaseStudyPage({ params }: Props) {
       {study.sample && (
         <div className="sample-banner">
           <div className="wrap">
-            <strong>Sample project.</strong> This is a demonstration of how Zirka presents its
-            work. It is not a real client engagement, and the figures below are illustrative.
+            <strong>Concept Project.</strong> This shows Zirka&rsquo;s strategy and creative
+            direction for an illustrative brief. It is not work for a real client, and it claims no
+            results.
           </div>
         </div>
       )}
 
-      {/* Challenge, solution, services, timeframe, results, testimonial — in that order. */}
+      {/*
+       * Real work: challenge, solution, services, timeframe, results, testimonial.
+       * A concept (brief §4) shows the brief, the proposed strategy and the
+       * services involved — and stops there, because it has no outcome to report.
+       */}
       <section className="section--flow">
         <div className="wrap">
           <div className="case-body">
-            {chapter("Client challenge", study.challenge)}
-            {chapter("Zirka solution", study.approach)}
+            {chapter(study.sample ? "The concept brief" : "Client challenge", study.challenge)}
+            {chapter(study.sample ? "Proposed strategy" : "Zirka solution", study.approach)}
 
             {study.servicesUsed.length > 0 && (
               <div className="case-chapter">
-                <h2>Services provided</h2>
+                <h2>{study.sample ? "Services involved" : "Services provided"}</h2>
                 <div className="tags">
                   {study.servicesUsed.map((s) => (
                     <Link className="tag" key={s.slug} href={`/services/${s.slug}`}>
@@ -102,33 +111,35 @@ export default async function CaseStudyPage({ params }: Props) {
               </div>
             )}
 
-            {study.timeframe && (
+            {!study.sample && study.timeframe && (
               <div className="case-chapter">
                 <h2>Timeframe</h2>
                 <p>{study.timeframe}</p>
               </div>
             )}
 
-            <div className="case-chapter">
-              <h2>Results</h2>
-              {study.outcome
-                .split(/\n\s*\n/)
-                .map((para) => para.trim())
-                .filter(Boolean)
-                .map((para, i) => (
-                  <p key={i}>{para}</p>
-                ))}
-              <dl className="case-results">
-                {results.map((r) => (
-                  <div key={`${r.value}-${r.label}`}>
-                    <dt>{r.label}</dt>
-                    <dd>{r.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
+            {!study.sample && (
+              <div className="case-chapter">
+                <h2>Results</h2>
+                {study.outcome
+                  .split(/\n\s*\n/)
+                  .map((para) => para.trim())
+                  .filter(Boolean)
+                  .map((para, i) => (
+                    <p key={i}>{para}</p>
+                  ))}
+                <dl className="case-results">
+                  {results.map((r) => (
+                    <div key={`${r.value}-${r.label}`}>
+                      <dt>{r.label}</dt>
+                      <dd>{r.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            )}
 
-            {study.testimonial && (
+            {!study.sample && study.testimonial && (
               <div className="case-chapter">
                 <h2>In their words</h2>
                 <blockquote className="case-quote">

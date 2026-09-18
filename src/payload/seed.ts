@@ -56,15 +56,7 @@ import {
           sample: true,
           // servicesUsed is linked separately by apply-pricing, once the
           // service records exist and their ids are known.
-          ...(w.story
-            ? {
-                challenge: w.story.challenge,
-                approach: w.story.approach,
-                timeframe: w.story.timeframe,
-                outcome: w.story.outcome,
-                results: w.story.results,
-              }
-            : {}),
+          ...(w.story ? { challenge: w.story.challenge, approach: w.story.approach } : {}),
         },
       });
     }

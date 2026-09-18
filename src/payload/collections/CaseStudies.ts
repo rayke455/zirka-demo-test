@@ -47,7 +47,10 @@ export const CaseStudies: CollectionConfig = {
               name: "metric",
               type: "text",
               required: true,
-              admin: { description: 'The headline result, e.g. "3.2× ROAS in 90 days"' },
+              admin: {
+                description:
+                  'The headline result, e.g. "3.2× ROAS in 90 days". Real, documented results only — it is never shown on a Concept Project.',
+              },
             },
             {
               name: "summary",
@@ -167,13 +170,13 @@ export const CaseStudies: CollectionConfig = {
     },
     {
       name: "sample",
-      label: "Sample / demo project",
+      label: "Concept Project (not client work)",
       type: "checkbox",
       defaultValue: false,
       admin: {
         position: "sidebar",
         description:
-          "Tick this for any project that is not a verified Zirka client result. The site then labels it publicly as a sample, so a placeholder can never read as a real client outcome.",
+          "Tick this for anything that is not genuine, documented client work. The site then labels it a Concept Project and hides every result, timeframe and testimonial, so a concept can never read as a client outcome.",
       },
     },
   ],

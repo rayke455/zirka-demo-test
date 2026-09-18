@@ -1,6 +1,4 @@
 import { getFaqs } from "@/lib/cms";
-import JsonLd from "./JsonLd";
-import { faqSchema } from "@/lib/schema";
 
 export default async function Faq() {
   const faqs = await getFaqs();
@@ -8,8 +6,7 @@ export default async function Faq() {
 
   return (
     <section id="faq" className="section--panel">
-      {/* Lets Google show these questions as drop-downs under the listing. */}
-      <JsonLd data={faqSchema(faqs)} />
+      {/* No FAQPage schema: it was there only to chase rich results (brief §14). */}
       <div className="wrap">
         <div className="section-head">
           <div>
@@ -17,8 +14,8 @@ export default async function Faq() {
             <h2>The things people ask before they call.</h2>
           </div>
           <p>
-            If your question isn&rsquo;t here, message us on WhatsApp &mdash; a strategist
-            answers, not a chatbot.
+            If your question isn&rsquo;t here, message us on WhatsApp and talk directly with a
+            Zirka strategist.
           </p>
         </div>
 
