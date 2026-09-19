@@ -43,6 +43,8 @@ export default buildConfig({
       },
       actions: ["/payload/components/AdminHeaderActions"],
       beforeDashboard: ["/payload/components/BeforeDashboard"],
+      // Show/hide button on every password box, including the login page.
+      providers: ["/payload/components/PasswordReveal"],
     },
     meta: {
       titleSuffix: " — Zirka Admin",

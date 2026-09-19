@@ -1090,3 +1090,46 @@ html[data-theme="dark"] .zk-dot {
   background: rgba(192, 57, 43, 0.1);
   color: #b03a2e;
 }
+
+/* ---------- Show / hide password ---------- */
+.zk-reveal-holder {
+  position: relative;
+}
+
+.zk-reveal-holder > input {
+  padding-right: 44px !important;
+}
+
+.zk-reveal {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--theme-elevation-500);
+  cursor: pointer;
+}
+
+.zk-reveal:hover {
+  color: var(--zk-copper);
+  background: rgba(184, 115, 51, 0.08);
+}
+
+.zk-reveal:focus-visible {
+  outline: 2px solid var(--zk-copper);
+  outline-offset: 1px;
+}
+
+/* Edge adds its own eye to password boxes; one button is enough. */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
