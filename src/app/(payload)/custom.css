@@ -2,9 +2,12 @@
    Scoped to colour, type, the login screen and our own dashboard panel.
    Payload's layout rules are left alone so version upgrades don't break the UI. */
 
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Libre+Franklin:wght@400;500;600;700&display=swap");
 
 :root {
+  /* The computer's own fonts: nothing to download before the admin can draw.
+     (A Google Fonts @import here held up every first page load.) */
+  --zk-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --zk-serif: Georgia, "Times New Roman", serif;
   --zk-green: #0a2c1f;
   --zk-green-deep: #071e16;
   --zk-green-mid: #114a35;
@@ -29,7 +32,7 @@ html[data-theme="dark"] {
 }
 
 body {
-  font-family: "Libre Franklin", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--zk-sans);
 }
 
 h1,
@@ -37,9 +40,9 @@ h2,
 h3,
 .doc-header__title,
 .collection-list__header h1 {
-  font-family: "Fraunces", Georgia, serif;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-family: var(--zk-sans);
+  font-weight: 650;
+  letter-spacing: -0.015em;
 }
 
 /* ---------- Actions ---------- */
@@ -65,37 +68,133 @@ h3,
 
 /* ---------- Sidebar Navigation ---------- */
 .nav {
-  background: linear-gradient(180deg, #0d3425 0%, var(--zk-green) 40%, #071e16 100%);
-  border-right: 1px solid rgba(255, 255, 255, 0.04);
+  background: var(--zk-green);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.nav *,
-.nav a,
+.nav__wrap {
+  padding-top: 8px;
+}
+
+/* Text colours only. The old `.nav *` rule also reached the menu button's
+   icon, which turned it cream on a light button: a blank white square. */
 .nav__link,
+.nav__link-label,
 .nav-group__toggle,
-.nav__label {
-  color: rgba(242, 239, 230, 0.82);
-  transition: color 0.15s ease, background 0.15s ease;
+.nav-group__indicator,
+.nav__log-out {
+  color: rgba(242, 239, 230, 0.8);
+  transition: color 0.15s ease, background-color 0.15s ease;
 }
 
-.nav a:hover,
-.nav__link:hover {
+.nav__link {
+  display: flex;
+  align-items: center;
+  margin: 1px 0;
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  text-decoration: none;
+}
+
+a.nav__link:hover {
+  color: #fff;
+  background: rgba(242, 239, 230, 0.07);
+}
+
+a.nav__link:hover .nav__link-label {
   color: #fff;
 }
 
-.nav__link--active {
-  color: #fff !important;
-  border-left: 2px solid var(--zk-copper);
-  background: rgba(184, 115, 51, 0.08);
-  box-shadow: inset 0 0 20px rgba(184, 115, 51, 0.04);
+/* Payload renders the page you are on as a <div class="nav__link">, not a link. */
+div.nav__link {
+  position: relative;
+  background: rgba(184, 115, 51, 0.18);
+}
+
+div.nav__link .nav__link-label {
+  color: #fff;
+  font-weight: 600;
+}
+
+.nav__link-indicator {
+  position: absolute;
+  left: 0;
+  top: 7px;
+  bottom: 7px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--zk-copper-light);
+}
+
+.nav-group {
+  margin-bottom: 6px;
+}
+
+.nav-group__toggle {
+  padding-block: 10px 6px;
 }
 
 .nav-group__label {
   color: var(--zk-copper-light);
-  font-family: "Libre Franklin", sans-serif;
+  font-family: var(--zk-sans);
   font-size: 10.5px;
+  font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+}
+
+.nav-group__indicator svg,
+.nav-group__indicator svg * {
+  stroke: rgba(242, 239, 230, 0.55);
+}
+
+.nav__controls {
+  border-top: 1px solid rgba(242, 239, 230, 0.1);
+  padding-top: 14px;
+}
+
+.nav__log-out {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+}
+
+.nav__log-out:hover {
+  color: #fff;
+  background: rgba(220, 80, 60, 0.18);
+}
+
+.nav__log-out svg,
+.nav__log-out svg * {
+  stroke: currentColor;
+}
+
+/* The menu button. On the page it keeps Payload's look; on the dark sidebar
+   (menu open, or the close button inside the phone menu) it goes dark too. */
+.hamburger {
+  border-radius: 8px;
+}
+
+.template-default__nav-toggler.nav-toggler--is-open .hamburger,
+.nav .hamburger {
+  background-color: rgba(242, 239, 230, 0.08);
+  box-shadow: 0 0 0 1px rgba(242, 239, 230, 0.2);
+  color: #f2efe6;
+}
+
+.template-default__nav-toggler.nav-toggler--is-open .hamburger:hover,
+.nav .hamburger:hover {
+  background-color: rgba(242, 239, 230, 0.16);
+  box-shadow: 0 0 0 1px rgba(242, 239, 230, 0.35);
+}
+
+.template-default__nav-toggler.nav-toggler--is-open .hamburger svg *,
+.nav .hamburger svg * {
+  stroke: currentColor;
 }
 
 .zirka-admin-icon {
@@ -115,7 +214,7 @@ h3,
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-family: "Libre Franklin", sans-serif;
+  font-family: var(--zk-sans);
   font-size: 12.5px;
   font-weight: 500;
   padding: 6px 12px;
@@ -156,7 +255,7 @@ html[data-theme="dark"] .zk-header-btn:hover {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-family: "Libre Franklin", sans-serif;
+  font-family: var(--zk-sans);
   font-size: 12.5px;
   font-weight: 500;
   padding: 6px 12px;
@@ -281,7 +380,7 @@ html[data-theme="dark"] .login__wrap {
 }
 
 .zirka-admin-logo span {
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--zk-serif);
   font-style: italic;
   font-size: 13.5px;
   letter-spacing: 0.02em;
@@ -309,18 +408,6 @@ html[data-theme="dark"] .login__wrap {
   display: flex;
   flex-direction: column;
   gap: 22px;
-  animation: zk-dash-in 0.5s ease-out both;
-}
-
-@keyframes zk-dash-in {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 /* Executive Header */
@@ -349,7 +436,7 @@ html[data-theme="dark"] .login__wrap {
 
 .zk-dash__title {
   margin: 0;
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--zk-serif);
   font-size: 1.65rem;
   font-weight: 500;
   color: var(--zk-ink);
@@ -434,7 +521,7 @@ html[data-theme="dark"] .login__wrap {
   border: 1px solid var(--zk-line);
   background: transparent;
   color: var(--zk-ink);
-  font-family: "Libre Franklin", sans-serif;
+  font-family: var(--zk-sans);
   font-size: 13px;
   font-weight: 500;
   text-decoration: none;
@@ -509,7 +596,7 @@ html[data-theme="dark"] .login__wrap {
   border-radius: 14px;
   background: var(--zk-copper);
   color: #fff;
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--zk-serif);
   font-size: 14px;
   font-weight: 600;
   flex-shrink: 0;
@@ -619,25 +706,6 @@ html[data-theme="dark"] .login__wrap {
   position: relative;
   overflow: hidden;
   transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.25s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.25s ease;
-  animation: zk-tile-in 0.4s ease-out both;
-}
-
-.zk-tile:nth-child(1) { animation-delay: 0.05s; }
-.zk-tile:nth-child(2) { animation-delay: 0.1s; }
-.zk-tile:nth-child(3) { animation-delay: 0.15s; }
-.zk-tile:nth-child(4) { animation-delay: 0.2s; }
-.zk-tile:nth-child(5) { animation-delay: 0.25s; }
-.zk-tile:nth-child(6) { animation-delay: 0.3s; }
-
-@keyframes zk-tile-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .zk-tile::before {
@@ -685,7 +753,7 @@ html[data-theme="dark"] .zk-tile {
 }
 
 .zk-tile__num {
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--zk-serif);
   font-size: 1.95rem;
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
@@ -746,7 +814,7 @@ html[data-theme="dark"] .zk-card {
 
 .zk-card__head h3 {
   margin: 0;
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--zk-serif);
   font-size: 1.05rem;
   font-weight: 500;
   color: var(--zk-ink);
@@ -780,7 +848,7 @@ html[data-theme="dark"] .zk-card {
 .zk-axis {
   fill: var(--viz-axis);
   font-size: 10.5px;
-  font-family: "Libre Franklin", sans-serif;
+  font-family: var(--zk-sans);
   font-variant-numeric: tabular-nums;
 }
 
@@ -969,4 +1037,56 @@ html[data-theme="dark"] .zk-dot {
   background: transparent;
   border: 1px solid rgba(184, 115, 51, 0.45);
   color: var(--zk-ink) !important;
+}
+
+/* ---------- Features → Emails: test button ---------- */
+.zk-test-email {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-top: 6px;
+}
+
+.zk-test-email__btn {
+  padding: 9px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--zk-copper);
+  background: rgba(184, 115, 51, 0.08);
+  color: var(--zk-copper);
+  font: 600 13px var(--zk-sans);
+  cursor: pointer;
+}
+
+.zk-test-email__btn:hover:not(:disabled) {
+  background: var(--zk-copper);
+  color: #fff;
+}
+
+.zk-test-email__btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.zk-test-email__hint {
+  font-size: 12.5px;
+  color: var(--theme-elevation-500);
+}
+
+.zk-test-email__result {
+  flex-basis: 100%;
+  margin: 4px 0 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13.5px;
+}
+
+.zk-test-email__result--ok {
+  background: rgba(34, 140, 94, 0.1);
+  color: #1d7a51;
+}
+
+.zk-test-email__result--error {
+  background: rgba(192, 57, 43, 0.1);
+  color: #b03a2e;
 }

@@ -28,6 +28,7 @@ import { BookingSettings } from "./payload/globals/BookingSettings";
 import { Bookings } from "./payload/collections/Bookings";
 import { Quotes } from "./payload/collections/Quotes";
 import { emailAdapter } from "./payload/email";
+import { dailyCron } from "./payload/cron";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -69,6 +70,8 @@ export default buildConfig({
     Users,
   ],
   globals: [SiteSettings, Features, BookingSettings],
+  // Vercel Cron calls this every morning (vercel.json).
+  endpoints: [dailyCron],
   email: emailAdapter,
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",

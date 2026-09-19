@@ -1,6 +1,7 @@
 import type { GlobalConfig } from "payload";
 import { revalidatePath } from "next/cache";
 import { isSuperAdmin } from "../access";
+import { mailSetup } from "../mailer";
 
 /** Accepts the bare code or the whole <meta … content="…"> tag and keeps just the code. */
 const verificationCode = (value: unknown) => {
@@ -34,6 +35,54 @@ export const Features: GlobalConfig = {
     read: isSuperAdmin,
     update: isSuperAdmin,
   },
+  endpoints: [
+    {
+      // POST /api/globals/features/test-email — sends one email through the
+      // saved mail server to the alerts inbox, or to the signed-in super admin.
+      path: "/test-email",
+      method: "post",
+      handler: async (req) => {
+        const user = req.user as { role?: string; email?: string } | null;
+        if (user?.role !== "superadmin") {
+          return Response.json({ message: "Only super admins can send a test email." }, { status: 403 });
+        }
+        const f = (await req.payload.findGlobal({ slug: "features", depth: 0 })) as {
+          smtpHost?: string | null;
+          smtpUser?: string | null;
+          smtpPass?: string | null;
+          notifyEmail?: string | null;
+        };
+        if (!f.smtpHost || !f.smtpUser || !f.smtpPass) {
+          return Response.json(
+            { message: "Fill in the server, username and password under “1. Mail server”, press Save, then try again." },
+            { status: 400 }
+          );
+        }
+        const to = f.notifyEmail || user.email;
+        if (!to) return Response.json({ message: "Add an address under “Send alerts to” first." }, { status: 400 });
+        const mail = await mailSetup(req.payload);
+        try {
+          await mail.send({
+            to,
+            subject: "Test email from your Zirka website",
+            html: `<div style="font-family:Arial,sans-serif;font-size:15px;color:#0e2a20">
+              <p style="font-size:18px;margin:0 0 12px">It works.</p>
+              <p style="margin:0">Your website can send email. Enquiry alerts and automatic replies will go out from this account.</p>
+            </div>`,
+          });
+          return Response.json({ message: `Sent to ${to}. Check that inbox (and its spam folder).` });
+        } catch (err) {
+          const reason = err instanceof Error ? err.message : String(err);
+          const hint = /auth|535|534|username|password/i.test(reason)
+            ? " The username or password was refused. For Gmail, use an App Password, not your normal password."
+            : /ECONN|ETIMEDOUT|ENOTFOUND|getaddrinfo/i.test(reason)
+              ? " The server couldn't be reached. Check the server name and port (465 or 587)."
+              : "";
+          return Response.json({ message: `Not sent: ${reason}.${hint}` }, { status: 502 });
+        }
+      },
+    },
+  ],
   hooks: {
     afterChange: [
       // Pages are cached for up to a minute. A switch — maintenance above all —
@@ -75,6 +124,155 @@ export const Features: GlobalConfig = {
               type: "textarea",
               defaultValue:
                 "Our website is being updated and will be back shortly. We're still working in the meantime, and happy to help.",
+            },
+          ],
+        },
+        {
+          label: "Emails",
+          description:
+            "The email account the website sends from, the alerts you get about new enquiries, and the automatic thank-you visitors get. Start with the mail server: nothing is sent without it.",
+          fields: [
+            {
+              type: "collapsible",
+              label: "1. Mail server (the account that sends the emails)",
+              admin: {
+                initCollapsed: false,
+                description:
+                  "For Gmail: server smtp.gmail.com, port 465, your Gmail address as the username, and a Gmail App Password (Google Account → Security → 2-Step Verification → App passwords). Never your normal password.",
+              },
+              fields: [
+                {
+                  type: "row",
+                  fields: [
+                    {
+                      name: "smtpHost",
+                      label: "Server",
+                      type: "text",
+                      admin: { width: "60%", placeholder: "smtp.gmail.com" },
+                    },
+                    {
+                      name: "smtpPort",
+                      label: "Port",
+                      type: "number",
+                      defaultValue: 465,
+                      admin: { width: "40%", description: "465 (SSL) or 587" },
+                    },
+                  ],
+                },
+                {
+                  type: "row",
+                  fields: [
+                    {
+                      name: "smtpUser",
+                      label: "Username",
+                      type: "text",
+                      admin: { width: "50%", description: "Usually the full email address that sends." },
+                    },
+                    {
+                      name: "smtpPass",
+                      label: "Password",
+                      type: "text",
+                      admin: { width: "50%", description: "An App Password for Gmail. Visible only to super admins." },
+                    },
+                  ],
+                },
+                {
+                  name: "fromAddress",
+                  label: "Send from",
+                  type: "email",
+                  admin: { description: "Leave blank to use the username." },
+                },
+                {
+                  name: "testEmail",
+                  type: "ui",
+                  admin: { components: { Field: "/payload/components/TestEmailButton" } },
+                },
+              ],
+            },
+            {
+              type: "collapsible",
+              label: "2. Alerts to you about new enquiries",
+              admin: { initCollapsed: false },
+              fields: [
+                toggle(
+                  "alertsEnabled",
+                  "Send me an email for every new enquiry",
+                  "Contact messages, free audit requests, quote requests and booked calls.",
+                  false
+                ),
+                {
+                  name: "notifyEmail",
+                  label: "Send alerts to",
+                  type: "email",
+                  admin: {
+                    description: "The inbox that receives the alerts.",
+                    condition: (data) => Boolean(data?.alertsEnabled),
+                  },
+                },
+              ],
+            },
+            {
+              type: "collapsible",
+              label: "3. Automatic thank-you to the person who sent the form",
+              admin: { initCollapsed: false },
+              fields: [
+                toggle(
+                  "autoReplyEnabled",
+                  "Send an automatic thank-you",
+                  "Right after someone sends the contact, free-audit or quote form, they get a short email confirming we have it. Booked calls already get their own confirmation."
+                ),
+                {
+                  type: "row",
+                  fields: [
+                    {
+                      name: "replyTime",
+                      label: "When you reply to enquiries",
+                      type: "text",
+                      admin: {
+                        width: "50%",
+                        placeholder: "within one business day",
+                        description:
+                          "Finishes “We'll get back to you …”. Only promise what you can keep. Leave blank for “as soon as we can”.",
+                      },
+                    },
+                    {
+                      name: "auditReplyTime",
+                      label: "When audit results are sent",
+                      type: "text",
+                      admin: {
+                        width: "50%",
+                        placeholder: "within 3 business days",
+                        description: "Finishes “We'll send your findings …”. Leave blank for “as soon as we've reviewed it”.",
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              type: "collapsible",
+              label: "4. Scheduled emails to you (every morning, 8am Kenya time)",
+              admin: {
+                initCollapsed: false,
+                description: "Sent to the alerts inbox above, so alerts must be switched on. Nothing is sent on a day with nothing to report.",
+              },
+              fields: [
+                toggle(
+                  "followUpReminders",
+                  "Daily follow-up reminder",
+                  "Leads whose “Follow up on” date is today or already passed."
+                ),
+                toggle(
+                  "untouchedLeadNudges",
+                  "Nudge for unanswered leads",
+                  "Enquiries, audit requests and quotes still marked New a day after they arrived."
+                ),
+                toggle(
+                  "weeklySummary",
+                  "Weekly summary on Mondays",
+                  "Last week's audit requests, enquiries, quotes, booked calls, deals won and page views."
+                ),
+              ],
             },
           ],
         },
@@ -161,101 +359,6 @@ export const Features: GlobalConfig = {
                   "In Bing Webmaster Tools, choose the “Meta tag” option. Or simply import your site from Google Search Console and skip this.",
               },
               hooks: { beforeChange: [({ value }) => verificationCode(value)] },
-            },
-          ],
-        },
-        {
-          label: "Enquiry alerts",
-          description:
-            "Email you whenever someone sends a form, and send them an automatic thank-you. Both need the mail server below.",
-          fields: [
-            toggle("alertsEnabled", "Send enquiry alerts", "Email a notification for every new enquiry.", false),
-            {
-              name: "notifyEmail",
-              label: "Send alerts to",
-              type: "email",
-              admin: {
-                description: "The inbox that receives new-enquiry alerts.",
-                condition: (data) => Boolean(data?.alertsEnabled),
-              },
-            },
-            {
-              type: "collapsible",
-              label: "Mail server (the account that sends the alert)",
-              admin: { condition: (data) => Boolean(data?.alertsEnabled) },
-              fields: [
-                {
-                  type: "row",
-                  fields: [
-                    {
-                      name: "smtpHost",
-                      label: "Server",
-                      type: "text",
-                      admin: { width: "60%", description: "e.g. smtp.gmail.com" },
-                    },
-                    {
-                      name: "smtpPort",
-                      label: "Port",
-                      type: "number",
-                      defaultValue: 465,
-                      admin: { width: "40%", description: "465 (SSL) or 587" },
-                    },
-                  ],
-                },
-                {
-                  name: "smtpUser",
-                  label: "Username",
-                  type: "text",
-                  admin: { description: "Usually the full email address that sends." },
-                },
-                {
-                  name: "smtpPass",
-                  label: "Password",
-                  type: "text",
-                  admin: {
-                    description:
-                      "For Gmail, an App Password — never your normal password. Visible only to super admins.",
-                  },
-                },
-                {
-                  name: "fromAddress",
-                  label: "Send from",
-                  type: "email",
-                  admin: { description: "Leave blank to use the username." },
-                },
-              ],
-            },
-            {
-              type: "collapsible",
-              label: "Automatic reply to the person who sent the form",
-              admin: { condition: (data) => Boolean(data?.alertsEnabled) },
-              fields: [
-                toggle(
-                  "autoReplyEnabled",
-                  "Send an automatic thank-you",
-                  "Right after someone sends the contact, free-audit or quote form, they get a short email confirming we have it. Booked calls already get their own confirmation."
-                ),
-                {
-                  name: "replyTime",
-                  label: "When you reply to enquiries",
-                  type: "text",
-                  admin: {
-                    placeholder: "within one business day",
-                    description:
-                      "Finishes the sentence “We'll get back to you …”. Only promise what you can keep. Leave blank to say “as soon as we can”.",
-                  },
-                },
-                {
-                  name: "auditReplyTime",
-                  label: "When audit results are sent",
-                  type: "text",
-                  admin: {
-                    placeholder: "within 3 business days",
-                    description:
-                      "Finishes “We'll send your findings …”. Leave blank to say “as soon as we've reviewed it”.",
-                  },
-                },
-              ],
             },
           ],
         },

@@ -5,6 +5,7 @@ import * as migration_20260918_214839_stage3_and_maintenance from './20260918_21
 import * as migration_20260919_030446_stage4_fields from './20260919_030446_stage4_fields';
 import * as migration_20260919_071342_ga_measurement_id from './20260919_071342_ga_measurement_id';
 import * as migration_20260919_075104_blog_projects_leads from './20260919_075104_blog_projects_leads';
+import * as migration_20260919_105034_scheduled_emails from './20260919_105034_scheduled_emails';
 
 export const migrations = [
   {
@@ -40,6 +41,11 @@ export const migrations = [
   {
     up: migration_20260919_075104_blog_projects_leads.up,
     down: migration_20260919_075104_blog_projects_leads.down,
-    name: '20260919_075104_blog_projects_leads'
+    name: '20260919_075104_blog_projects_leads',
+  },
+  {
+    up: migration_20260919_105034_scheduled_emails.up,
+    down: migration_20260919_105034_scheduled_emails.down,
+    name: '20260919_105034_scheduled_emails'
   },
 ];

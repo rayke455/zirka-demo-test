@@ -41,6 +41,11 @@ export default function TrafficChart({ days }: { days: Day[] }) {
   // Label only the ends and the peak, never every point.
   const peak = days.reduce((b, d, i) => (d.views > days[b].views ? i : b), 0);
   const labelled = new Set([0, days.length - 1, peak]);
+  // The peak's date is only printed when it is far enough from both ends not
+  // to overlap their dates; its dot always shows.
+  const last = days.length - 1;
+  const showDate = (i: number) => i === 0 || i === last || (i >= 5 && i <= last - 5);
+  const anchor = (i: number) => (i === 0 ? "start" : i === last ? "end" : "middle");
 
   return (
     <div className="zk-card">
@@ -81,9 +86,11 @@ export default function TrafficChart({ days }: { days: Day[] }) {
           labelled.has(i) ? (
             <g key={d.date}>
               <circle cx={x(i)} cy={y(d.views)} r={4} className="zk-dot" />
-              <text x={x(i)} y={H - 8} className="zk-axis" textAnchor="middle">
-                {d.label}
-              </text>
+              {showDate(i) && (
+                <text x={x(i)} y={H - 8} className="zk-axis" textAnchor={anchor(i)}>
+                  {d.label}
+                </text>
+              )}
             </g>
           ) : null
         )}

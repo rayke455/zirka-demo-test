@@ -29,13 +29,22 @@ export const escapeHtml = (value: unknown) =>
     .replace(/'/g, "&#39;");
 
 /**
- * Where team alerts go, and how mail is sent. The super admin's Features page
- * wins; .env is the fallback. Returns null when alerts are off everywhere.
+ * How mail is sent, and where team alerts go.
+ *
+ * The mail server on Features → Emails is used whenever it is filled in, for
+ * alerts, automatic replies and booking confirmations alike; without it, mail
+ * goes through the .env adapter. Alerts go to the admin's inbox only while
+ * alerts are switched on there; .env's NOTIFY_EMAIL is the fallback when the
+ * admin mail server isn't set up.
  */
 export async function mailSetup(payload: Payload) {
   const f = (await payload.findGlobal({ slug: "features", depth: 0 })) as unknown as Features;
-  const adminSmtp = Boolean(f.alertsEnabled && f.smtpHost && f.smtpUser && f.smtpPass);
-  const teamInbox = adminSmtp ? f.notifyEmail || null : process.env.NOTIFY_EMAIL || null;
+  const adminSmtp = Boolean(f.smtpHost && f.smtpUser && f.smtpPass);
+  const teamInbox = adminSmtp
+    ? f.alertsEnabled
+      ? f.notifyEmail || null
+      : null
+    : process.env.NOTIFY_EMAIL || null;
 
   const send = async (mail: Mail) => {
     if (adminSmtp) {

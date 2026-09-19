@@ -4,7 +4,9 @@ import config from "../../payload.config";
 import Greeting from "./Greeting";
 import TrafficChart from "./TrafficChart";
 import TopPages from "./TopPages";
+import { sql } from "@payloadcms/db-postgres";
 import { OPEN_STAGES } from "../fields/lead";
+import { dbKind } from "../db";
 
 type Props = {
   user?: {
@@ -62,96 +64,124 @@ export default async function BeforeDashboard({ user }: Props) {
   const wonThisMonth = async () => {
     let count = 0;
     let value = 0;
-    for (const collection of ["submissions", "quotes"] as const) {
-      try {
-        const { docs } = await payload.find({
-          collection,
-          limit: 500,
-          depth: 0,
-          where: { and: [{ status: { equals: "won" } }, { wonAt: { greater_than_equal: monthStart.toISOString() } }] },
-        });
-        count += docs.length;
-        value += docs.reduce((sum, d) => sum + (Number((d as { dealValue?: number | null }).dealValue) || 0), 0);
-      } catch {
-        // Leave the tile at what could be counted.
-      }
-    }
+    await Promise.all(
+      (["submissions", "quotes"] as const).map(async (collection) => {
+        try {
+          const { docs } = await payload.find({
+            collection,
+            limit: 500,
+            depth: 0,
+            select: { dealValue: true },
+            where: { and: [{ status: { equals: "won" } }, { wonAt: { greater_than_equal: monthStart.toISOString() } }] },
+          });
+          count += docs.length;
+          value += docs.reduce((sum, d) => sum + (Number((d as { dealValue?: number | null }).dealValue) || 0), 0);
+        } catch {
+          // Leave the tile at what could be counted.
+        }
+      })
+    );
     return { count, value };
   };
 
-  const [newEnquiries, newQuotes, confirmedBookings, openEnquiries, openQuotes, dueEnquiries, dueQuotes, won] =
-    await Promise.all([
-      countOf("submissions", { status: { equals: "new" } }),
-      countOf("quotes", { status: { equals: "new" } }),
-      countOf("bookings", { status: { equals: "confirmed" } }),
-      countOf("submissions", openLead("submissions")),
-      countOf("quotes", openLead("quotes")),
-      countOf("submissions", dueLead("submissions")),
-      countOf("quotes", dueLead("quotes")),
-      wonThisMonth(),
-    ]);
-  const openLeads = openEnquiries + openQuotes;
-  // The admin list reads `in` filters as an indexed array in the address.
-  const openStageQuery = (collection: keyof typeof OPEN_STAGES) =>
-    OPEN_STAGES[collection].map((stage, i) => `where[status][in][${i}]=${stage}`).join("&");
-  const followUpsDue = dueEnquiries + dueQuotes;
+  /**
+   * Views per day and the top pages. The database does the counting: loading
+   * every page view of the month (up to 20,000 rows) to count them in here
+   * was the slowest part of opening the dashboard.
+   */
+  const pageViewStats = async () => {
+    const perDay = new Map<string, number>();
+    for (let i = 0; i < DAYS; i++) {
+      const d = new Date(since);
+      d.setUTCDate(since.getUTCDate() + i);
+      perDay.set(d.toISOString().slice(0, 10), 0);
+    }
+    let perPath: { path: string; views: number }[] = [];
 
-  let days: { date: string; label: string; views: number }[] = [];
-  let topPages: { path: string; views: number }[] = [];
-  // No session id is stored on a visitor's device any more, so this counts
-  // page views rather than unique people.
-  let views = 0;
-
-  if (isAdmin) {
-    try {
+    if (dbKind === "postgres") {
+      const drizzle = (payload.db as unknown as { drizzle: { execute: (q: unknown) => Promise<{ rows: Record<string, unknown>[] }> } }).drizzle;
+      const [byDay, byPath] = await Promise.all([
+        drizzle.execute(
+          sql`select to_char(created_at at time zone 'UTC', 'YYYY-MM-DD') as day, count(*)::int as views
+              from page_views where created_at >= ${since.toISOString()} group by 1`
+        ),
+        drizzle.execute(
+          sql`select path, count(*)::int as views from page_views
+              where created_at >= ${since.toISOString()} group by path order by views desc limit 5`
+        ),
+      ]);
+      for (const r of byDay.rows) if (perDay.has(String(r.day))) perDay.set(String(r.day), Number(r.views));
+      perPath = byPath.rows.map((r) => ({ path: String(r.path), views: Number(r.views) }));
+    } else {
+      // Local SQLite: small enough to count here.
       const { docs } = await payload.find({
         collection: "page-views",
         limit: 20000,
         depth: 0,
         where: { createdAt: { greater_than_equal: since.toISOString() } },
       });
-
-      const perDay = new Map<string, number>();
-      const perPath = new Map<string, number>();
-
-      for (let i = 0; i < DAYS; i++) {
-        const d = new Date(since);
-        d.setUTCDate(since.getUTCDate() + i);
-        perDay.set(d.toISOString().slice(0, 10), 0);
-      }
-
-      for (const v of docs as {
-        path: string;
-        createdAt: string;
-      }[]) {
+      const paths = new Map<string, number>();
+      for (const v of docs as { path: string; createdAt: string }[]) {
         const key = v.createdAt.slice(0, 10);
         if (perDay.has(key)) perDay.set(key, (perDay.get(key) ?? 0) + 1);
-        perPath.set(v.path, (perPath.get(v.path) ?? 0) + 1);
+        paths.set(v.path, (paths.get(v.path) ?? 0) + 1);
       }
-
-      days = [...perDay.entries()].map(([date, views]) => ({
-        date,
-        label: new Date(`${date}T00:00:00Z`).toLocaleDateString(undefined, {
-          month: "short",
-          day: "numeric",
-          timeZone: "UTC",
-        }),
-        views,
-      }));
-
-      topPages = [...perPath.entries()]
+      perPath = [...paths.entries()]
         .map(([path, views]) => ({ path, views }))
         .sort((a, b) => b.views - a.views)
         .slice(0, 5);
-
-      views = docs.length;
-    } catch {
-      // Gracefully handle any analytics query issues
     }
-  }
+
+    const days = [...perDay.entries()].map(([date, views]) => ({
+      date,
+      label: new Date(`${date}T00:00:00Z`).toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric",
+        timeZone: "UTC",
+      }),
+      views,
+    }));
+    return { days, topPages: perPath, views: days.reduce((sum, d) => sum + d.views, 0) };
+  };
+
+  // Everything at once: each query waits on the database, not on the others.
+  const [
+    newEnquiries,
+    newQuotes,
+    confirmedBookings,
+    openEnquiries,
+    openQuotes,
+    dueEnquiries,
+    dueQuotes,
+    won,
+    stats,
+    features,
+  ] = await Promise.all([
+    countOf("submissions", { status: { equals: "new" } }),
+    countOf("quotes", { status: { equals: "new" } }),
+    countOf("bookings", { status: { equals: "confirmed" } }),
+    countOf("submissions", openLead("submissions")),
+    countOf("quotes", openLead("quotes")),
+    countOf("submissions", dueLead("submissions")),
+    countOf("quotes", dueLead("quotes")),
+    wonThisMonth(),
+    // Page views are for admins only; a failed query just leaves the charts out.
+    isAdmin ? pageViewStats().catch(() => null) : Promise.resolve(null),
+    payload.findGlobal({ slug: "features", depth: 0 }) as Promise<{ maintenanceMode?: boolean }>,
+  ]);
+  const openLeads = openEnquiries + openQuotes;
+  // The admin list reads `in` filters as an indexed array in the address.
+  const openStageQuery = (collection: keyof typeof OPEN_STAGES) =>
+    OPEN_STAGES[collection].map((stage, i) => `where[status][in][${i}]=${stage}`).join("&");
+  const followUpsDue = dueEnquiries + dueQuotes;
+
+  // No session id is stored on a visitor's device any more, so this counts
+  // page views rather than unique people.
+  const days = stats?.days ?? [];
+  const topPages = stats?.topPages ?? [];
+  const views = stats?.views ?? 0;
 
   const hasPendingItems = newEnquiries > 0 || newQuotes > 0 || confirmedBookings > 0 || followUpsDue > 0;
-  const features = (await payload.findGlobal({ slug: "features", depth: 0 })) as { maintenanceMode?: boolean };
   const maintenanceOn = features.maintenanceMode === true;
   const displayName = user?.name?.split(" ")[0] || user?.email?.split("@")[0] || "there";
 

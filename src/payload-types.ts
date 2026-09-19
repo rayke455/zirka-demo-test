@@ -1576,6 +1576,55 @@ export interface Feature {
   maintenanceMode?: boolean | null;
   maintenanceHeading?: string | null;
   maintenanceMessage?: string | null;
+  smtpHost?: string | null;
+  /**
+   * 465 (SSL) or 587
+   */
+  smtpPort?: number | null;
+  /**
+   * Usually the full email address that sends.
+   */
+  smtpUser?: string | null;
+  /**
+   * An App Password for Gmail. Visible only to super admins.
+   */
+  smtpPass?: string | null;
+  /**
+   * Leave blank to use the username.
+   */
+  fromAddress?: string | null;
+  /**
+   * Contact messages, free audit requests, quote requests and booked calls.
+   */
+  alertsEnabled?: boolean | null;
+  /**
+   * The inbox that receives the alerts.
+   */
+  notifyEmail?: string | null;
+  /**
+   * Right after someone sends the contact, free-audit or quote form, they get a short email confirming we have it. Booked calls already get their own confirmation.
+   */
+  autoReplyEnabled?: boolean | null;
+  /**
+   * Finishes “We'll get back to you …”. Only promise what you can keep. Leave blank for “as soon as we can”.
+   */
+  replyTime?: string | null;
+  /**
+   * Finishes “We'll send your findings …”. Leave blank for “as soon as we've reviewed it”.
+   */
+  auditReplyTime?: string | null;
+  /**
+   * Leads whose “Follow up on” date is today or already passed.
+   */
+  followUpReminders?: boolean | null;
+  /**
+   * Enquiries, audit requests and quotes still marked New a day after they arrived.
+   */
+  untouchedLeadNudges?: boolean | null;
+  /**
+   * Last week's audit requests, enquiries, quotes, booked calls, deals won and page views.
+   */
+  weeklySummary?: boolean | null;
   /**
    * The four figures under the homepage headline.
    */
@@ -1656,46 +1705,6 @@ export interface Feature {
    * In Bing Webmaster Tools, choose the “Meta tag” option. Or simply import your site from Google Search Console and skip this.
    */
   bingVerification?: string | null;
-  /**
-   * Email a notification for every new enquiry.
-   */
-  alertsEnabled?: boolean | null;
-  /**
-   * The inbox that receives new-enquiry alerts.
-   */
-  notifyEmail?: string | null;
-  /**
-   * e.g. smtp.gmail.com
-   */
-  smtpHost?: string | null;
-  /**
-   * 465 (SSL) or 587
-   */
-  smtpPort?: number | null;
-  /**
-   * Usually the full email address that sends.
-   */
-  smtpUser?: string | null;
-  /**
-   * For Gmail, an App Password — never your normal password. Visible only to super admins.
-   */
-  smtpPass?: string | null;
-  /**
-   * Leave blank to use the username.
-   */
-  fromAddress?: string | null;
-  /**
-   * Right after someone sends the contact, free-audit or quote form, they get a short email confirming we have it. Booked calls already get their own confirmation.
-   */
-  autoReplyEnabled?: boolean | null;
-  /**
-   * Finishes the sentence “We'll get back to you …”. Only promise what you can keep. Leave blank to say “as soon as we can”.
-   */
-  replyTime?: string | null;
-  /**
-   * Finishes “We'll send your findings …”. Leave blank to say “as soon as we've reviewed it”.
-   */
-  auditReplyTime?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1834,6 +1843,19 @@ export interface FeaturesSelect<T extends boolean = true> {
   maintenanceMode?: T;
   maintenanceHeading?: T;
   maintenanceMessage?: T;
+  smtpHost?: T;
+  smtpPort?: T;
+  smtpUser?: T;
+  smtpPass?: T;
+  fromAddress?: T;
+  alertsEnabled?: T;
+  notifyEmail?: T;
+  autoReplyEnabled?: T;
+  replyTime?: T;
+  auditReplyTime?: T;
+  followUpReminders?: T;
+  untouchedLeadNudges?: T;
+  weeklySummary?: T;
   showStats?: T;
   showTrustedBy?: T;
   showServices?: T;
@@ -1854,16 +1876,6 @@ export interface FeaturesSelect<T extends boolean = true> {
   gaMeasurementId?: T;
   googleVerification?: T;
   bingVerification?: T;
-  alertsEnabled?: T;
-  notifyEmail?: T;
-  smtpHost?: T;
-  smtpPort?: T;
-  smtpUser?: T;
-  smtpPass?: T;
-  fromAddress?: T;
-  autoReplyEnabled?: T;
-  replyTime?: T;
-  auditReplyTime?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
