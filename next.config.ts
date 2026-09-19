@@ -15,6 +15,17 @@ const nextConfig: NextConfig = {
   devIndicators: {
     position: "bottom-right",
   },
+  // Old addresses that still carry search value or saved links.
+  async redirects() {
+    return [
+      {
+        // Concept project renamed so it doesn't resemble a real company.
+        source: "/work/verve-coffee-co",
+        destination: "/work/fernwhistle-coffee",
+        permanent: true,
+      },
+    ];
+  },
   experimental: {
     // The site and the admin each have their own root layout, so unmatched URLs
     // need a standalone 404 page rather than one composed from a shared layout.

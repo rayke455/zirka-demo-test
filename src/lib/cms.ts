@@ -24,7 +24,7 @@ const SERVICE_FALLBACK: Record<string, string> = Object.fromEntries(
 const WORK_FALLBACK: Record<string, string> = {
   "Solace Skincare": "/images/work-skincare.jpg",
   "Northline Freight": "/images/work-freight.jpg",
-  "Verve Coffee Co.": "/images/work-coffee.jpg",
+  "Fernwhistle Coffee": "/images/work-coffee.jpg",
   "Atlas Fitness": "/images/work-fitness.jpg",
   "Harlow & Rye": "/images/work-homegoods.jpg",
   "Meridian Legal": "/images/work-legal.jpg",

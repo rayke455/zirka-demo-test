@@ -8,7 +8,7 @@ export const stats = [
 export const trustedNames = [
   "Solace Skincare",
   "Northline Freight",
-  "Verve Coffee Co.",
+  "Fernwhistle Coffee",
   "Atlas Fitness",
   "Harlow & Rye",
 ];
@@ -421,7 +421,7 @@ export const work: WorkItem[] = [
     alt: "Freight truck on a highway at dusk",
   },
   {
-    name: "Verve Coffee Co.",
+    name: "Fernwhistle Coffee",
     category: "Coffee · Brand + Web",
     metric: "4.6× revenue in 1 year",
     summary: "A concept identity system and subscription-first website for a specialty coffee brand.",
