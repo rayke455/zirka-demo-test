@@ -8,9 +8,6 @@
      (A Google Fonts @import here held up every first page load.) */
   --zk-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --zk-serif: Georgia, "Times New Roman", serif;
-  --zk-green: #0a2c1f;
-  --zk-green-deep: #071e16;
-  --zk-green-mid: #114a35;
   --zk-copper: #b87333;
   --zk-copper-light: #dfa473;
   --zk-paper: #f6f3ea;
@@ -22,11 +19,10 @@
 }
 
 html[data-theme="light"] {
-  --theme-bg: var(--zk-paper);
+  --theme-bg: #ffffff;
 }
 
 html[data-theme="dark"] {
-  --theme-bg: var(--zk-green-deep);
   --zk-ink: #f0ede4;
   --zk-line: rgba(240, 237, 228, 0.14);
 }
@@ -67,23 +63,22 @@ h3,
 }
 
 /* ---------- Sidebar Navigation ---------- */
+/* White like the rest of the admin (dark mode uses Payload's neutral dark),
+   separated from the page by a hairline, with copper for the current page. */
 .nav {
-  background: var(--zk-green);
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--theme-bg);
+  border-right: 1px solid var(--theme-elevation-100);
 }
 
 .nav__wrap {
   padding-top: 8px;
 }
 
-/* Text colours only. The old `.nav *` rule also reached the menu button's
-   icon, which turned it cream on a light button: a blank white square. */
 .nav__link,
 .nav__link-label,
 .nav-group__toggle,
-.nav-group__indicator,
 .nav__log-out {
-  color: rgba(242, 239, 230, 0.8);
+  color: var(--theme-elevation-800);
   transition: color 0.15s ease, background-color 0.15s ease;
 }
 
@@ -98,22 +93,21 @@ h3,
 }
 
 a.nav__link:hover {
-  color: #fff;
-  background: rgba(242, 239, 230, 0.07);
+  background: var(--theme-elevation-50);
 }
 
 a.nav__link:hover .nav__link-label {
-  color: #fff;
+  color: var(--theme-text);
 }
 
 /* Payload renders the page you are on as a <div class="nav__link">, not a link. */
 div.nav__link {
   position: relative;
-  background: rgba(184, 115, 51, 0.18);
+  background: rgba(184, 115, 51, 0.1);
 }
 
 div.nav__link .nav__link-label {
-  color: #fff;
+  color: var(--theme-text);
   font-weight: 600;
 }
 
@@ -124,7 +118,7 @@ div.nav__link .nav__link-label {
   bottom: 7px;
   width: 3px;
   border-radius: 0 3px 3px 0;
-  background: var(--zk-copper-light);
+  background: var(--zk-copper);
 }
 
 .nav-group {
@@ -136,7 +130,7 @@ div.nav__link .nav__link-label {
 }
 
 .nav-group__label {
-  color: var(--zk-copper-light);
+  color: #9c5c33;
   font-family: var(--zk-sans);
   font-size: 10.5px;
   font-weight: 600;
@@ -144,13 +138,12 @@ div.nav__link .nav__link-label {
   text-transform: uppercase;
 }
 
-.nav-group__indicator svg,
-.nav-group__indicator svg * {
-  stroke: rgba(242, 239, 230, 0.55);
+html[data-theme="dark"] .nav-group__label {
+  color: var(--zk-copper-light);
 }
 
 .nav__controls {
-  border-top: 1px solid rgba(242, 239, 230, 0.1);
+  border-top: 1px solid var(--theme-elevation-100);
   padding-top: 14px;
 }
 
@@ -164,8 +157,8 @@ div.nav__link .nav__link-label {
 }
 
 .nav__log-out:hover {
-  color: #fff;
-  background: rgba(220, 80, 60, 0.18);
+  color: #c0392b;
+  background: rgba(192, 57, 43, 0.08);
 }
 
 .nav__log-out svg,
@@ -173,28 +166,8 @@ div.nav__link .nav__link-label {
   stroke: currentColor;
 }
 
-/* The menu button. On the page it keeps Payload's look; on the dark sidebar
-   (menu open, or the close button inside the phone menu) it goes dark too. */
 .hamburger {
   border-radius: 8px;
-}
-
-.template-default__nav-toggler.nav-toggler--is-open .hamburger,
-.nav .hamburger {
-  background-color: rgba(242, 239, 230, 0.08);
-  box-shadow: 0 0 0 1px rgba(242, 239, 230, 0.2);
-  color: #f2efe6;
-}
-
-.template-default__nav-toggler.nav-toggler--is-open .hamburger:hover,
-.nav .hamburger:hover {
-  background-color: rgba(242, 239, 230, 0.16);
-  box-shadow: 0 0 0 1px rgba(242, 239, 230, 0.35);
-}
-
-.template-default__nav-toggler.nav-toggler--is-open .hamburger svg *,
-.nav .hamburger svg * {
-  stroke: currentColor;
 }
 
 .zirka-admin-icon {
@@ -281,13 +254,8 @@ html[data-theme="dark"] .zk-header-btn:hover {
 /* ---------- Login Page ---------- */
 .login {
   background:
-    radial-gradient(1.5px 1.5px at 14% 26%, rgba(242, 239, 230, 0.5), transparent),
-    radial-gradient(1.5px 1.5px at 38% 68%, rgba(242, 239, 230, 0.32), transparent),
-    radial-gradient(1px 1px at 61% 22%, rgba(242, 239, 230, 0.45), transparent),
-    radial-gradient(1.5px 1.5px at 82% 58%, rgba(242, 239, 230, 0.38), transparent),
-    radial-gradient(1px 1px at 92% 31%, rgba(242, 239, 230, 0.4), transparent),
-    radial-gradient(1200px 600px at 50% -10%, rgba(17, 74, 53, 0.9), transparent),
-    linear-gradient(150deg, var(--zk-green) 0%, var(--zk-green-deep) 100%);
+    radial-gradient(900px 500px at 50% -10%, rgba(184, 115, 51, 0.07), transparent),
+    #ffffff;
   min-height: 100vh;
   position: relative;
   overflow: hidden;
@@ -314,7 +282,7 @@ html[data-theme="dark"] .zk-header-btn:hover {
   width: 400px;
   height: 400px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(31, 107, 78, 0.1), transparent 70%);
+  background: radial-gradient(circle, rgba(184, 115, 51, 0.06), transparent 70%);
   animation: login-glow 8s ease-in-out 4s infinite alternate;
   pointer-events: none;
 }
@@ -326,11 +294,11 @@ html[data-theme="dark"] .zk-header-btn:hover {
 
 .login__form,
 .login__wrap {
-  background: rgba(255, 253, 247, 0.98);
+  background: #ffffff;
   border-radius: 20px;
   padding: 38px 36px 34px;
-  box-shadow: 0 40px 100px -40px rgba(0, 0, 0, 0.75), 0 0 60px -20px rgba(184, 115, 51, 0.1);
-  border: 1px solid rgba(184, 115, 51, 0.18);
+  box-shadow: 0 24px 60px -30px rgba(14, 42, 32, 0.25);
+  border: 1px solid var(--theme-elevation-100);
   position: relative;
   z-index: 1;
   animation: login-card-in 0.6s ease-out both;
@@ -349,8 +317,8 @@ html[data-theme="dark"] .zk-header-btn:hover {
 
 html[data-theme="dark"] .login__form,
 html[data-theme="dark"] .login__wrap {
-  background: rgba(14, 50, 37, 0.98);
-  box-shadow: 0 40px 100px -40px rgba(0, 0, 0, 0.85), 0 0 60px -20px rgba(184, 115, 51, 0.08);
+  background: var(--theme-elevation-50);
+  box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.6);
 }
 
 .zirka-admin-logo {
@@ -384,7 +352,7 @@ html[data-theme="dark"] .login__wrap {
   font-style: italic;
   font-size: 13.5px;
   letter-spacing: 0.02em;
-  color: var(--zk-copper-light);
+  color: #9c5c33;
 }
 
 /* ---------- Inputs ---------- */
@@ -512,40 +480,9 @@ html[data-theme="dark"] .login__wrap {
   flex-wrap: wrap;
 }
 
-.zk-btn-head {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 8px 14px;
-  border-radius: 8px;
-  border: 1px solid var(--zk-line);
-  background: transparent;
-  color: var(--zk-ink);
-  font-family: var(--zk-sans);
-  font-size: 13px;
-  font-weight: 500;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
 
-.zk-btn-head:hover {
-  border-color: var(--zk-copper);
-  color: var(--zk-copper);
-  background: rgba(184, 115, 51, 0.06);
-}
 
-.zk-btn-head--site {
-  background: var(--zk-green);
-  border-color: var(--zk-green-mid);
-  color: #fff !important;
-}
 
-.zk-btn-head--site:hover {
-  background: var(--zk-green-mid);
-  border-color: var(--zk-copper);
-  color: #fff !important;
-}
 
 /* ---------- Priority Alerts Grid ---------- */
 .zk-alerts {
@@ -700,7 +637,7 @@ html[data-theme="dark"] .login__wrap {
   padding: 18px 20px;
   border-radius: 14px;
   border: 1px solid var(--zk-line);
-  background: #fffdf7;
+  background: var(--theme-elevation-0);
   text-decoration: none;
   color: var(--zk-ink);
   position: relative;
@@ -723,7 +660,7 @@ html[data-theme="dark"] .login__wrap {
 }
 
 html[data-theme="dark"] .zk-tile {
-  background: #0e3225;
+  background: var(--theme-elevation-50);
 }
 
 .zk-tile:hover {
@@ -786,7 +723,7 @@ html[data-theme="dark"] .zk-tile {
   border: 1px solid var(--zk-line);
   border-radius: 14px;
   padding: 20px 22px 16px;
-  background: #fffdf7;
+  background: var(--theme-elevation-0);
   min-width: 0;
   transition: box-shadow 0.25s ease, border-color 0.25s ease;
 }
@@ -798,9 +735,9 @@ html[data-theme="dark"] .zk-tile {
 
 html[data-theme="dark"] .zk-card {
   --viz-series: #bd7d38;
-  --viz-grid: #1c3f31;
-  --viz-axis: #8ea295;
-  background: #0e3225;
+  --viz-grid: #2e2e2e;
+  --viz-axis: #9a9a9a;
+  background: var(--theme-elevation-50);
 }
 
 .zk-card__head {
@@ -868,12 +805,12 @@ html[data-theme="dark"] .zk-card {
 
 .zk-dot {
   fill: var(--viz-series);
-  stroke: #fffdf7;
+  stroke: var(--theme-elevation-0);
   stroke-width: 2;
 }
 
 html[data-theme="dark"] .zk-dot {
-  stroke: #0e3225;
+  stroke: var(--theme-elevation-50);
 }
 
 /* Horizontal bars */
