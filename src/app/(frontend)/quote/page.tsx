@@ -3,11 +3,14 @@ import Link from "next/link";
 import PageHeader from "@/components/PageHeader";
 import QuoteForm from "@/components/QuoteForm";
 import { getCms, getFeatures, getServices, getSettings } from "@/lib/cms";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Get a quote",
-  description: "Tell us which services you need and we'll send you a quote.",
-};
+  description:
+    "Request a quote from Zirka Digital Solutions: choose the services you need, tell us your budget, and we'll reply with a clear price.",
+  path: "/quote",
+});
 
 type Props = { searchParams: Promise<{ service?: string }> };
 

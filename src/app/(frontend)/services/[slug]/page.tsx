@@ -19,6 +19,7 @@ import {
 import { relatedServices } from "@/lib/related";
 import ServiceCard from "@/components/ServiceCard";
 import { serviceSchema, breadcrumbSchema } from "@/lib/schema";
+import { pageMeta } from "@/lib/seo";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -32,16 +33,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const service = await getService(slug);
   if (!service) return { title: "Service not found" };
-  return {
-    title: service.name,
-    description: service.short,
-    alternates: { canonical: `/services/${service.slug}` },
-    openGraph: {
-      title: `${service.name} | Zirka Digital Solutions`,
-      description: service.short,
-      images: [{ url: service.image }],
-    },
-  };
+  // The one-line summary alone is often under 70 characters — too thin for a
+  // search snippet — so shorter ones gain a line on who delivers it.
+  const description =
+    service.short.length < 100
+      ? `${service.short} From Zirka Digital Solutions — start with a free marketing audit.`
+      : `${service.short} From Zirka Digital Solutions.`;
+  return pageMeta({ title: service.name, description, path: `/services/${service.slug}`, image: service.image });
 }
 
 export default async function ServicePage({ params }: Props) {

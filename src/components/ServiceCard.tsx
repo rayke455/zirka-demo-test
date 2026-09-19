@@ -24,7 +24,7 @@ export default function ServiceCard({ service }: { service: ServiceView }) {
           )}
         </div>
         <Link className="explore" href={`/services/${service.slug}`}>
-          Learn More
+          Learn More<span className="sr-only"> about {service.name}</span>
           <ArrowIcon />
         </Link>
       </div>

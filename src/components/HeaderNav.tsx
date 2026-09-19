@@ -43,108 +43,113 @@ export default function HeaderNav({ categories }: { categories: NavCategory[] })
   }, [servicesOpen]);
 
   return (
-    <header className="site">
-      <div className="navrow">
-        <Link className="wordmark" href="/" aria-label="Zirka Digital Solutions — home">
-          {/* Declared at display size so the optimizer serves a ~110px file, not a 1920px one. */}
-          <Image
-            className="mark"
-            src="/images/logo-mark.png"
-            alt=""
-            width={55}
-            height={38}
-            loading="eager"
-            fetchPriority="high"
-          />
-          <span className="lockup">
-            <span className="name">Zirka</span>
-            <span className="sub">Digital Solutions</span>
-          </span>
-        </Link>
-        <ul className="links">
-          <li className="nav-services" ref={servicesRef}>
+    <>
+      <header className="site">
+        <div className="navrow">
+          <Link className="wordmark" href="/">
+            {/* Declared at display size so the optimizer serves a ~110px file, not a 1920px one. */}
+            <Image
+              className="mark"
+              src="/images/logo-mark.png"
+              alt=""
+              width={55}
+              height={38}
+              loading="eager"
+              fetchPriority="high"
+            />
+            <span className="lockup">
+              <span className="name">Zirka</span>{" "}
+              <span className="sub">Digital Solutions</span>
+            </span>
+          </Link>
+          <ul className="links">
+            <li className="nav-services" ref={servicesRef}>
+              <button
+                type="button"
+                className="nav-services__toggle"
+                aria-expanded={servicesOpen}
+                aria-controls={menuId}
+                onClick={() => setServicesOpen((v) => !v)}
+              >
+                Services
+                <span className="nav-services__chevron" aria-hidden="true" />
+              </button>
+              <div className="nav-services__menu" id={menuId} hidden={!servicesOpen}>
+                <ul>
+                  {categories.map((c) => (
+                    <li key={c.slug}>
+                      <Link href={`/services#${c.slug}`}>
+                        <strong>{c.name}</strong>
+                        <span>{c.description}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+                <Link className="nav-services__all" href="/services">
+                  All services &rarr;
+                </Link>
+              </div>
+            </li>
+            {NAV_LINKS.map((link) => (
+              <li key={link.href}>
+                <Link href={link.href}>{link.label}</Link>
+              </li>
+            ))}
+          </ul>
+          <div className="nav-right">
+            <ThemeToggle />
+            <Link
+              className="btn btn-gold nav-cta"
+              href="/free-marketing-audit"
+              data-track="main_cta_click"
+            >
+              Get a Free Marketing Audit
+            </Link>
             <button
               type="button"
-              className="nav-services__toggle"
-              aria-expanded={servicesOpen}
-              aria-controls={menuId}
-              onClick={() => setServicesOpen((v) => !v)}
+              className="menu-toggle"
+              aria-expanded={open}
+              aria-label={open ? "Close menu" : "Open menu"}
+              onClick={() => setOpen((v) => !v)}
             >
-              Services
-              <span className="nav-services__chevron" aria-hidden="true" />
+              {open ? <CloseIcon /> : <MenuIcon />}
             </button>
-            <div className="nav-services__menu" id={menuId} hidden={!servicesOpen}>
-              <ul>
-                {categories.map((c) => (
-                  <li key={c.slug}>
-                    <Link href={`/services#${c.slug}`}>
-                      <strong>{c.name}</strong>
-                      <span>{c.description}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-              <Link className="nav-services__all" href="/services">
-                All services &rarr;
-              </Link>
-            </div>
-          </li>
-          {NAV_LINKS.map((link) => (
-            <li key={link.href}>
-              <Link href={link.href}>{link.label}</Link>
-            </li>
-          ))}
-        </ul>
-        <div className="nav-right">
-          <ThemeToggle />
-          <Link
-            className="btn btn-gold nav-cta"
-            href="/free-marketing-audit"
-            data-track="main_cta_click"
-          >
-            Get a Free Marketing Audit
-          </Link>
-          <button
-            type="button"
-            className="menu-toggle"
-            aria-expanded={open}
-            aria-label={open ? "Close menu" : "Open menu"}
-            onClick={() => setOpen((v) => !v)}
-          >
-            {open ? <CloseIcon /> : <MenuIcon />}
-          </button>
+          </div>
         </div>
-      </div>
-      {open && (
-        <nav className="mobile-panel">
-          <Link href="/services" onClick={() => setOpen(false)}>
-            Services
-          </Link>
-          {categories.map((c) => (
+        {open && (
+          <nav className="mobile-panel">
+            <Link href="/services" onClick={() => setOpen(false)}>
+              Services
+            </Link>
+            {categories.map((c) => (
+              <Link
+                key={c.slug}
+                className="mobile-sub"
+                href={`/services#${c.slug}`}
+                onClick={() => setOpen(false)}
+              >
+                {c.name}
+              </Link>
+            ))}
+            {NAV_LINKS.map((link) => (
+              <Link key={link.href} href={link.href} onClick={() => setOpen(false)}>
+                {link.label}
+              </Link>
+            ))}
             <Link
-              key={c.slug}
-              className="mobile-sub"
-              href={`/services#${c.slug}`}
+              className="btn btn-gold mobile-cta"
+              href="/free-marketing-audit"
+              data-track="main_cta_click"
               onClick={() => setOpen(false)}
             >
-              {c.name}
+              Get a Free Marketing Audit
             </Link>
-          ))}
-          {NAV_LINKS.map((link) => (
-            <Link key={link.href} href={link.href} onClick={() => setOpen(false)}>
-              {link.label}
-            </Link>
-          ))}
-          <Link
-            className="btn btn-gold mobile-cta"
-            href="/free-marketing-audit"
-            data-track="main_cta_click"
-            onClick={() => setOpen(false)}
-          >
-            Get a Free Marketing Audit
-          </Link>
-        </nav>
-      )}
-    </header>
+          </nav>
+        )}
+      </header>
+      {/* Where "Skip to content" lands: just past the navigation, which on this
+          site sits inside each page's hero rather than above <main>. */}
+      <span id="content" tabIndex={-1} className="skip-target" />
+    </>
   );
 }

@@ -29,10 +29,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     template: "%s | Zirka Digital Solutions",
-    default: "Zirka Digital Solutions — Where Ideas Become Impact",
+    default: "Zirka Digital Solutions | Digital Marketing Agency",
   },
   description,
-  alternates: { canonical: "./" },
   openGraph: {
     type: "website",
     siteName: "Zirka Digital Solutions",
@@ -59,7 +58,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body suppressHydrationWarning>
-        {children}
+        <a className="skip-link" href="#content">
+          Skip to content
+        </a>
+        <main id="main">{children}</main>
         <Footer />
         <PageTracker />
         <PreviewBadge />

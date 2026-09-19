@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import CtaBand from "@/components/CtaBand";
 import { ArrowIcon } from "@/components/Icons";
 import { getCaseStudy } from "@/lib/cms";
+import { pageMeta } from "@/lib/seo";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -13,12 +14,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const study = await getCaseStudy(slug);
   if (!study) return { title: "Case study not found" };
-  return {
+  return pageMeta({
     // A concept's metric is illustrative, so it must never reach a search result.
     title: study.sample ? `${study.name} — Concept Project` : `${study.name} — ${study.metric}`,
     description: study.summary,
-    openGraph: { images: [{ url: study.heroImage }] },
-  };
+    path: `/work/${study.slug}`,
+    image: study.heroImage,
+  });
 }
 
 export default async function CaseStudyPage({ params }: Props) {

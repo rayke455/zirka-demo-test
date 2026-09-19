@@ -6,13 +6,14 @@ import JsonLd from "@/components/JsonLd";
 import { breadcrumbSchema } from "@/lib/schema";
 import { getFeatures } from "@/lib/cms";
 import { notFound } from "next/navigation";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Pricing",
   description:
     "Zirka Digital Solutions pricing: monthly marketing plans from $950, and one-off projects including websites, branding, SEO audits and automation.",
-  alternates: { canonical: "/pricing" },
-};
+  path: "/pricing",
+});
 
 export default async function PricingPage() {
   // The same switch that hides pricing on the homepage hides this page, so the

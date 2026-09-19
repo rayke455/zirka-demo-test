@@ -4,13 +4,14 @@ import AuditForm from "@/components/AuditForm";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbSchema } from "@/lib/schema";
 import { getFeatures, getSettings } from "@/lib/cms";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Free Marketing Audit",
   description:
-    "Request a free marketing audit from Zirka Digital Solutions. We review your website, search visibility and lead generation, and send you the biggest opportunities we find.",
-  alternates: { canonical: "/free-marketing-audit" },
-};
+    "Request a free marketing audit. We review your website, search visibility and lead generation, and send you the biggest opportunities we find.",
+  path: "/free-marketing-audit",
+});
 
 /** What the audit covers (brief §8). Deliberately no promise of results. */
 const COVERS = [

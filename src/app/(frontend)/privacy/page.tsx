@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
 import PageHeader from "@/components/PageHeader";
 import { getSettings } from "@/lib/cms";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Privacy",
-  description: "What information Zirka Digital Solutions collects through this website, and what we do with it.",
-};
+  description:
+    "What information Zirka Digital Solutions collects through this website, why, how long it is kept, and the choices you have.",
+  path: "/privacy",
+});
 
 // Written to match what the site actually does. If the site starts collecting
-// something new (email marketing, ad pixels, third-party analytics), update this page.
+// something new (email marketing, ad pixels, third-party analytics), update this page —
+// including anything Cloudflare adds from its dashboard, which bypasses this codebase.
 const LAST_UPDATED = "September 2026";
 
 export default async function PrivacyPage() {
@@ -28,10 +32,18 @@ export default async function PrivacyPage() {
 
           <h2>When you send us an enquiry</h2>
           <p>
-            If you use the contact form, we store what you type into it: your name, email address,
-            company, budget range and message. We use it only to reply to you and to follow up on
-            the conversation you started. It is visible to our team and to no one else, and we do
-            not sell it or add you to a mailing list.
+            Our forms store what you type into them. Depending on the form, that is your name,
+            email address, phone or WhatsApp number, business name, website, main marketing goal,
+            budget range, the services you are interested in, a preferred call time, and your
+            message. We use it only to reply to you and to follow up on the conversation you
+            started. It is visible to our team and to no one else, and we do not sell it or add
+            you to a mailing list.
+          </p>
+          <p>
+            If you arrived through a link from one of our campaigns, the free-audit form also
+            records the campaign tags in that link (such as utm_source), the page you landed on
+            and the website that referred you — the domain only. This tells us which campaigns
+            bring enquiries; it is saved with your enquiry and nowhere else.
           </p>
 
           <h2>When you browse the site</h2>
@@ -41,12 +53,19 @@ export default async function PrivacyPage() {
             the full link.
           </p>
           <p>
-            Nothing is written to your device. No cookie, no visit ID, nothing kept in your
-            browser&rsquo;s storage. We do not record your IP address and we use no third-party
-            analytics or advertising pixels. Because we store nothing on your device and hold
-            nothing that identifies you, the site does not ask you to accept anything before you
-            read it. The trade-off is ours: we cannot tell whether two page views came from the
-            same person.
+            Nothing is written to your device for this. No cookie, no visit ID, nothing kept in
+            your browser&rsquo;s storage, and we do not record your IP address. We use no
+            advertising pixels. The trade-off is ours: we cannot tell whether two page views came
+            from the same person.
+          </p>
+
+          <h2>Our hosting and network providers</h2>
+          <p>
+            The site is hosted by Vercel and served through Cloudflare, which protect it and make
+            it load faster. Like any network provider, they handle your IP address in order to
+            deliver the page to you. Cloudflare also measures visits with Cloudflare Web Analytics,
+            which it describes as not using cookies and not tracking you across other websites.
+            Their own privacy policies apply to that processing.
           </p>
 
           <h2>Protecting the site from abuse</h2>

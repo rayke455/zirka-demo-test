@@ -1,41 +1,91 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import PageHeader from "@/components/PageHeader";
 import ContactForm from "@/components/ContactForm";
 import { getSettings, getFeatures } from "@/lib/cms";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Contact",
-  description: "Get in touch with Zirka Digital Solutions — tell us what you're trying to solve.",
-};
+  description:
+    "Get in touch with Zirka Digital Solutions. Tell us what you're trying to solve, or request a free marketing audit.",
+  path: "/contact",
+});
 
 export default async function ContactPage() {
   const [settings, features] = await Promise.all([getSettings(), getFeatures()]);
 
+  const digits = settings.whatsapp.replace(/\D/g, "");
+  const whatsapp = `https://wa.me/${digits}`;
+
   return (
     <>
       <PageHeader
-        eyebrow="Get in touch"
-        title="Ready to find your direction?"
-        lede="Tell us about the business and the number you're trying to move. A strategist reads every message personally — no form-fill funnel."
+        eyebrow="Contact"
+        title="Let's talk about your marketing."
+        lede="Choose whichever suits you: a free audit of your current marketing, a call with a strategist, or a message on WhatsApp. You'll talk directly with a Zirka strategist."
       />
+
+      {/* The three routes from brief §15, in order of how much we learn up front. */}
+      <section className="section--flow contact-routes-section">
+        <div className="wrap">
+          <div className="contact-routes">
+            <article className="contact-route contact-route--primary">
+              <h2>Request a Free Marketing Audit</h2>
+              <p>
+                We review your website and current marketing, then send you the biggest
+                opportunities we find. Free, with no obligation.
+              </p>
+              <Link className="btn btn-gold" href="/free-marketing-audit" data-track="main_cta_click">
+                Get a Free Marketing Audit
+              </Link>
+            </article>
+            <article className="contact-route">
+              <h2>Talk to a Strategist</h2>
+              <p>
+                {features.bookingEnabled
+                  ? "Book a free 30-minute call at a time that suits you."
+                  : "Message us to arrange a call at a time that suits you."}
+              </p>
+              {features.bookingEnabled ? (
+                <Link className="btn btn-outline" href="/book">
+                  Book a call
+                </Link>
+              ) : (
+                <a className="btn btn-outline" href={whatsapp} target="_blank" rel="noopener noreferrer">
+                  Arrange a call
+                </a>
+              )}
+            </article>
+            <article className="contact-route">
+              <h2>Contact via WhatsApp</h2>
+              <p>Message us and talk directly with a Zirka strategist.</p>
+              <a className="btn btn-outline" href={whatsapp} target="_blank" rel="noopener noreferrer">
+                Message {settings.phoneDisplay || `+${digits}`}
+              </a>
+            </article>
+          </div>
+        </div>
+      </section>
 
       <section>
         <div className="wrap contact-grid">
-          {features.contactFormEnabled ? (
-            <ContactForm />
-          ) : (
-            <div className="success-note">
-              <h3>Message us directly</h3>
-              <p>
-                The easiest way to reach a strategist is on WhatsApp or by using the details
-                alongside. Tell us about the business and the number you&rsquo;re trying to move.
+          <div>
+            <h2 className="index-heading">Or send us a message</h2>
+            {features.contactFormEnabled ? (
+              <ContactForm />
+            ) : (
+              <p className="success-note">
+                The message form is closed at the moment — please use WhatsApp or the details
+                alongside.
               </p>
-            </div>
-          )}
+            )}
+          </div>
           <div className="contact-info">
+            <h2 className="index-heading">Contact details</h2>
             <div className="info-block">
               <h3>WhatsApp</h3>
-              <a href={`https://wa.me/${settings.whatsapp}`}>{settings.phoneDisplay}</a>
+              <a href={whatsapp}>{settings.phoneDisplay}</a>
             </div>
             {settings.email && (
               <div className="info-block">
@@ -43,18 +93,22 @@ export default async function ContactPage() {
                 <a href={`mailto:${settings.email}`}>{settings.email}</a>
               </div>
             )}
-            <div className="info-block">
-              <h3>Social</h3>
-              <p>
-                Facebook &amp; Instagram
-                <br />
-                {settings.socialHandle}
-              </p>
-            </div>
-            <div className="info-block">
-              <h3>Hours</h3>
-              <p>{settings.hours}</p>
-            </div>
+            {settings.socialHandle && (
+              <div className="info-block">
+                <h3>Social</h3>
+                <p>
+                  Facebook &amp; Instagram
+                  <br />
+                  {settings.socialHandle}
+                </p>
+              </div>
+            )}
+            {settings.hours && (
+              <div className="info-block">
+                <h3>Hours</h3>
+                <p>{settings.hours}</p>
+              </div>
+            )}
           </div>
         </div>
       </section>

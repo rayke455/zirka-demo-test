@@ -4,11 +4,14 @@ import PageHeader from "@/components/PageHeader";
 import CtaBand from "@/components/CtaBand";
 import TeamSection from "@/components/TeamSection";
 import { getTeam, getValues, getFeatures, getSettings } from "@/lib/cms";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "About",
-  description: "Who Zirka Digital Solutions is and how we work.",
-};
+  description:
+    "Who Zirka Digital Solutions is, how we work and what we stand for: a digital marketing agency for growing businesses.",
+  path: "/about",
+});
 
 export default async function AboutPage() {
   const [team, values, features, settings] = await Promise.all([

@@ -26,8 +26,8 @@ export default function SolutionCategories({ categories }: { categories: Solutio
               ))}
             </ul>
           )}
-          <Link className="explore" href={`/services#${c.slug}`} aria-label={`Learn more about ${c.name}`}>
-            Learn More
+          <Link className="explore" href={`/services#${c.slug}`}>
+            Learn More<span className="sr-only"> about {c.name}</span>
             <ArrowIcon />
           </Link>
         </article>

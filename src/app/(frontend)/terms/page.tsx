@@ -2,11 +2,14 @@ import type { Metadata } from "next";
 import PageHeader from "@/components/PageHeader";
 import LegalBody from "@/components/LegalBody";
 import { getLegal } from "@/lib/cms";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Terms of service",
-  description: "The terms that cover work carried out by Zirka Digital Solutions.",
-};
+  description:
+    "The terms that apply when you work with Zirka Digital Solutions: scope, payment, ownership, and what each of us can expect.",
+  path: "/terms",
+});
 
 export default async function TermsPage() {
   const legal = await getLegal();

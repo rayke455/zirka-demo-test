@@ -4,11 +4,14 @@ import PageHeader from "@/components/PageHeader";
 import BookingWidget from "@/components/BookingWidget";
 import { getCms, getFeatures, getSettings } from "@/lib/cms";
 import { getAvailability } from "@/lib/booking";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Talk to a Strategist",
-  description: "Book a free 30-minute call with a Zirka strategist — honest advice, no obligation.",
-};
+  description:
+    "Book a free 30-minute call with a Zirka strategist — honest advice about your marketing, with no obligation.",
+  path: "/book",
+});
 
 // Availability changes with every booking, so never serve a cached page.
 export const dynamic = "force-dynamic";

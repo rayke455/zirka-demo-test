@@ -3,16 +3,26 @@ import PageHeader from "@/components/PageHeader";
 import CtaBand from "@/components/CtaBand";
 import WorkCard from "@/components/WorkCard";
 import { getCaseStudies } from "@/lib/cms";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Work",
-  description: "Case studies and results from Zirka Digital Solutions client engagements.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const work = await getCaseStudies();
+  // Describe what is really on the page: no "results" while there are only concepts.
+  return pageMeta({
+    title: "Work",
+    description: work.some((w) => !w.sample)
+      ? "Client case studies from Zirka Digital Solutions — the challenge, what we did and the result — alongside concept projects."
+      : "Concept projects from Zirka Digital Solutions showing the strategy and creative direction we bring to digital marketing work.",
+    path: "/work",
+  });
+}
 
 export default async function WorkPage() {
   const work = await getCaseStudies();
   // Only claim measured outcomes when there is real, documented work to back it.
   const hasRealWork = work.some((w) => !w.sample);
+  const real = work.filter((w) => !w.sample);
+  const concepts = work.filter((w) => w.sample);
 
   return (
     <>
@@ -29,11 +39,29 @@ export default async function WorkPage() {
       <section>
         <div className="wrap">
           {work.length > 0 ? (
-            <div className="work-grid wide">
-              {work.map((item) => (
-                <WorkCard item={item} showSummary key={item.name} />
-              ))}
-            </div>
+            <>
+              {/* Real work and concepts kept in separate groups (brief §4). */}
+              {real.length > 0 && (
+                <>
+                  <h2 className="index-heading">Client case studies</h2>
+                  <div className="work-grid wide">
+                    {real.map((item) => (
+                      <WorkCard item={item} showSummary key={item.name} />
+                    ))}
+                  </div>
+                </>
+              )}
+              {concepts.length > 0 && (
+                <div className={real.length > 0 ? "work-group--spaced" : undefined}>
+                  <h2 className="index-heading">Concept projects</h2>
+                  <div className="work-grid wide">
+                    {concepts.map((item) => (
+                      <WorkCard item={item} showSummary key={item.name} />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
           ) : (
             <div className="booking-empty">
               <h2>Case studies coming soon</h2>
@@ -46,7 +74,7 @@ export default async function WorkPage() {
         </div>
       </section>
 
-      <CtaBand heading="Want results like these?" />
+      <CtaBand heading={hasRealWork ? "Want results like these?" : "Want work like this?"} />
     </>
   );
 }

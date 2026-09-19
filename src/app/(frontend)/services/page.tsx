@@ -6,13 +6,14 @@ import ServiceCard from "@/components/ServiceCard";
 import JsonLd from "@/components/JsonLd";
 import { getServices, getSolutionCategories } from "@/lib/cms";
 import { breadcrumbSchema } from "@/lib/schema";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Services",
   description:
     "Digital advertising, social media, websites, SEO, content, WhatsApp marketing, AI automation and more — every service Zirka Digital Solutions offers.",
-  alternates: { canonical: "/services" },
-};
+  path: "/services",
+});
 
 export default async function ServicesPage() {
   const [services, categories] = await Promise.all([getServices(), getSolutionCategories()]);

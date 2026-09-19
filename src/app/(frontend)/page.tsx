@@ -14,6 +14,8 @@ import Faq from "@/components/Faq";
 import CtaBand from "@/components/CtaBand";
 import JsonLd from "@/components/JsonLd";
 import { organizationSchema } from "@/lib/schema";
+import { pageMeta } from "@/lib/seo";
+import type { Metadata } from "next";
 import {
   getServices,
   getCaseStudies,
@@ -22,6 +24,12 @@ import {
   getFeatures,
   getSolutionCategories,
 } from "@/lib/cms";
+
+export const metadata: Metadata = pageMeta({
+  description:
+    "Zirka Digital Solutions helps growing businesses generate more leads and revenue through paid advertising, SEO, websites, content and automation.",
+  path: "/",
+});
 
 /** Split the headline so the emphasised word can carry the accent colour. */
 function Headline({ text, emphasis }: { text: string; emphasis: string }) {
