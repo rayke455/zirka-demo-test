@@ -8,7 +8,16 @@ import WorkCard from "@/components/WorkCard";
 import JsonLd from "@/components/JsonLd";
 import VideoEmbed, { hasVideo } from "@/components/VideoEmbed";
 import { CheckIcon, ArrowIcon } from "@/components/Icons";
-import { getService, getServices, getServiceSitemap, getSettings } from "@/lib/cms";
+import {
+  getService,
+  getServices,
+  getServiceSitemap,
+  getSettings,
+  getSolutionCategories,
+  getProcessSteps,
+} from "@/lib/cms";
+import { relatedServices } from "@/lib/related";
+import ServiceCard from "@/components/ServiceCard";
 import { serviceSchema, breadcrumbSchema } from "@/lib/schema";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -37,19 +46,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ServicePage({ params }: Props) {
   const { slug } = await params;
-  const [service, settings, all] = await Promise.all([
+  const [service, settings, all, categories, steps] = await Promise.all([
     getService(slug),
     getSettings(),
     getServices(),
+    getSolutionCategories(),
+    getProcessSteps(),
   ]);
   if (!service) notFound();
 
-  const others = all.filter((s) => s.slug !== service.slug);
-
-  const paragraphs = service.description
-    .split(/\n\s*\n/)
-    .map((p) => p.trim())
-    .filter(Boolean);
+  const related = relatedServices(service.slug, categories, all);
+  const hasRealWork = service.relatedWork.some((w) => !w.sample);
+  const paras = (text: string) =>
+    text
+      .split(/\n\s*\n/)
+      .map((p) => p.trim())
+      .filter(Boolean);
 
   return (
     <>
@@ -97,11 +109,22 @@ export default async function ServicePage({ params }: Props) {
         </div>
       </div>
 
+      {/* Brief §21: problem, solution, what's included, process, proof, FAQ, related. */}
       <section className="section--flow">
         <div className="wrap">
           <div className="service-page">
-            <div className="service-page__intro">
-              {paragraphs.map((p, i) => (
+            {service.problem && (
+              <div className="service-page__block service-page__intro">
+                <h2>The problem</h2>
+                {paras(service.problem).map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
+              </div>
+            )}
+
+            <div className="service-page__block service-page__intro">
+              <h2>Our solution</h2>
+              {paras(service.description).map((p, i) => (
                 <p key={i}>{p}</p>
               ))}
               {service.outcomes && <div className="outcome">{service.outcomes}</div>}
@@ -132,14 +155,32 @@ export default async function ServicePage({ params }: Props) {
         </div>
       </section>
 
+      {steps.length > 0 && (
+        <section className="section--panel">
+          <div className="wrap">
+            <div className="section-head">
+              <div>
+                <span className="eyebrow">Our process</span>
+                <h2>How we&rsquo;ll work on it.</h2>
+              </div>
+            </div>
+            <div className="approach">
+              {steps.map((step) => (
+                <div className="step" key={step.name}>
+                  <span className="idx">{step.idx}</span>
+                  <h3>{step.name}</h3>
+                  <p>{step.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {service.relatedWork.length > 0 && (
         <section className="section--flow">
           <div className="wrap">
-            <h2 className="index-heading">
-              {service.relatedWork.some((w) => !w.sample)
-                ? "Where we’ve done this"
-                : "Related concept projects"}
-            </h2>
+            <h2 className="index-heading">{hasRealWork ? "Proof" : "Related concept projects"}</h2>
             <div className="work-grid wide">
               {service.relatedWork.map((item) => (
                 <WorkCard item={item} key={item.slug} />
@@ -149,23 +190,49 @@ export default async function ServicePage({ params }: Props) {
         </section>
       )}
 
-      {others.length > 0 && (
-        <section className="section--index">
+      {service.faqs.length > 0 && (
+        <section className="section--flow">
           <div className="wrap">
-            <h2 className="index-heading">Other services</h2>
-            <ol className="service-index">
-              {others.map((other, i) => (
-                <li key={other.slug}>
-                  <Link href={`/services/${other.slug}`}>
-                    <span className="service-index__num">{String(i + 1).padStart(2, "0")}</span>
-                    <span className="service-index__name">{other.name}</span>
-                    <span className="service-index__count">
-                      {other.capabilities.length} included
-                    </span>
-                  </Link>
-                </li>
+            <div className="section-head">
+              <div>
+                <span className="eyebrow">Questions</span>
+                <h2>About {service.name}.</h2>
+              </div>
+            </div>
+            <div className="faq-list">
+              {service.faqs.map((f, i) => (
+                <details key={f.q} name={`faq-${service.slug}`} open={i === 0}>
+                  <summary>
+                    {f.q}
+                    <span className="faq-icon" aria-hidden="true" />
+                  </summary>
+                  <p>{f.a}</p>
+                </details>
               ))}
-            </ol>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {related.length > 0 && (
+        <section className="section--flow">
+          <div className="wrap">
+            <div className="section-head">
+              <div>
+                <span className="eyebrow">Related services</span>
+                <h2>Often paired with {service.name}.</h2>
+              </div>
+            </div>
+            <div className="service-grid">
+              {related.map((r) => (
+                <ServiceCard service={r} key={r.slug} />
+              ))}
+            </div>
+            <div style={{ marginTop: 32 }}>
+              <Link className="btn btn-outline" href="/services">
+                See all {all.length} services
+              </Link>
+            </div>
           </div>
         </section>
       )}

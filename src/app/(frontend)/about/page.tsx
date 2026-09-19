@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import PageHeader from "@/components/PageHeader";
 import CtaBand from "@/components/CtaBand";
+import TeamSection from "@/components/TeamSection";
 import { getTeam, getValues, getFeatures, getSettings } from "@/lib/cms";
 
 export const metadata: Metadata = {
@@ -66,34 +67,7 @@ export default async function AboutPage() {
         </section>
       )}
 
-      {features.showLeadership && team.length > 0 && (
-        <section className="section--flow">
-          <div className="wrap">
-            <div className="section-head">
-              <div>
-                <span className="eyebrow">The team</span>
-                <h2>The people you&rsquo;ll work with.</h2>
-              </div>
-            </div>
-            <div className="team-grid">
-              {team.map((member) => (
-                <div className="team-card" key={member.name}>
-                  <div className="portrait">
-                    <Image
-                      src={member.image}
-                      alt={`${member.name}, ${member.role} at Zirka`}
-                      fill
-                      sizes="(max-width: 480px) 100vw, (max-width: 860px) 50vw, 25vw"
-                    />
-                  </div>
-                  <h3>{member.name}</h3>
-                  <span className="role">{member.role}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+      {features.showLeadership && <TeamSection team={team} />}
 
       <CtaBand heading="Want to work together?" />
     </>

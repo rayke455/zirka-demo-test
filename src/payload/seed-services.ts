@@ -35,6 +35,7 @@ export async function seedServices(payload: Payload) {
         order: i,
         core: s.core,
         short: s.short,
+        problem: s.problem,
         description: s.description,
         capabilities: s.capabilities.map((label) => ({ label })),
         accent: s.plate,

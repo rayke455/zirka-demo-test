@@ -30,13 +30,6 @@ const WORK_FALLBACK: Record<string, string> = {
   "Meridian Legal": "/images/work-legal.jpg",
 };
 
-const TEAM_FALLBACK: Record<string, string> = {
-  "Dara Osei": "/images/team-dara.jpg",
-  "Marcus Wren": "/images/team-marcus.jpg",
-  "Imogen Castellan": "/images/team-imogen.jpg",
-  "Teo Alvarez": "/images/team-teo.jpg",
-};
-
 const PLACEHOLDER = "/images/svc-performance.jpg";
 
 const published = { _status: { equals: "published" } };
@@ -175,6 +168,9 @@ export const getCaseStudy = async (slug: string): Promise<CaseStudyView | null> 
 };
 
 export type ServiceDetailView = ServiceView & {
+  /** What is going wrong for the business before Zirka is involved (brief §21). */
+  problem: string;
+  faqs: { q: string; a: string }[];
   /** Case studies tagged with this service, so the page can prove the claim. */
   relatedWork: WorkView[];
 };
@@ -199,7 +195,10 @@ export const getService = async (slug: string): Promise<ServiceDetailView | null
 
   return {
     ...toServiceView(service),
-    relatedWork: (studies as CaseStudy[]).map(toWorkView),
+    problem: service.problem ?? "",
+    faqs: (service.faqs ?? []).map((f) => ({ q: f.question, a: f.answer })),
+    // Real client work first: it is proof. Concepts only illustrate.
+    relatedWork: (studies as CaseStudy[]).map(toWorkView).sort((a, b) => Number(a.sample) - Number(b.sample)),
   };
 };
 
@@ -219,15 +218,34 @@ export const getServiceSitemap = async () => {
     .map((d) => ({ slug: d.slug as string, updatedAt: d.updatedAt }));
 };
 
-export type TeamView = { name: string; role: string; image: string };
+export type TeamView = {
+  name: string;
+  role: string;
+  image: string;
+  bio: string;
+  experience: string;
+  certifications: string[];
+  linkedin: string;
+};
 
+/**
+ * Published team members with a real uploaded photo (brief §3). There is no
+ * fallback image on purpose: a person without a photo is left out rather than
+ * shown with a placeholder, stock or generated face.
+ */
 export const getTeam = async (): Promise<TeamView[]> => {
   const docs = await findAll<TeamMember>("team-members");
-  return docs.map((m) => ({
-    name: m.name,
-    role: m.role,
-    image: urlOf(m.photo as MediaLike, TEAM_FALLBACK[m.name] ?? PLACEHOLDER),
-  }));
+  return docs
+    .filter((m) => urlOf(m.photo as MediaLike, "") !== "")
+    .map((m) => ({
+      name: m.name,
+      role: m.role,
+      image: urlOf(m.photo as MediaLike, ""),
+      bio: m.bio ?? "",
+      experience: m.experience ?? "",
+      certifications: (m.certifications ?? []).map((c) => c.name).filter(Boolean),
+      linkedin: m.linkedin ?? "",
+    }));
 };
 
 /** Published case study addresses with their last edit, for the sitemap. */
@@ -283,17 +301,44 @@ export const getProjectPricing = async () => {
   return docs.map((p) => ({ name: p.name, price: p.price, note: p.note ?? "" }));
 };
 
-export const getFeaturedTestimonial = async () => {
+export type TestimonialView = {
+  quote: string;
+  name: string;
+  role: string;
+  company: string;
+  photo: string;
+  logo: string;
+  result: string;
+  caseStudy: { name: string; slug: string } | null;
+};
+
+/**
+ * Published testimonials, featured first (brief §7). Returns an empty list
+ * rather than anything to fill the space when there are none.
+ */
+export const getTestimonials = async (limit = 3): Promise<TestimonialView[]> => {
   const payload = await getCms();
   const { docs } = await payload.find({
     collection: "testimonials",
-    limit: 1,
-    depth: 0,
-    where: { and: [published, { featured: { equals: true } }] },
+    limit,
+    depth: 1,
+    sort: ["-featured", "-createdAt"],
+    where: published,
   });
-  const t = docs[0] as Testimonial | undefined;
-  if (!t) return null;
-  return { quote: t.quote, name: t.name, role: t.role ?? "", company: t.company };
+  return (docs as Testimonial[]).map((t) => {
+    const cs = t.caseStudy && typeof t.caseStudy === "object" ? t.caseStudy : null;
+    return {
+      quote: t.quote,
+      name: t.name,
+      role: t.role ?? "",
+      company: t.company,
+      photo: urlOf(t.photo as MediaLike, ""),
+      logo: urlOf(t.logo as MediaLike, ""),
+      result: t.result ?? "",
+      // Only link a case study that is itself published.
+      caseStudy: cs && cs._status === "published" && cs.slug ? { name: cs.name, slug: cs.slug } : null,
+    };
+  });
 };
 
 const FEATURE_DEFAULTS = {

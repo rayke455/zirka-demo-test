@@ -188,7 +188,11 @@ export interface Service {
    */
   short: string;
   /**
-   * The longer version, shown on the services page.
+   * What is going wrong for a business before they come to you. Shown first on the service page (brief §21).
+   */
+  problem?: string | null;
+  /**
+   * How Zirka solves that problem. Also shown on the services page.
    */
   description: string;
   /**
@@ -198,6 +202,16 @@ export interface Service {
   capabilities?:
     | {
         label: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Questions specific to this service. Answer honestly — never promise rankings, revenue or results (brief §14). The section is hidden while empty.
+   */
+  faqs?:
+    | {
+        question: string;
+        answer: string;
         id?: string | null;
       }[]
     | null;
@@ -375,7 +389,7 @@ export interface CaseStudy {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * People shown on the about page.
+ * Real team members only — never stock, AI-generated or placeholder people (brief §3). Someone appears on the site only when they are published, have a real photo, and Features → Leadership is switched on.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "team-members".
@@ -389,15 +403,33 @@ export interface TeamMember {
   role: string;
   order?: number | null;
   /**
-   * A real photo of this person — square crops work best.
+   * A real photo of this person — square crops work best. Without one they are not shown, rather than showing a placeholder.
    */
   photo?: (number | null) | Media;
+  /**
+   * Two or three sentences, in plain language.
+   */
+  bio?: string | null;
+  /**
+   * e.g. "Eight years running paid search for retail brands."
+   */
+  experience?: string | null;
+  /**
+   * Only certifications this person actually holds and can show.
+   */
+  certifications?:
+    | {
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
+  linkedin?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Only publish quotes a client has actually given you.
+ * Genuine testimonials only, supplied by the client (brief §7) — never written for them. Published ones appear on the homepage when Features → Testimonial is on.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "testimonials".
@@ -412,7 +444,23 @@ export interface Testimonial {
   role?: string | null;
   company: string;
   /**
-   * Show this one in the big quote on the homepage.
+   * Optional, and only with their permission.
+   */
+  photo?: (number | null) | Media;
+  /**
+   * Optional, and only with their permission.
+   */
+  logo?: (number | null) | Media;
+  /**
+   * Optional, and only if documented, e.g. "42% more enquiries in 3 months".
+   */
+  result?: string | null;
+  /**
+   * Optional link to the full story.
+   */
+  caseStudy?: (number | null) | CaseStudy;
+  /**
+   * Shown first when there is more than one.
    */
   featured?: boolean | null;
   updatedAt: string;
@@ -817,12 +865,20 @@ export interface ServicesSelect<T extends boolean = true> {
   videoTitle?: T;
   core?: T;
   short?: T;
+  problem?: T;
   description?: T;
   outcomes?: T;
   capabilities?:
     | T
     | {
         label?: T;
+        id?: T;
+      };
+  faqs?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
         id?: T;
       };
   image?: T;
@@ -887,6 +943,15 @@ export interface TeamMembersSelect<T extends boolean = true> {
   role?: T;
   order?: T;
   photo?: T;
+  bio?: T;
+  experience?: T;
+  certifications?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
+  linkedin?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -900,6 +965,10 @@ export interface TestimonialsSelect<T extends boolean = true> {
   name?: T;
   role?: T;
   company?: T;
+  photo?: T;
+  logo?: T;
+  result?: T;
+  caseStudy?: T;
   featured?: T;
   updatedAt?: T;
   createdAt?: T;

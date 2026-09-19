@@ -17,6 +17,8 @@ export type Service = {
   slug: string;
   name: string;
   short: string;
+  /** The customer's situation before Zirka (brief §21). Describes, never claims. */
+  problem: string;
   description: string;
   capabilities: string[];
   core: boolean;
@@ -30,6 +32,8 @@ export type Service = {
 export const services: Service[] = [
   {
     slug: "digital-advertising",
+    problem:
+      "You're paying for ads but can't say which ones bring in customers. Budget spreads across platforms with no clear picture of what each dollar returns, so it's hard to know whether to spend more or stop.",
     name: "Digital Advertising",
     short: "Paid campaigns on the platforms your customers actually use, built to bring in leads and sales.",
     description:
@@ -52,6 +56,8 @@ export const services: Service[] = [
   },
   {
     slug: "social-media-management",
+    problem:
+      "Your channels go quiet for weeks, then get a burst of posts whenever someone finds the time. Without a plan or a consistent look, followers don't know what to expect, and the channels rarely lead to enquiries.",
     name: "Social Media Management",
     short: "Consistent, on-brand social channels your audience wants to follow.",
     description:
@@ -75,6 +81,8 @@ export const services: Service[] = [
   },
   {
     slug: "website-development",
+    problem:
+      "Your website looks dated, loads slowly on phones, or doesn't make it obvious what you do and how to get in touch — so visitors leave before they ever enquire.",
     name: "Website Development",
     short: "Fast, professional websites designed to turn visitors into enquiries.",
     description:
@@ -98,6 +106,8 @@ export const services: Service[] = [
   },
   {
     slug: "seo-online-visibility",
+    problem:
+      "When customers search for what you offer, competitors show up and you don't — on Google or on the map. Each of those searches is someone ready to buy, going somewhere else.",
     name: "SEO & Online Visibility",
     short: "Get found on Google and Google Maps when customers search for what you offer.",
     description:
@@ -122,6 +132,8 @@ export const services: Service[] = [
   },
   {
     slug: "content-creation",
+    problem:
+      "Your photos, graphics and videos don't look as good as your work really is, or there simply isn't enough content to keep your channels and ads fresh.",
     name: "Content Creation",
     short: "Scroll-stopping graphics, photos and videos made for your brand.",
     description:
@@ -144,6 +156,8 @@ export const services: Service[] = [
   },
   {
     slug: "lead-generation-sales",
+    problem:
+      "Enquiries arrive in a trickle, or arrive and go nowhere: replies are slow, follow-up is forgotten, and there's no clear record of which leads became customers.",
     name: "Lead Generation & Sales",
     short: "A steady flow of qualified leads, and the systems to follow them up.",
     description:
@@ -167,6 +181,8 @@ export const services: Service[] = [
   },
   {
     slug: "whatsapp-marketing",
+    problem:
+      "Customers message you on WhatsApp, but replies depend on whoever happens to see the chat. Questions sit unanswered after hours, and there's no easy way to reach past customers again.",
     name: "WhatsApp Marketing",
     short: "Turn WhatsApp into a sales channel, from catalogue to automated follow-up.",
     description:
@@ -189,6 +205,8 @@ export const services: Service[] = [
   },
   {
     slug: "ai-business-automation",
+    problem:
+      "Your team spends hours on the same questions, the same follow-ups and the same admin, and enquiries that arrive after hours wait until morning — or go to a competitor.",
     name: "AI & Business Automation",
     short: "AI chatbots and automations that answer, qualify and follow up around the clock.",
     description:
@@ -211,6 +229,8 @@ export const services: Service[] = [
   },
   {
     slug: "branding-graphic-design",
+    problem:
+      "Your logo, colours and materials don't match from one place to the next, so the business looks less established than it is and is harder to remember.",
     name: "Branding & Graphic Design",
     short: "A brand identity and marketing materials that look as good as your work.",
     description:
@@ -234,6 +254,8 @@ export const services: Service[] = [
   },
   {
     slug: "digital-marketing-strategy",
+    problem:
+      "You're doing some marketing, but it isn't joined up. It's hard to say which channels are worth the money, what to do next, or how any of it connects to revenue.",
     name: "Digital Marketing Strategy",
     short: "A clear plan for where to spend, what to say, and how to grow.",
     description:
@@ -256,6 +278,8 @@ export const services: Service[] = [
   },
   {
     slug: "email-marketing",
+    problem:
+      "You have a list of customers and past enquiries but rarely email them — or send everyone the same message — so repeat business is left on the table.",
     name: "Email Marketing",
     short: "Email campaigns and automations that keep customers coming back.",
     description:
@@ -277,6 +301,8 @@ export const services: Service[] = [
   },
   {
     slug: "blogging-copywriting",
+    problem:
+      "The words on your website and posts don't explain clearly what you do or why someone should choose you, and there's little written content for search engines to find.",
     name: "Blogging & Copywriting",
     short: "Words that explain what you do and persuade people to act.",
     description:
@@ -300,6 +326,8 @@ export const services: Service[] = [
   },
   {
     slug: "influencer-marketing",
+    problem:
+      "You'd like trusted voices to introduce your brand, but finding the right creators, agreeing terms and knowing whether it worked takes time you don't have.",
     name: "Influencer Marketing",
     short: "The right creators, the right partnerships, and results you can track.",
     description:
@@ -320,6 +348,8 @@ export const services: Service[] = [
   },
   {
     slug: "analytics-reporting",
+    problem:
+      "Reports are missing, or full of numbers that don't answer the real question: what is your marketing actually returning?",
     name: "Analytics & Reporting",
     short: "Clear reports that show what your marketing is really returning.",
     description:

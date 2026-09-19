@@ -66,10 +66,20 @@ export const Services: CollectionConfig = {
       admin: { description: "One or two lines, shown on the homepage card." },
     },
     {
+      name: "problem",
+      label: "Customer problem",
+      type: "textarea",
+      admin: {
+        description:
+          "What is going wrong for a business before they come to you. Shown first on the service page (brief §21).",
+      },
+    },
+    {
       name: "description",
+      label: "Our solution",
       type: "textarea",
       required: true,
-      admin: { description: "The longer version, shown on the services page." },
+      admin: { description: "How Zirka solves that problem. Also shown on the services page." },
     },
     {
       name: "outcomes",
@@ -82,6 +92,20 @@ export const Services: CollectionConfig = {
       minRows: 1,
       labels: { singular: "Capability", plural: "Capabilities" },
       fields: [{ name: "label", type: "text", required: true }],
+    },
+    {
+      name: "faqs",
+      label: "Service FAQs",
+      type: "array",
+      labels: { singular: "Question", plural: "Questions" },
+      admin: {
+        description:
+          "Questions specific to this service. Answer honestly — never promise rankings, revenue or results (brief §14). The section is hidden while empty.",
+      },
+      fields: [
+        { name: "question", type: "text", required: true },
+        { name: "answer", type: "textarea", required: true },
+      ],
     },
     {
       name: "image",

@@ -2,6 +2,10 @@
  * Writes every collection and global to backups/<timestamp>.json.
  * Run with: npm run backup — before any change that touches live content.
  *
+ * Take it BEFORE editing any collection or global in code. Payload reads every
+ * field the code defines, so once the code has a field the database does not
+ * yet have (i.e. before the migration runs), this backup fails.
+ *
  * Captures each document's latest state, drafts included. It does not copy
  * uploaded files (those live in Vercel Blob) or password hashes (Payload never
  * returns them), so restoring means re-uploading media and resetting logins.

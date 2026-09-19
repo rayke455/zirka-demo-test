@@ -7,7 +7,7 @@
  */
 import { getPayload } from "payload";
 import config from "../payload.config";
-import { work } from "../lib/data";
+import { services as serviceData, team as placeholderTeam, work } from "../lib/data";
 
 const payload = await getPayload({ config });
 
@@ -130,5 +130,35 @@ for (const c of concepts.docs as { id: number; name: string }[]) {
   }
 }
 console.log(`concept summaries: ${concepts.docs.length}`);
+
+// --- §21 Service problem statements ---------------------------------------------
+// Only fills services whose problem is still empty, so wording the team has
+// already written in the admin is never overwritten.
+const problemBySlug = new Map(serviceData.map((s) => [s.slug, s.problem]));
+const svcDocs = await payload.find({ collection: "services", limit: 200, depth: 0, pagination: false });
+let filled = 0;
+for (const svc of svcDocs.docs as { id: number; slug: string; problem?: string | null }[]) {
+  const text = problemBySlug.get(svc.slug);
+  if (text && !svc.problem) {
+    await payload.update({ collection: "services", id: svc.id, data: { _status: "published", problem: text } });
+    filled++;
+  }
+}
+console.log(`service problems filled: ${filled}`);
+
+// --- §3 Placeholder team -------------------------------------------------------
+// The four seeded people are invented, and their photos were stock images of
+// real strangers. Unpublished, so they can never appear even if Leadership is
+// switched on; the records stay so their structure is there to overwrite.
+const invented = new Set(placeholderTeam.map((m) => m.name));
+const members = await payload.find({ collection: "team-members", limit: 100, depth: 0, pagination: false });
+let hidden = 0;
+for (const m of members.docs as { id: number; name: string; _status?: string }[]) {
+  if (invented.has(m.name) && m._status !== "draft") {
+    await payload.update({ collection: "team-members", id: m.id, data: { _status: "draft" } });
+    hidden++;
+  }
+}
+console.log(`placeholder team members unpublished: ${hidden}`);
 
 process.exit(0);
