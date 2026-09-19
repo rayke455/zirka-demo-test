@@ -1570,6 +1570,7 @@ export interface SiteSetting {
  */
 export interface Feature {
   id: number;
+  siteTheme?: ('emerald' | 'midnight' | 'onyx' | 'plum') | null;
   /**
    * When on, every public page shows the maintenance notice instead. Search engines are told the site is temporarily unavailable, so your rankings are kept.
    */
@@ -1626,11 +1627,11 @@ export interface Feature {
    */
   weeklySummary?: boolean | null;
   /**
-   * The four figures under the homepage headline.
+   * The four figures under the homepage headline (Site Settings → Stats). Only real, provable numbers.
    */
   showStats?: boolean | null;
   /**
-   * The row of client names below the hero.
+   * The row of client names below the hero (Site Settings → Trusted by). Only list real clients who agreed to be named. The list currently holds concept project names, so replace them before switching this on.
    */
   showTrustedBy?: boolean | null;
   /**
@@ -1840,6 +1841,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
  * via the `definition` "features_select".
  */
 export interface FeaturesSelect<T extends boolean = true> {
+  siteTheme?: T;
   maintenanceMode?: T;
   maintenanceHeading?: T;
   maintenanceMessage?: T;

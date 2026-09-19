@@ -2,6 +2,7 @@ import type { GlobalConfig } from "payload";
 import { revalidatePath } from "next/cache";
 import { isSuperAdmin } from "../access";
 import { mailSetup } from "../mailer";
+import { SITE_THEMES } from "../../lib/site-themes";
 
 /** Accepts the bare code or the whole <meta … content="…"> tag and keeps just the code. */
 const verificationCode = (value: unknown) => {
@@ -101,6 +102,19 @@ export const Features: GlobalConfig = {
     {
       type: "tabs",
       tabs: [
+        {
+          label: "Theme",
+          fields: [
+            {
+              name: "siteTheme",
+              label: "Website theme",
+              type: "select",
+              defaultValue: "emerald",
+              options: SITE_THEMES.map((t) => ({ label: t.name, value: t.id })),
+              admin: { components: { Field: "/payload/components/ThemePicker" } },
+            },
+          ],
+        },
         {
           label: "Maintenance",
           description:
@@ -278,9 +292,15 @@ export const Features: GlobalConfig = {
         },
         {
           label: "Homepage sections",
+          description:
+            "Show or hide each section (widget) of the homepage. Hidden sections keep their content, so you can switch them back on at any time.",
           fields: [
-            toggle("showStats", "Stats strip", "The four figures under the homepage headline."),
-            toggle("showTrustedBy", "Trusted by", "The row of client names below the hero."),
+            toggle("showStats", "Stats strip", "The four figures under the homepage headline (Site Settings → Stats). Only real, provable numbers."),
+            toggle(
+              "showTrustedBy",
+              "Trusted by",
+              "The row of client names below the hero (Site Settings → Trusted by). Only list real clients who agreed to be named. The list currently holds concept project names, so replace them before switching this on."
+            ),
             toggle("showServices", "Solutions", "The four solution categories on the homepage."),
             toggle("showWork", "Selected work", "The case studies on the homepage."),
             toggle("showTestimonial", "Testimonial", "The large client quote (only appears if one is published)."),

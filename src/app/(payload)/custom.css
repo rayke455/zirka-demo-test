@@ -1070,3 +1070,142 @@ input::-ms-reveal,
 input::-ms-clear {
   display: none;
 }
+
+/* ---------- Features → Theme: picker ---------- */
+.zk-themes__intro {
+  margin: 0 0 16px;
+  max-width: 70ch;
+  color: var(--theme-elevation-700);
+}
+
+.zk-themes__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 16px;
+}
+
+.zk-theme {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border: 2px solid var(--theme-elevation-100);
+  border-radius: 14px;
+  background: var(--theme-elevation-0);
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  font: inherit;
+  color: var(--theme-text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.zk-theme:hover {
+  border-color: var(--theme-elevation-300);
+  transform: translateY(-2px);
+}
+
+.zk-theme--selected,
+.zk-theme--selected:hover {
+  border-color: var(--zk-copper);
+  box-shadow: 0 0 0 3px rgba(184, 115, 51, 0.18);
+}
+
+.zk-theme:focus-visible {
+  outline: 2px solid var(--zk-copper);
+  outline-offset: 2px;
+}
+
+.zk-theme__preview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+}
+
+.zk-theme__hero {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 12px;
+  border-radius: 8px;
+}
+
+.zk-theme__line {
+  display: block;
+  height: 5px;
+  border-radius: 3px;
+}
+
+.zk-theme__btn {
+  display: block;
+  width: 40%;
+  height: 12px;
+  margin-top: 4px;
+  border-radius: 999px;
+}
+
+.zk-theme__cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.zk-theme__card {
+  display: block;
+  height: 30px;
+  padding: 8px;
+  border: 1px solid;
+  border-radius: 6px;
+}
+
+.zk-theme__dot {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.zk-theme__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px 14px;
+  border-top: 1px solid var(--theme-elevation-100);
+}
+
+.zk-theme__name {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-weight: 650;
+  font-size: 14px;
+}
+
+.zk-theme__badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--zk-copper);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.zk-theme__desc {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--theme-elevation-600);
+}
+
+.zk-theme__swatches {
+  display: flex;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.zk-theme__swatches span {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid var(--theme-elevation-150);
+}

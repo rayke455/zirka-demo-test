@@ -5,7 +5,7 @@ import GoogleAnalytics from "@/components/GoogleAnalytics";
 import PageTracker from "@/components/PageTracker";
 import PreviewBadge from "@/components/PreviewBadge";
 import { SITE_URL } from "@/lib/site";
-import { getGaMeasurementId, getSiteVerification } from "@/lib/cms";
+import { getGaMeasurementId, getSiteTheme, getSiteVerification } from "@/lib/cms";
 import { themeScript } from "@/components/ThemeToggle";
 import "./globals.css";
 
@@ -63,11 +63,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const gaId = await getGaMeasurementId();
+  const [gaId, siteTheme] = await Promise.all([getGaMeasurementId(), getSiteTheme()]);
   return (
     <html
       lang="en"
       className={urbanist.variable}
+      data-site-theme={siteTheme}
       suppressHydrationWarning
     >
       <head>

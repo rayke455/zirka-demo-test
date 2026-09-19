@@ -30,6 +30,9 @@ export default function StarField() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const lines = document.createElement("canvas");
     const linesCtx = lines.getContext("2d");
+    // The connecting lines take the site theme's accent (Features → Theme).
+    const accent =
+      getComputedStyle(document.documentElement).getPropertyValue("--accent-rgb").trim() || "184, 115, 51";
     let points: Point[] = [];
     let width = 0;
     let height = 0;
@@ -69,7 +72,7 @@ export default function StarField() {
           const dy = points[i].y - points[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist < 130) {
-            linesCtx.strokeStyle = `rgba(184,115,51,${0.18 * (1 - dist / 130)})`;
+            linesCtx.strokeStyle = `rgba(${accent}, ${0.18 * (1 - dist / 130)})`;
             linesCtx.beginPath();
             linesCtx.moveTo(points[i].x, points[i].y);
             linesCtx.lineTo(points[j].x, points[j].y);

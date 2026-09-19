@@ -10,12 +10,6 @@ const EYE =
 const EYE_OFF =
   '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.6 5.1A10.8 10.8 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.2M6.6 6.6C3.7 8.5 2 12 2 12s3.6 7 10 7a10.6 10.6 0 0 0 5.4-1.5"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="m3 3 18 18"/></svg>';
 
-/**
- * Adds a show/hide button to every password box in the admin: the login
- * page, changing a password on an account, and the mail server password.
- * Payload renders those inputs itself, so this watches the page and adds the
- * button next to each one as it appears.
- */
 /** Centre the button on the box itself: some wrappers are taller than the input. */
 function place(input: HTMLInputElement) {
   const button = input.nextElementSibling as HTMLElement | null;
@@ -24,6 +18,12 @@ function place(input: HTMLInputElement) {
   }
 }
 
+/**
+ * Adds a show/hide button to every password box in the admin: the login
+ * page, changing a password on an account, and the mail server password.
+ * Payload renders those inputs itself, so this watches the page and adds the
+ * button next to each one as it appears.
+ */
 function enhance(input: HTMLInputElement) {
   if (input.dataset.zkReveal) return place(input);
   input.dataset.zkReveal = "1";

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Urbanist } from "next/font/google";
 import "../(frontend)/globals.css";
+import { getSiteTheme } from "@/lib/cms";
 
 // Same family as the main site, so the notice still looks like Zirka.
 const urbanist = Urbanist({
@@ -18,9 +19,10 @@ export const metadata: Metadata = {
  * A bare layout for the maintenance notice: no header or footer, whose links
  * would only lead back to the notice while the site is closed.
  */
-export default function MaintenanceLayout({ children }: { children: React.ReactNode }) {
+export default async function MaintenanceLayout({ children }: { children: React.ReactNode }) {
+  const siteTheme = await getSiteTheme();
   return (
-    <html lang="en" className={urbanist.variable}>
+    <html lang="en" className={urbanist.variable} data-site-theme={siteTheme}>
       <body className="maintenance-body">{children}</body>
     </html>
   );

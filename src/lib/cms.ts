@@ -2,6 +2,7 @@ import { getPayload, type Where } from "payload";
 import config from "@payload-config";
 import type { Service, CaseStudy, TeamMember, Faq, Engagement, Testimonial, Project, Post } from "@/payload-types";
 import { services as seedServices } from "@/lib/data";
+import { isSiteTheme, type SiteThemeId } from "@/lib/site-themes";
 
 export const getCms = async () => getPayload({ config });
 
@@ -559,6 +560,17 @@ const FEATURE_DEFAULTS = {
 };
 
 export type FeatureFlags = typeof FEATURE_DEFAULTS;
+
+/** The site theme chosen in Features → Theme; Emerald when unset or unknown. */
+export const getSiteTheme = async (): Promise<SiteThemeId> => {
+  try {
+    const payload = await getCms();
+    const f = (await payload.findGlobal({ slug: "features", depth: 0 })) as { siteTheme?: string | null };
+    return isSiteTheme(f.siteTheme) ? f.siteTheme : "emerald";
+  } catch {
+    return "emerald";
+  }
+};
 
 /** Search Console and Bing ownership codes from Features → Search engines. */
 export const getSiteVerification = async (): Promise<{ google: string | null; bing: string | null }> => {
