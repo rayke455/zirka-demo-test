@@ -29,6 +29,7 @@ export const SolutionCategories: CollectionConfig = {
     { name: "name", type: "text", required: true, admin: { description: 'e.g. "Get Found"' } },
     {
       name: "slug",
+      label: "Page address",
       type: "text",
       required: true,
       unique: true,
@@ -50,6 +51,6 @@ export const SolutionCategories: CollectionConfig = {
       hasMany: true,
       admin: { description: "The services shown under this category. A service can sit in more than one." },
     },
-    { name: "order", type: "number", defaultValue: 0, admin: { position: "sidebar" } },
+    { name: "order", label: "Position in list", type: "number", defaultValue: 0, admin: { position: "sidebar" } },
   ],
 };

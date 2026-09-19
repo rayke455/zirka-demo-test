@@ -13,6 +13,7 @@ export const slugify = (value: string) =>
 /** A unique page address filled in from `from` (e.g. the title) unless typed by hand. */
 export const slugField = (from: string, description: string): Field => ({
   name: "slug",
+  label: "Page address",
   type: "text",
   unique: true,
   index: true,

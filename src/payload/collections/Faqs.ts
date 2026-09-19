@@ -20,6 +20,6 @@ export const Faqs: CollectionConfig = {
   fields: [
     { name: "question", type: "text", required: true },
     { name: "answer", type: "textarea", required: true },
-    { name: "order", type: "number", defaultValue: 0 },
+    { name: "order", label: "Position in list", type: "number", defaultValue: 0 },
   ],
 };

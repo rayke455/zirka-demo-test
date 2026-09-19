@@ -140,6 +140,7 @@ export const CaseStudies: CollectionConfig = {
     },
     {
       name: "slug",
+      label: "Page address",
       type: "text",
       unique: true,
       index: true,
@@ -161,6 +162,7 @@ export const CaseStudies: CollectionConfig = {
     },
     {
       name: "order",
+      label: "Position in list",
       type: "number",
       defaultValue: 0,
       admin: {

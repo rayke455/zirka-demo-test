@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { isStaff, isPublicOrStaff, isAdmin } from "../access";
+import { isStaff, isPublicOrStaff, isAdmin, hiddenUnlessSuperAdmin } from "../access";
 
 export const Values: CollectionConfig = {
   slug: "values",
@@ -8,6 +8,7 @@ export const Values: CollectionConfig = {
     useAsTitle: "name",
     defaultColumns: ["name", "order", "_status"],
     group: "Content",
+    hidden: hiddenUnlessSuperAdmin,
     description: "The operating principles shown on the about page.",
   },
   access: {
@@ -21,6 +22,6 @@ export const Values: CollectionConfig = {
   fields: [
     { name: "name", type: "text", required: true },
     { name: "description", type: "textarea", required: true },
-    { name: "order", type: "number", defaultValue: 0 },
+    { name: "order", label: "Position in list", type: "number", defaultValue: 0 },
   ],
 };

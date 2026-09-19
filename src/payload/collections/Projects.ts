@@ -116,6 +116,7 @@ export const Projects: CollectionConfig = {
     },
     {
       name: "order",
+      label: "Position in list",
       type: "number",
       defaultValue: 0,
       admin: { position: "sidebar", description: "Lower numbers appear first." },

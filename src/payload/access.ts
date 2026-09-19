@@ -78,3 +78,11 @@ export const canSetRole: FieldAccess = ({ req }) => {
   const role = roleOf(req.user as UserWithRole);
   return role === "superadmin" || role === "admin";
 };
+
+/**
+ * For `admin.hidden`: keeps setup-only sections out of everyday accounts'
+ * menus and dashboard, so the site owner's staff see only what they use.
+ * Super admins still see everything. Access rules are unchanged.
+ */
+export const hiddenUnlessSuperAdmin = ({ user }: { user?: unknown }) =>
+  (user as UserWithRole)?.role !== "superadmin";

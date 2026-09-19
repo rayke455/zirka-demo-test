@@ -67,23 +67,23 @@ export interface Config {
   };
   blocks: {};
   collections: {
-    services: Service;
-    'solution-categories': SolutionCategory;
+    submissions: Submission;
+    quotes: Quote;
+    bookings: Booking;
+    'page-views': PageView;
     projects: Project;
-    'case-studies': CaseStudy;
     posts: Post;
-    'team-members': TeamMember;
+    services: Service;
+    'case-studies': CaseStudy;
     testimonials: Testimonial;
+    'team-members': TeamMember;
+    faqs: Faq;
+    media: Media;
+    'solution-categories': SolutionCategory;
     'process-steps': ProcessStep;
     values: Value;
-    faqs: Faq;
     engagements: Engagement;
     'project-pricing': ProjectPricing;
-    submissions: Submission;
-    bookings: Booking;
-    quotes: Quote;
-    'page-views': PageView;
-    media: Media;
     users: User;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -92,23 +92,23 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
-    services: ServicesSelect<false> | ServicesSelect<true>;
-    'solution-categories': SolutionCategoriesSelect<false> | SolutionCategoriesSelect<true>;
+    submissions: SubmissionsSelect<false> | SubmissionsSelect<true>;
+    quotes: QuotesSelect<false> | QuotesSelect<true>;
+    bookings: BookingsSelect<false> | BookingsSelect<true>;
+    'page-views': PageViewsSelect<false> | PageViewsSelect<true>;
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
-    'case-studies': CaseStudiesSelect<false> | CaseStudiesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
-    'team-members': TeamMembersSelect<false> | TeamMembersSelect<true>;
+    services: ServicesSelect<false> | ServicesSelect<true>;
+    'case-studies': CaseStudiesSelect<false> | CaseStudiesSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
+    'team-members': TeamMembersSelect<false> | TeamMembersSelect<true>;
+    faqs: FaqsSelect<false> | FaqsSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
+    'solution-categories': SolutionCategoriesSelect<false> | SolutionCategoriesSelect<true>;
     'process-steps': ProcessStepsSelect<false> | ProcessStepsSelect<true>;
     values: ValuesSelect<false> | ValuesSelect<true>;
-    faqs: FaqsSelect<false> | FaqsSelect<true>;
     engagements: EngagementsSelect<false> | EngagementsSelect<true>;
     'project-pricing': ProjectPricingSelect<false> | ProjectPricingSelect<true>;
-    submissions: SubmissionsSelect<false> | SubmissionsSelect<true>;
-    bookings: BookingsSelect<false> | BookingsSelect<true>;
-    quotes: QuotesSelect<false> | QuotesSelect<true>;
-    'page-views': PageViewsSelect<false> | PageViewsSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -156,6 +156,91 @@ export interface UserAuthOperations {
     email: string;
     password: string;
   };
+}
+/**
+ * Everything sent through the website's contact and free-audit forms, in one list. Filter by Type to see audit requests alone.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "submissions".
+ */
+export interface Submission {
+  id: number;
+  kind?: ('enquiry' | 'audit') | null;
+  name: string;
+  email: string;
+  phone?: string | null;
+  company?: string | null;
+  website?: string | null;
+  goal?: string | null;
+  budget?: string | null;
+  message?: string | null;
+  /**
+   * Where this lead came from, captured from the link they arrived on. Only campaign tags and the referring site — never anything personal.
+   */
+  attribution?: {
+    utmSource?: string | null;
+    utmMedium?: string | null;
+    utmCampaign?: string | null;
+    utmContent?: string | null;
+    utmTerm?: string | null;
+    landingPage?: string | null;
+    referrer?: string | null;
+  };
+  status?: ('new' | 'contacted' | 'open' | 'proposal' | 'won' | 'closed') | null;
+  /**
+   * The dashboard reminds you on this day.
+   */
+  followUp?: string | null;
+  /**
+   * What this client is worth, e.g. the first month plus any project fee. Counts toward “Won this month” on the dashboard.
+   */
+  dealValue?: number | null;
+  wonAt?: string | null;
+  /**
+   * Internal only, never shown on the website. Calls, what was agreed, next steps.
+   */
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Quote requests from the website, including the services each person asked about.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quotes".
+ */
+export interface Quote {
+  id: number;
+  name: string;
+  email: string;
+  phone?: string | null;
+  company?: string | null;
+  /**
+   * What they asked us to quote for.
+   */
+  services?: (number | Service)[] | null;
+  /**
+   * The range they picked on the form, or a one-off project.
+   */
+  budget?: string | null;
+  timeline?: string | null;
+  details?: string | null;
+  status?: ('new' | 'contacted' | 'quoted' | 'won' | 'closed') | null;
+  /**
+   * The dashboard reminds you on this day.
+   */
+  followUp?: string | null;
+  /**
+   * What this client is worth, e.g. the first month plus any project fee. Counts toward “Won this month” on the dashboard.
+   */
+  dealValue?: number | null;
+  wonAt?: string | null;
+  /**
+   * Internal only, never shown on the website. Calls, what was agreed, next steps.
+   */
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * The disciplines listed on the homepage and services page.
@@ -281,33 +366,48 @@ export interface Media {
   };
 }
 /**
- * The four headline categories on the homepage, the Services page and the Services menu. Pick which services belong to each.
+ * Consultations booked through the website. Times are stored in UTC and shown in your browser's timezone.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "solution-categories".
+ * via the `definition` "bookings".
  */
-export interface SolutionCategory {
+export interface Booking {
   id: number;
-  /**
-   * e.g. "Get Found"
-   */
+  start: string;
+  end: string;
+  status: 'confirmed' | 'completed' | 'no-show' | 'cancelled';
   name: string;
+  email: string;
+  phone?: string | null;
+  company?: string | null;
   /**
-   * Used in links, e.g. "get-found" gives /services#get-found. Lowercase and hyphens only.
+   * What they want to talk about.
    */
-  slug: string;
+  topic?: string | null;
   /**
-   * One or two sentences on the outcome, not the tasks.
+   * The timezone they booked from.
    */
-  description: string;
+  visitorTimezone?: string | null;
   /**
-   * The services shown under this category. A service can sit in more than one.
+   * Internal only.
    */
-  services?: (number | Service)[] | null;
-  order?: number | null;
+  notes?: string | null;
   updatedAt: string;
   createdAt: string;
-  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Anonymous traffic log. No IP addresses or cookies are stored.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-views".
+ */
+export interface PageView {
+  id: number;
+  path: string;
+  referrer?: string | null;
+  session?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * Work you have delivered for real clients: websites, logos, campaigns and more. Shown on the Work page, and on the homepage when marked Featured. Only add genuine client work.
@@ -377,89 +477,6 @@ export interface Project {
    * Tick once the client has agreed. A project can't be published without it.
    */
   clientPermission?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Client work shown on the homepage, the work page, and each case study's own page.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "case-studies".
- */
-export interface CaseStudy {
-  id: number;
-  /**
-   * Client name.
-   */
-  name: string;
-  /**
-   * e.g. "Skincare · Performance"
-   */
-  category: string;
-  /**
-   * The headline result, e.g. "3.2× ROAS in 90 days". Real, documented results only — it is never shown on a Concept Project.
-   */
-  metric: string;
-  /**
-   * One line on what you did.
-   */
-  summary: string;
-  image?: (number | null) | Media;
-  accent?: ('w1' | 'w2' | 'w3' | 'w4' | 'w5' | 'w6') | null;
-  /**
-   * Where the client was stuck when they came to you.
-   */
-  challenge?: string | null;
-  /**
-   * What you did, and why that and not something else.
-   */
-  approach?: string | null;
-  servicesUsed?: (number | Service)[] | null;
-  /**
-   * How long the work ran, e.g. "3 months" or "Jan – Apr 2026".
-   */
-  timeframe?: string | null;
-  /**
-   * What changed for the business, in words.
-   */
-  outcome?: string | null;
-  /**
-   * Up to four headline numbers for the results strip.
-   */
-  results?:
-    | {
-        /**
-         * e.g. "3.2×"
-         */
-        value: string;
-        /**
-         * e.g. "Return on ad spend"
-         */
-        label: string;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * In the client's own words. Only use a quote they actually gave you.
-   */
-  testimonialQuote?: string | null;
-  /**
-   * e.g. "Priya Raman, Marketing Director"
-   */
-  testimonialAttribution?: string | null;
-  /**
-   * The page address, e.g. /work/solace-skincare. Filled in from the name automatically.
-   */
-  slug?: string | null;
-  /**
-   * Lower numbers appear first. The first one is the featured card.
-   */
-  order?: number | null;
-  /**
-   * Tick this for anything that is not genuine, documented client work. The site then labels it a Concept Project and hides every result, timeframe and testimonial, so a concept can never read as a client outcome.
-   */
-  sample?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -558,6 +575,89 @@ export interface TeamMember {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Client work shown on the homepage, the work page, and each case study's own page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "case-studies".
+ */
+export interface CaseStudy {
+  id: number;
+  /**
+   * Client name.
+   */
+  name: string;
+  /**
+   * e.g. "Skincare · Performance"
+   */
+  category: string;
+  /**
+   * The headline result, e.g. "3.2× ROAS in 90 days". Real, documented results only — it is never shown on a Concept Project.
+   */
+  metric: string;
+  /**
+   * One line on what you did.
+   */
+  summary: string;
+  image?: (number | null) | Media;
+  accent?: ('w1' | 'w2' | 'w3' | 'w4' | 'w5' | 'w6') | null;
+  /**
+   * Where the client was stuck when they came to you.
+   */
+  challenge?: string | null;
+  /**
+   * What you did, and why that and not something else.
+   */
+  approach?: string | null;
+  servicesUsed?: (number | Service)[] | null;
+  /**
+   * How long the work ran, e.g. "3 months" or "Jan – Apr 2026".
+   */
+  timeframe?: string | null;
+  /**
+   * What changed for the business, in words.
+   */
+  outcome?: string | null;
+  /**
+   * Up to four headline numbers for the results strip.
+   */
+  results?:
+    | {
+        /**
+         * e.g. "3.2×"
+         */
+        value: string;
+        /**
+         * e.g. "Return on ad spend"
+         */
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * In the client's own words. Only use a quote they actually gave you.
+   */
+  testimonialQuote?: string | null;
+  /**
+   * e.g. "Priya Raman, Marketing Director"
+   */
+  testimonialAttribution?: string | null;
+  /**
+   * The page address, e.g. /work/solace-skincare. Filled in from the name automatically.
+   */
+  slug?: string | null;
+  /**
+   * Lower numbers appear first. The first one is the featured card.
+   */
+  order?: number | null;
+  /**
+   * Tick this for anything that is not genuine, documented client work. The site then labels it a Concept Project and hides every result, timeframe and testimonial, so a concept can never read as a client outcome.
+   */
+  sample?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * Genuine testimonials only, supplied by the client (brief §7) — never written for them. Published ones appear on the homepage when Features → Testimonial is on.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -597,6 +697,48 @@ export interface Testimonial {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "faqs".
+ */
+export interface Faq {
+  id: number;
+  question: string;
+  answer: string;
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * The four headline categories on the homepage, the Services page and the Services menu. Pick which services belong to each.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "solution-categories".
+ */
+export interface SolutionCategory {
+  id: number;
+  /**
+   * e.g. "Get Found"
+   */
+  name: string;
+  /**
+   * Used in links, e.g. "get-found" gives /services#get-found. Lowercase and hyphens only.
+   */
+  slug: string;
+  /**
+   * One or two sentences on the outcome, not the tasks.
+   */
+  description: string;
+  /**
+   * The services shown under this category. A service can sit in more than one.
+   */
+  services?: (number | Service)[] | null;
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * The "How we work" stages on the homepage. Order matters — they read as a sequence.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -627,19 +769,6 @@ export interface Value {
   id: number;
   name: string;
   description: string;
-  order?: number | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "faqs".
- */
-export interface Faq {
-  id: number;
-  question: string;
-  answer: string;
   order?: number | null;
   updatedAt: string;
   createdAt: string;
@@ -707,135 +836,6 @@ export interface ProjectPricing {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Everything sent through the website's contact and free-audit forms, in one list. Filter by Type to see audit requests alone.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "submissions".
- */
-export interface Submission {
-  id: number;
-  kind?: ('enquiry' | 'audit') | null;
-  name: string;
-  email: string;
-  phone?: string | null;
-  company?: string | null;
-  website?: string | null;
-  goal?: string | null;
-  budget?: string | null;
-  message?: string | null;
-  /**
-   * Where this lead came from, captured from the link they arrived on. Only campaign tags and the referring site — never anything personal.
-   */
-  attribution?: {
-    utmSource?: string | null;
-    utmMedium?: string | null;
-    utmCampaign?: string | null;
-    utmContent?: string | null;
-    utmTerm?: string | null;
-    landingPage?: string | null;
-    referrer?: string | null;
-  };
-  status?: ('new' | 'contacted' | 'open' | 'proposal' | 'won' | 'closed') | null;
-  /**
-   * The dashboard reminds you on this day.
-   */
-  followUp?: string | null;
-  /**
-   * What this client is worth, e.g. the first month plus any project fee. Counts toward “Won this month” on the dashboard.
-   */
-  dealValue?: number | null;
-  wonAt?: string | null;
-  /**
-   * Internal only, never shown on the website. Calls, what was agreed, next steps.
-   */
-  notes?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Consultations booked through the website. Times are stored in UTC and shown in your browser's timezone.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "bookings".
- */
-export interface Booking {
-  id: number;
-  start: string;
-  end: string;
-  status: 'confirmed' | 'completed' | 'no-show' | 'cancelled';
-  name: string;
-  email: string;
-  phone?: string | null;
-  company?: string | null;
-  /**
-   * What they want to talk about.
-   */
-  topic?: string | null;
-  /**
-   * The timezone they booked from.
-   */
-  visitorTimezone?: string | null;
-  /**
-   * Internal only.
-   */
-  notes?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Quote requests from the website, including the services each person asked about.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "quotes".
- */
-export interface Quote {
-  id: number;
-  name: string;
-  email: string;
-  phone?: string | null;
-  company?: string | null;
-  /**
-   * What they asked us to quote for.
-   */
-  services?: (number | Service)[] | null;
-  /**
-   * The range they picked on the form, or a one-off project.
-   */
-  budget?: string | null;
-  timeline?: string | null;
-  details?: string | null;
-  status?: ('new' | 'contacted' | 'quoted' | 'won' | 'closed') | null;
-  /**
-   * The dashboard reminds you on this day.
-   */
-  followUp?: string | null;
-  /**
-   * What this client is worth, e.g. the first month plus any project fee. Counts toward “Won this month” on the dashboard.
-   */
-  dealValue?: number | null;
-  wonAt?: string | null;
-  /**
-   * Internal only, never shown on the website. Calls, what was agreed, next steps.
-   */
-  notes?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Anonymous traffic log. No IP addresses or cookies are stored.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "page-views".
- */
-export interface PageView {
-  id: number;
-  path: string;
-  referrer?: string | null;
-  session?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -894,32 +894,56 @@ export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
-        relationTo: 'services';
-        value: number | Service;
+        relationTo: 'submissions';
+        value: number | Submission;
       } | null)
     | ({
-        relationTo: 'solution-categories';
-        value: number | SolutionCategory;
+        relationTo: 'quotes';
+        value: number | Quote;
+      } | null)
+    | ({
+        relationTo: 'bookings';
+        value: number | Booking;
+      } | null)
+    | ({
+        relationTo: 'page-views';
+        value: number | PageView;
       } | null)
     | ({
         relationTo: 'projects';
         value: number | Project;
       } | null)
     | ({
+        relationTo: 'posts';
+        value: number | Post;
+      } | null)
+    | ({
+        relationTo: 'services';
+        value: number | Service;
+      } | null)
+    | ({
         relationTo: 'case-studies';
         value: number | CaseStudy;
       } | null)
     | ({
-        relationTo: 'posts';
-        value: number | Post;
+        relationTo: 'testimonials';
+        value: number | Testimonial;
       } | null)
     | ({
         relationTo: 'team-members';
         value: number | TeamMember;
       } | null)
     | ({
-        relationTo: 'testimonials';
-        value: number | Testimonial;
+        relationTo: 'faqs';
+        value: number | Faq;
+      } | null)
+    | ({
+        relationTo: 'media';
+        value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'solution-categories';
+        value: number | SolutionCategory;
       } | null)
     | ({
         relationTo: 'process-steps';
@@ -930,36 +954,12 @@ export interface PayloadLockedDocument {
         value: number | Value;
       } | null)
     | ({
-        relationTo: 'faqs';
-        value: number | Faq;
-      } | null)
-    | ({
         relationTo: 'engagements';
         value: number | Engagement;
       } | null)
     | ({
         relationTo: 'project-pricing';
         value: number | ProjectPricing;
-      } | null)
-    | ({
-        relationTo: 'submissions';
-        value: number | Submission;
-      } | null)
-    | ({
-        relationTo: 'bookings';
-        value: number | Booking;
-      } | null)
-    | ({
-        relationTo: 'quotes';
-        value: number | Quote;
-      } | null)
-    | ({
-        relationTo: 'page-views';
-        value: number | PageView;
-      } | null)
-    | ({
-        relationTo: 'media';
-        value: number | Media;
       } | null)
     | ({
         relationTo: 'users';
@@ -1009,6 +1009,142 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "submissions_select".
+ */
+export interface SubmissionsSelect<T extends boolean = true> {
+  kind?: T;
+  name?: T;
+  email?: T;
+  phone?: T;
+  company?: T;
+  website?: T;
+  goal?: T;
+  budget?: T;
+  message?: T;
+  attribution?:
+    | T
+    | {
+        utmSource?: T;
+        utmMedium?: T;
+        utmCampaign?: T;
+        utmContent?: T;
+        utmTerm?: T;
+        landingPage?: T;
+        referrer?: T;
+      };
+  status?: T;
+  followUp?: T;
+  dealValue?: T;
+  wonAt?: T;
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quotes_select".
+ */
+export interface QuotesSelect<T extends boolean = true> {
+  name?: T;
+  email?: T;
+  phone?: T;
+  company?: T;
+  services?: T;
+  budget?: T;
+  timeline?: T;
+  details?: T;
+  status?: T;
+  followUp?: T;
+  dealValue?: T;
+  wonAt?: T;
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bookings_select".
+ */
+export interface BookingsSelect<T extends boolean = true> {
+  start?: T;
+  end?: T;
+  status?: T;
+  name?: T;
+  email?: T;
+  phone?: T;
+  company?: T;
+  topic?: T;
+  visitorTimezone?: T;
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-views_select".
+ */
+export interface PageViewsSelect<T extends boolean = true> {
+  path?: T;
+  referrer?: T;
+  session?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects_select".
+ */
+export interface ProjectsSelect<T extends boolean = true> {
+  name?: T;
+  client?: T;
+  deliverables?: T;
+  industry?: T;
+  year?: T;
+  summary?: T;
+  description?: T;
+  cover?: T;
+  gallery?:
+    | T
+    | {
+        image?: T;
+        caption?: T;
+        id?: T;
+      };
+  services?: T;
+  liveUrl?: T;
+  slug?: T;
+  featured?: T;
+  order?: T;
+  clientPermission?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts_select".
+ */
+export interface PostsSelect<T extends boolean = true> {
+  title?: T;
+  excerpt?: T;
+  cover?: T;
+  content?: T;
+  slug?: T;
+  publishedAt?: T;
+  topic?: T;
+  author?: T;
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "services_select".
  */
 export interface ServicesSelect<T extends boolean = true> {
@@ -1039,50 +1175,6 @@ export interface ServicesSelect<T extends boolean = true> {
   image?: T;
   accent?: T;
   icon?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "solution-categories_select".
- */
-export interface SolutionCategoriesSelect<T extends boolean = true> {
-  name?: T;
-  slug?: T;
-  description?: T;
-  services?: T;
-  order?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "projects_select".
- */
-export interface ProjectsSelect<T extends boolean = true> {
-  name?: T;
-  client?: T;
-  deliverables?: T;
-  industry?: T;
-  year?: T;
-  summary?: T;
-  description?: T;
-  cover?: T;
-  gallery?:
-    | T
-    | {
-        image?: T;
-        caption?: T;
-        id?: T;
-      };
-  services?: T;
-  liveUrl?: T;
-  slug?: T;
-  featured?: T;
-  order?: T;
-  clientPermission?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1121,23 +1213,18 @@ export interface CaseStudiesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "posts_select".
+ * via the `definition` "testimonials_select".
  */
-export interface PostsSelect<T extends boolean = true> {
-  title?: T;
-  excerpt?: T;
-  cover?: T;
-  content?: T;
-  slug?: T;
-  publishedAt?: T;
-  topic?: T;
-  author?: T;
-  seo?:
-    | T
-    | {
-        title?: T;
-        description?: T;
-      };
+export interface TestimonialsSelect<T extends boolean = true> {
+  quote?: T;
+  name?: T;
+  role?: T;
+  company?: T;
+  photo?: T;
+  logo?: T;
+  result?: T;
+  caseStudy?: T;
+  featured?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1166,48 +1253,6 @@ export interface TeamMembersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "testimonials_select".
- */
-export interface TestimonialsSelect<T extends boolean = true> {
-  quote?: T;
-  name?: T;
-  role?: T;
-  company?: T;
-  photo?: T;
-  logo?: T;
-  result?: T;
-  caseStudy?: T;
-  featured?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "process-steps_select".
- */
-export interface ProcessStepsSelect<T extends boolean = true> {
-  name?: T;
-  description?: T;
-  order?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "values_select".
- */
-export interface ValuesSelect<T extends boolean = true> {
-  name?: T;
-  description?: T;
-  order?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "faqs_select".
  */
 export interface FaqsSelect<T extends boolean = true> {
@@ -1217,123 +1262,6 @@ export interface FaqsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "engagements_select".
- */
-export interface EngagementsSelect<T extends boolean = true> {
-  name?: T;
-  price?: T;
-  cadence?: T;
-  summary?: T;
-  includes?:
-    | T
-    | {
-        label?: T;
-        id?: T;
-      };
-  order?: T;
-  featured?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "project-pricing_select".
- */
-export interface ProjectPricingSelect<T extends boolean = true> {
-  name?: T;
-  price?: T;
-  note?: T;
-  order?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "submissions_select".
- */
-export interface SubmissionsSelect<T extends boolean = true> {
-  kind?: T;
-  name?: T;
-  email?: T;
-  phone?: T;
-  company?: T;
-  website?: T;
-  goal?: T;
-  budget?: T;
-  message?: T;
-  attribution?:
-    | T
-    | {
-        utmSource?: T;
-        utmMedium?: T;
-        utmCampaign?: T;
-        utmContent?: T;
-        utmTerm?: T;
-        landingPage?: T;
-        referrer?: T;
-      };
-  status?: T;
-  followUp?: T;
-  dealValue?: T;
-  wonAt?: T;
-  notes?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "bookings_select".
- */
-export interface BookingsSelect<T extends boolean = true> {
-  start?: T;
-  end?: T;
-  status?: T;
-  name?: T;
-  email?: T;
-  phone?: T;
-  company?: T;
-  topic?: T;
-  visitorTimezone?: T;
-  notes?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "quotes_select".
- */
-export interface QuotesSelect<T extends boolean = true> {
-  name?: T;
-  email?: T;
-  phone?: T;
-  company?: T;
-  services?: T;
-  budget?: T;
-  timeline?: T;
-  details?: T;
-  status?: T;
-  followUp?: T;
-  dealValue?: T;
-  wonAt?: T;
-  notes?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "page-views_select".
- */
-export interface PageViewsSelect<T extends boolean = true> {
-  path?: T;
-  referrer?: T;
-  session?: T;
-  updatedAt?: T;
-  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1386,6 +1314,78 @@ export interface MediaSelect<T extends boolean = true> {
               filename?: T;
             };
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "solution-categories_select".
+ */
+export interface SolutionCategoriesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  description?: T;
+  services?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "process-steps_select".
+ */
+export interface ProcessStepsSelect<T extends boolean = true> {
+  name?: T;
+  description?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "values_select".
+ */
+export interface ValuesSelect<T extends boolean = true> {
+  name?: T;
+  description?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "engagements_select".
+ */
+export interface EngagementsSelect<T extends boolean = true> {
+  name?: T;
+  price?: T;
+  cadence?: T;
+  summary?: T;
+  includes?:
+    | T
+    | {
+        label?: T;
+        id?: T;
+      };
+  order?: T;
+  featured?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "project-pricing_select".
+ */
+export interface ProjectPricingSelect<T extends boolean = true> {
+  name?: T;
+  price?: T;
+  note?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

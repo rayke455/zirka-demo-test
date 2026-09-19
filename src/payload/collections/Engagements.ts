@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { isAdmin, isPublicOrStaff } from "../access";
+import { isAdmin, isPublicOrStaff, hiddenUnlessSuperAdmin } from "../access";
 
 export const Engagements: CollectionConfig = {
   slug: "engagements",
@@ -8,6 +8,7 @@ export const Engagements: CollectionConfig = {
     useAsTitle: "name",
     defaultColumns: ["name", "price", "featured", "_status"],
     group: "Pricing",
+    hidden: hiddenUnlessSuperAdmin,
     description: "Pricing is restricted to admins and super admins.",
   },
   // Pricing is commercially sensitive — workers cannot touch it.
@@ -38,7 +39,7 @@ export const Engagements: CollectionConfig = {
       labels: { singular: "Line item", plural: "Line items" },
       fields: [{ name: "label", type: "text", required: true }],
     },
-    { name: "order", type: "number", defaultValue: 0 },
+    { name: "order", label: "Position in list", type: "number", defaultValue: 0 },
     {
       name: "featured",
       type: "checkbox",

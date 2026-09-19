@@ -27,7 +27,7 @@ export const TeamMembers: CollectionConfig = {
       required: true,
       admin: { description: 'Job title, e.g. "Head of Performance Media"' },
     },
-    { name: "order", type: "number", defaultValue: 0 },
+    { name: "order", label: "Position in list", type: "number", defaultValue: 0 },
     {
       name: "photo",
       type: "upload",

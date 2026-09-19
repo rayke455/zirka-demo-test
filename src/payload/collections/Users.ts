@@ -1,12 +1,6 @@
 import type { CollectionConfig, PayloadRequest } from "payload";
 import { APIError } from "payload";
-import {
-  canCreateUsers,
-  canDeleteUsers,
-  canReadUsers,
-  canSetRole,
-  canUpdateUsers,
-} from "../access";
+import { canCreateUsers, canDeleteUsers, canReadUsers, canSetRole, canUpdateUsers, hiddenUnlessSuperAdmin } from "../access";
 
 const countSuperAdmins = async (req: PayloadRequest): Promise<number> => {
   const { totalDocs } = await req.payload.find({
@@ -25,6 +19,7 @@ export const Users: CollectionConfig = {
     useAsTitle: "name",
     defaultColumns: ["name", "email", "role"],
     group: "Team",
+    hidden: hiddenUnlessSuperAdmin,
   },
   access: {
     read: canReadUsers,

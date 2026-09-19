@@ -21,6 +21,7 @@ export const Services: CollectionConfig = {
     { name: "name", type: "text", required: true },
     {
       name: "slug",
+      label: "Page address",
       type: "text",
       required: true,
       unique: true,
@@ -28,6 +29,7 @@ export const Services: CollectionConfig = {
     },
     {
       name: "order",
+      label: "Position in list",
       type: "number",
       defaultValue: 0,
       admin: { description: "Lower numbers appear first." },

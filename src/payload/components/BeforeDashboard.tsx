@@ -1,3 +1,4 @@
+import type React from "react";
 import Link from "next/link";
 import { getPayload, type Where } from "payload";
 import config from "../../payload.config";
@@ -24,6 +25,60 @@ const ROLE_LABEL: Record<string, string> = {
 };
 
 const DAYS = 30;
+
+const ICON = (paths: React.ReactNode) => (
+  <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    {paths}
+  </svg>
+);
+
+/** The everyday jobs, in the order they usually matter. */
+const ACTIONS: { href: string; label: string; hint: string; icon: React.ReactNode; external?: boolean }[] = [
+  {
+    href: "/admin/collections/submissions",
+    label: "Read enquiries",
+    hint: "Messages and free audit requests",
+    icon: ICON(<><path d="M22 12h-6l-2 3h-4l-2-3H2" /><path d="M5.5 5h13L22 12v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z" /></>),
+  },
+  {
+    href: "/admin/collections/quotes",
+    label: "See quote requests",
+    hint: "People asking for prices",
+    icon: ICON(<><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" /><path d="M14 3v6h6M8 13h8M8 17h5" /></>),
+  },
+  {
+    href: "/admin/collections/bookings",
+    label: "See booked calls",
+    hint: "Who is calling and when",
+    icon: ICON(<><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M16 3v4M8 3v4M3 11h18" /></>),
+  },
+  {
+    href: "/admin/collections/projects/create",
+    label: "Add a project",
+    hint: "Show off work you've finished",
+    icon: ICON(<><rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="9" cy="10" r="2" /><path d="m21 16-5-5-9 9" /></>),
+  },
+  {
+    href: "/admin/collections/posts/create",
+    label: "Write a blog post",
+    hint: "Share advice with customers",
+    icon: ICON(<><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" /></>),
+  },
+  {
+    href: "/admin/globals/site-settings",
+    label: "Change contact details",
+    hint: "Phone, WhatsApp, email and hours",
+    icon: ICON(<><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z" /></>),
+  },
+  {
+    href: "/",
+    label: "View the website",
+    hint: "Opens in a new tab",
+    external: true,
+    icon: ICON(<><circle cx="12" cy="12" r="10" /><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></>),
+  },
+];
+
 
 export default async function BeforeDashboard({ user }: Props) {
   const payload = await getPayload({ config });
@@ -311,37 +366,64 @@ export default async function BeforeDashboard({ user }: Props) {
         </div>
       )}
 
+      {/* Big, plainly worded shortcuts to the everyday jobs. */}
+      <section className="zk-actions-wrap" aria-labelledby="zk-actions-title">
+        <h2 id="zk-actions-title" className="zk-section-title">
+          What would you like to do?
+        </h2>
+        <div className="zk-actions">
+          {ACTIONS.map((a) => (
+            <Link
+              key={a.href}
+              className="zk-action"
+              href={a.href}
+              {...(a.external ? { target: "_blank", rel: "noopener" } : {})}
+            >
+              <span className="zk-action__icon" aria-hidden="true">
+                {a.icon}
+              </span>
+              <span className="zk-action__text">
+                <strong>{a.label}</strong>
+                <span>{a.hint}</span>
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <h2 className="zk-section-title">How things are going</h2>
+
       {/* Business Metrics Grid */}
       <div className="zk-tiles">
         {isAdmin && (
           <div className="zk-tile zk-tile--static">
             <span className="zk-tile__num">{views.toLocaleString()}</span>
-            <span className="zk-tile__label">Page Views (30 Days)</span>
-            <span className="zk-tile__hint">Website traffic</span>
+            <span className="zk-tile__label">Pages viewed</span>
+            <span className="zk-tile__hint">In the last 30 days</span>
           </div>
         )}
 
         <Link className="zk-tile" href="/admin/collections/submissions">
           <span className="zk-tile__num">{newEnquiries}</span>
-          <span className="zk-tile__label">New Inquiries</span>
-          <span className="zk-tile__hint">Contact form</span>
+          <span className="zk-tile__label">New enquiries</span>
+          <span className="zk-tile__hint">Not answered yet</span>
         </Link>
 
         <Link className="zk-tile" href="/admin/collections/quotes">
           <span className="zk-tile__num">{newQuotes}</span>
-          <span className="zk-tile__label">Quote Requests</span>
-          <span className="zk-tile__hint">Project proposals</span>
+          <span className="zk-tile__label">New quote requests</span>
+          <span className="zk-tile__hint">Not answered yet</span>
         </Link>
 
         <Link className="zk-tile" href="/admin/collections/bookings">
           <span className="zk-tile__num">{confirmedBookings}</span>
-          <span className="zk-tile__label">Booked Meetings</span>
-          <span className="zk-tile__hint">Consultations</span>
+          <span className="zk-tile__label">Upcoming calls</span>
+          <span className="zk-tile__hint">Booked on the website</span>
         </Link>
 
         <Link className="zk-tile" href={`/admin/collections/submissions?${openStageQuery("submissions")}`}>
           <span className="zk-tile__num">{openLeads}</span>
-          <span className="zk-tile__label">Open Leads</span>
+          <span className="zk-tile__label">Open leads</span>
           <span className="zk-tile__hint">
             {openEnquiries} {openEnquiries === 1 ? "enquiry" : "enquiries"} · {openQuotes} {openQuotes === 1 ? "quote" : "quotes"}
           </span>
@@ -349,7 +431,7 @@ export default async function BeforeDashboard({ user }: Props) {
 
         <div className="zk-tile zk-tile--static">
           <span className="zk-tile__num">{won.count}</span>
-          <span className="zk-tile__label">Won This Month</span>
+          <span className="zk-tile__label">Won this month</span>
           <span className="zk-tile__hint">
             {won.value > 0 ? `$${won.value.toLocaleString("en-US")} in deals` : "Mark a lead Won to count it"}
           </span>
@@ -365,11 +447,8 @@ export default async function BeforeDashboard({ user }: Props) {
       )}
 
       {/*
-       * No shortcut chips here. Payload's own dashboard below already lists
-       * every collection and global with a create button, and the sidebar lists
-       * them a third time — three copies of the same links is what made this
-       * page feel complicated. This panel keeps only what the sidebar cannot
-       * show: who is signed in, what is waiting, and how the site is doing.
+       * Payload's own grid of every collection is hidden in custom.css: with the
+       * shortcuts above and the sidebar, it was a third copy of the same links.
        */}
     </div>
   );

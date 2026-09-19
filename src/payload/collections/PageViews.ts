@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { isAdmin } from "../access";
+import { isAdmin, hiddenUnlessSuperAdmin } from "../access";
 
 /**
  * Deliberately minimal: no IP address, no cookie, no personal data.
@@ -14,7 +14,8 @@ export const PageViews: CollectionConfig = {
     defaultColumns: ["path", "referrer", "createdAt"],
     group: "Enquiries",
     description: "Anonymous traffic log. No IP addresses or cookies are stored.",
-    hidden: ({ user }) => (user as { role?: string })?.role === "worker",
+    // The dashboard already charts page views; the raw list is for the super admin.
+    hidden: hiddenUnlessSuperAdmin,
   },
   access: {
     // Only the tracker's server action may write; the public REST API may not.
