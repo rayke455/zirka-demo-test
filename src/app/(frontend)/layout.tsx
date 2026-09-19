@@ -5,7 +5,7 @@ import GoogleAnalytics from "@/components/GoogleAnalytics";
 import PageTracker from "@/components/PageTracker";
 import PreviewBadge from "@/components/PreviewBadge";
 import { SITE_URL } from "@/lib/site";
-import { getGaMeasurementId } from "@/lib/cms";
+import { getGaMeasurementId, getSiteVerification } from "@/lib/cms";
 import { themeScript } from "@/components/ThemeToggle";
 import "./globals.css";
 
@@ -27,7 +27,7 @@ export const revalidate = 60;
 const description =
   "Zirka Digital Solutions is a digital marketing agency running performance media, SEO, social, and web experience for growing brands.";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     template: "%s | Zirka Digital Solutions",
@@ -48,6 +48,19 @@ export const metadata: Metadata = {
     images: ["/images/og.png"],
   },
 };
+
+export async function generateMetadata(): Promise<Metadata> {
+  // Ownership codes pasted in Features → Search engines.
+  const { google, bing } = await getSiteVerification();
+  if (!google && !bing) return baseMetadata;
+  return {
+    ...baseMetadata,
+    verification: {
+      ...(google ? { google } : {}),
+      ...(bing ? { other: { "msvalidate.01": bing } } : {}),
+    },
+  };
+}
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const gaId = await getGaMeasurementId();

@@ -85,3 +85,26 @@ export const breadcrumbSchema = (trail: { name: string; path: string }[]) => ({
     item: `${SITE_URL}${step.path}`,
   })),
 });
+
+/** A blog post, credited to its author when one is set and always published by Zirka. */
+export const articleSchema = (post: {
+  title: string;
+  excerpt: string;
+  slug: string;
+  publishedAt: string;
+  updatedAt: string;
+  heroImage: string | null;
+  author: string;
+}) => ({
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: post.title,
+  description: post.excerpt,
+  url: `${SITE_URL}/blog/${post.slug}`,
+  mainEntityOfPage: `${SITE_URL}/blog/${post.slug}`,
+  datePublished: post.publishedAt,
+  dateModified: post.updatedAt,
+  ...(post.heroImage ? { image: absolute(post.heroImage) } : {}),
+  author: post.author ? { "@type": "Person", name: post.author } : { "@id": ORG_ID },
+  publisher: { "@id": ORG_ID },
+});

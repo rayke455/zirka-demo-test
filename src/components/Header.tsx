@@ -1,4 +1,4 @@
-import { getSolutionCategories } from "@/lib/cms";
+import { getSolutionCategories, hasPosts } from "@/lib/cms";
 import HeaderNav from "./HeaderNav";
 
 /**
@@ -6,10 +6,11 @@ import HeaderNav from "./HeaderNav";
  * matches what is in the admin, then hands them to the interactive header.
  */
 export default async function Header() {
-  const categories = await getSolutionCategories();
+  const [categories, showBlog] = await Promise.all([getSolutionCategories(), hasPosts()]);
   return (
     <HeaderNav
       categories={categories.map((c) => ({ name: c.name, slug: c.slug, description: c.description }))}
+      showBlog={showBlog}
     />
   );
 }

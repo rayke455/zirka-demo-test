@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getCaseStudySitemap, getServiceSitemap } from "@/lib/cms";
+import { getCaseStudySitemap, getPostSitemap, getProjectSitemap, getServiceSitemap } from "@/lib/cms";
 import { SITE_URL } from "@/lib/site";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -18,15 +18,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/refunds`, changeFrequency: "yearly", priority: 0.2 },
   ];
 
-  const [studies, services] = await Promise.all([getCaseStudySitemap(), getServiceSitemap()]);
+  const [studies, services, projects, posts] = await Promise.all([
+    getCaseStudySitemap(),
+    getServiceSitemap(),
+    getProjectSitemap(),
+    getPostSitemap(),
+  ]);
   return [
     ...pages,
+    ...(posts.length > 0 ? [{ url: `${SITE_URL}/blog`, changeFrequency: "weekly" as const, priority: 0.8 }] : []),
     // Each service has its own page to rank for, so list them above case studies.
     ...services.map((s) => ({
       url: `${SITE_URL}/services/${s.slug}`,
       lastModified: new Date(s.updatedAt),
       changeFrequency: "monthly" as const,
       priority: 0.8,
+    })),
+    ...projects.map((p) => ({
+      url: `${SITE_URL}/work/projects/${p.slug}`,
+      lastModified: new Date(p.updatedAt),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
+    ...posts.map((p) => ({
+      url: `${SITE_URL}/blog/${p.slug}`,
+      lastModified: new Date(p.updatedAt),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
     })),
     ...studies.map((s) => ({
       url: `${SITE_URL}/work/${s.slug}`,

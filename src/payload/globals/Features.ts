@@ -2,6 +2,13 @@ import type { GlobalConfig } from "payload";
 import { revalidatePath } from "next/cache";
 import { isSuperAdmin } from "../access";
 
+/** Accepts the bare code or the whole <meta … content="…"> tag and keeps just the code. */
+const verificationCode = (value: unknown) => {
+  if (!value) return value;
+  const text = String(value).trim();
+  return (text.match(/content\s*=\s*["']([^"']+)["']/i)?.[1] ?? text).trim();
+};
+
 const toggle = (name: string, label: string, description: string, defaultValue = true) => ({
   name,
   label,
@@ -130,8 +137,37 @@ export const Features: GlobalConfig = {
           ],
         },
         {
+          label: "Search engines",
+          description:
+            "Prove to Google and Bing that you own this website, so you can see which searches find you. Paste the code each one gives you. The whole <meta …> tag works too.",
+          fields: [
+            {
+              name: "googleVerification",
+              label: "Google Search Console code",
+              type: "text",
+              admin: {
+                placeholder: "e.g. aBcD123…",
+                description:
+                  "In Search Console, add a URL-prefix property for https://zirkadigitalsolutions.com and pick the “HTML tag” method. Save here first, then press Verify there.",
+              },
+              hooks: { beforeChange: [({ value }) => verificationCode(value)] },
+            },
+            {
+              name: "bingVerification",
+              label: "Bing Webmaster Tools code",
+              type: "text",
+              admin: {
+                description:
+                  "In Bing Webmaster Tools, choose the “Meta tag” option. Or simply import your site from Google Search Console and skip this.",
+              },
+              hooks: { beforeChange: [({ value }) => verificationCode(value)] },
+            },
+          ],
+        },
+        {
           label: "Enquiry alerts",
-          description: "Email you whenever someone sends the contact form.",
+          description:
+            "Email you whenever someone sends a form, and send them an automatic thank-you. Both need the mail server below.",
           fields: [
             toggle("alertsEnabled", "Send enquiry alerts", "Email a notification for every new enquiry.", false),
             {
@@ -186,6 +222,38 @@ export const Features: GlobalConfig = {
                   label: "Send from",
                   type: "email",
                   admin: { description: "Leave blank to use the username." },
+                },
+              ],
+            },
+            {
+              type: "collapsible",
+              label: "Automatic reply to the person who sent the form",
+              admin: { condition: (data) => Boolean(data?.alertsEnabled) },
+              fields: [
+                toggle(
+                  "autoReplyEnabled",
+                  "Send an automatic thank-you",
+                  "Right after someone sends the contact, free-audit or quote form, they get a short email confirming we have it. Booked calls already get their own confirmation."
+                ),
+                {
+                  name: "replyTime",
+                  label: "When you reply to enquiries",
+                  type: "text",
+                  admin: {
+                    placeholder: "within one business day",
+                    description:
+                      "Finishes the sentence “We'll get back to you …”. Only promise what you can keep. Leave blank to say “as soon as we can”.",
+                  },
+                },
+                {
+                  name: "auditReplyTime",
+                  label: "When audit results are sent",
+                  type: "text",
+                  admin: {
+                    placeholder: "within 3 business days",
+                    description:
+                      "Finishes “We'll send your findings …”. Leave blank to say “as soon as we've reviewed it”.",
+                  },
                 },
               ],
             },

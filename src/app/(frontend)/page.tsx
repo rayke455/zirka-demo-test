@@ -7,6 +7,7 @@ import SolutionCategories from "@/components/SolutionCategories";
 import WhoWeHelp from "@/components/WhoWeHelp";
 import WorkCard from "@/components/WorkCard";
 import WorkFeature from "@/components/WorkFeature";
+import ProjectCard from "@/components/ProjectCard";
 import Testimonial from "@/components/Testimonial";
 import VideoSection from "@/components/VideoSection";
 import Engagements from "@/components/Engagements";
@@ -23,6 +24,7 @@ import {
   getProcessSteps,
   getFeatures,
   getSolutionCategories,
+  getProjects,
 } from "@/lib/cms";
 
 export const metadata: Metadata = pageMeta({
@@ -45,13 +47,14 @@ function Headline({ text, emphasis }: { text: string; emphasis: string }) {
 }
 
 export default async function Home() {
-  const [settings, services, work, steps, features, categories] = await Promise.all([
+  const [settings, services, work, steps, features, categories, projects] = await Promise.all([
     getSettings(),
     getServices(),
     getCaseStudies(),
     getProcessSteps(),
     getFeatures(),
     getSolutionCategories(),
+    getProjects({ featured: true, limit: 3 }),
   ]);
 
   // Only claim results when there is real, documented client work to show.
@@ -153,6 +156,31 @@ export default async function Home() {
             <div style={{ marginTop: 32 }}>
               <Link className="btn btn-outline" href="/services">
                 See all {services.length} services
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* 4a — Delivered client projects the owner has marked for the homepage */}
+      {features.showWork && projects.length > 0 && (
+        <section id="projects" className="section--flow">
+          <div className="wrap">
+            <div className="section-head">
+              <div>
+                <span className="eyebrow">Recent projects</span>
+                <h2>Work we&rsquo;ve delivered.</h2>
+              </div>
+              <p>Websites, brands and campaigns we&rsquo;ve built for real clients.</p>
+            </div>
+            <div className="project-grid">
+              {projects.map((item) => (
+                <ProjectCard item={item} key={item.slug} />
+              ))}
+            </div>
+            <div style={{ marginTop: 32 }}>
+              <Link className="btn btn-outline" href="/work">
+                See all our work
               </Link>
             </div>
           </div>

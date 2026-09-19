@@ -1,6 +1,6 @@
-import { getPayload } from "payload";
+import { getPayload, type Where } from "payload";
 import config from "@payload-config";
-import type { Service, CaseStudy, TeamMember, Faq, Engagement, Testimonial } from "@/payload-types";
+import type { Service, CaseStudy, TeamMember, Faq, Engagement, Testimonial, Project, Post } from "@/payload-types";
 import { services as seedServices } from "@/lib/data";
 
 export const getCms = async () => getPayload({ config });
@@ -167,12 +167,197 @@ export const getCaseStudy = async (slug: string): Promise<CaseStudyView | null> 
   };
 };
 
+export type ProjectView = {
+  slug: string;
+  name: string;
+  client: string;
+  deliverables: string;
+  industry: string;
+  year: number | null;
+  summary: string;
+  image: string;
+  alt: string;
+};
+
+const toProjectView = (p: Project): ProjectView => ({
+  slug: p.slug ?? "",
+  name: p.name,
+  client: p.client,
+  deliverables: p.deliverables,
+  industry: p.industry ?? "",
+  year: p.year ?? null,
+  summary: p.summary,
+  image: urlOf(p.cover as MediaLike, PLACEHOLDER),
+  alt: altOf(p.cover as MediaLike, `${p.name} for ${p.client}`),
+});
+
+/** Published projects the client has agreed to show, in the admin's order. */
+const projectWhere = (extra?: Where): Where => ({
+  and: [published, { clientPermission: { equals: true } }, ...(extra ? [extra] : [])],
+});
+
+export const getProjects = async (options: { featured?: boolean; limit?: number } = {}): Promise<ProjectView[]> => {
+  try {
+    const payload = await getCms();
+    const { docs } = await payload.find({
+      collection: "projects",
+      limit: options.limit ?? 100,
+      sort: "order",
+      depth: 1,
+      where: projectWhere(options.featured ? { featured: { equals: true } } : undefined),
+    });
+    return (docs as Project[]).map(toProjectView);
+  } catch {
+    return [];
+  }
+};
+
+export type ProjectDetailView = ProjectView & {
+  heroImage: string;
+  description: string;
+  liveUrl: string;
+  gallery: { src: string; alt: string; caption: string; width: number | null; height: number | null }[];
+  services: { name: string; slug: string }[];
+};
+
+export const getProject = async (slug: string): Promise<ProjectDetailView | null> => {
+  const payload = await getCms();
+  const { docs } = await payload.find({
+    collection: "projects",
+    limit: 1,
+    depth: 1,
+    where: projectWhere({ slug: { equals: slug } }),
+  });
+  const p = docs[0] as Project | undefined;
+  if (!p) return null;
+  return {
+    ...toProjectView(p),
+    heroImage: wideUrlOf(p.cover as MediaLike, PLACEHOLDER),
+    description: p.description ?? "",
+    liveUrl: p.liveUrl ?? "",
+    gallery: (p.gallery ?? [])
+      .filter((g) => typeof g.image === "object" && g.image !== null)
+      .map((g) => {
+        const m = g.image as { url?: string | null; alt?: string | null; width?: number | null; height?: number | null };
+        return {
+          src: urlOf(m as MediaLike, ""),
+          alt: m.alt || g.caption || p.name,
+          caption: g.caption ?? "",
+          width: m.width ?? null,
+          height: m.height ?? null,
+        };
+      })
+      .filter((g) => g.src),
+    services: (p.services ?? [])
+      .filter((s): s is Service => typeof s === "object" && s !== null)
+      .map((s) => ({ name: s.name, slug: s.slug })),
+  };
+};
+
+export type PostView = {
+  slug: string;
+  title: string;
+  excerpt: string;
+  topic: string;
+  publishedAt: string;
+  image: string | null;
+  alt: string;
+  author: string;
+};
+
+const toPostView = (p: Post): PostView => ({
+  slug: p.slug ?? "",
+  title: p.title,
+  excerpt: p.excerpt,
+  topic: p.topic ?? "",
+  publishedAt: p.publishedAt ?? p.createdAt,
+  image: urlOf(p.cover as MediaLike, "") || null,
+  alt: altOf(p.cover as MediaLike, p.title),
+  author: typeof p.author === "object" && p.author ? p.author.name : "",
+});
+
+/** Newest first. Posts dated in the future stay hidden until that day. */
+const postWhere = (extra?: Where): Where => ({
+  and: [published, { publishedAt: { less_than_equal: new Date().toISOString() } }, ...(extra ? [extra] : [])],
+});
+
+export const getPosts = async (limit = 100): Promise<PostView[]> => {
+  try {
+    const payload = await getCms();
+    const { docs } = await payload.find({ collection: "posts", limit, sort: "-publishedAt", depth: 1, where: postWhere() });
+    return (docs as Post[]).map(toPostView);
+  } catch {
+    return [];
+  }
+};
+
+export const hasPosts = async () => (await getPosts(1)).length > 0;
+
+export type PostDetailView = PostView & {
+  content: Post["content"];
+  heroImage: string | null;
+  seoTitle: string;
+  seoDescription: string;
+  updatedAt: string;
+};
+
+export const getPost = async (slug: string): Promise<PostDetailView | null> => {
+  const payload = await getCms();
+  const { docs } = await payload.find({
+    collection: "posts",
+    limit: 1,
+    depth: 1,
+    where: postWhere({ slug: { equals: slug } }),
+  });
+  const p = docs[0] as Post | undefined;
+  if (!p) return null;
+  return {
+    ...toPostView(p),
+    content: p.content,
+    heroImage: wideUrlOf(p.cover as MediaLike, "") || null,
+    seoTitle: p.seo?.title ?? "",
+    seoDescription: p.seo?.description ?? "",
+    updatedAt: p.updatedAt,
+  };
+};
+
+/** Addresses and edit dates for the sitemap. */
+export const getProjectSitemap = async () => {
+  const payload = await getCms();
+  const { docs } = await payload.find({
+    collection: "projects",
+    limit: 500,
+    depth: 0,
+    where: projectWhere(),
+    select: { slug: true, updatedAt: true },
+  });
+  return (docs as { slug?: string | null; updatedAt: string }[])
+    .filter((d) => d.slug)
+    .map((d) => ({ slug: d.slug as string, updatedAt: d.updatedAt }));
+};
+
+export const getPostSitemap = async () => {
+  const payload = await getCms();
+  const { docs } = await payload.find({
+    collection: "posts",
+    limit: 1000,
+    depth: 0,
+    where: postWhere(),
+    select: { slug: true, updatedAt: true },
+  });
+  return (docs as { slug?: string | null; updatedAt: string }[])
+    .filter((d) => d.slug)
+    .map((d) => ({ slug: d.slug as string, updatedAt: d.updatedAt }));
+};
+
 export type ServiceDetailView = ServiceView & {
   /** What is going wrong for the business before Zirka is involved (brief §21). */
   problem: string;
   faqs: { q: string; a: string }[];
   /** Case studies tagged with this service, so the page can prove the claim. */
   relatedWork: WorkView[];
+  /** Delivered client projects that used this service. */
+  relatedProjects: ProjectView[];
 };
 
 export const getService = async (slug: string): Promise<ServiceDetailView | null> => {
@@ -186,12 +371,21 @@ export const getService = async (slug: string): Promise<ServiceDetailView | null
   const service = docs[0] as Service | undefined;
   if (!service) return null;
 
-  const { docs: studies } = await payload.find({
-    collection: "case-studies",
-    limit: 3,
-    depth: 1,
-    where: { and: [published, { servicesUsed: { in: [service.id] } }] },
-  });
+  const [{ docs: studies }, { docs: projects }] = await Promise.all([
+    payload.find({
+      collection: "case-studies",
+      limit: 3,
+      depth: 1,
+      where: { and: [published, { servicesUsed: { in: [service.id] } }] },
+    }),
+    payload.find({
+      collection: "projects",
+      limit: 3,
+      depth: 1,
+      sort: "order",
+      where: projectWhere({ services: { in: [service.id] } }),
+    }),
+  ]);
 
   return {
     ...toServiceView(service),
@@ -199,6 +393,7 @@ export const getService = async (slug: string): Promise<ServiceDetailView | null
     faqs: (service.faqs ?? []).map((f) => ({ q: f.question, a: f.answer })),
     // Real client work first: it is proof. Concepts only illustrate.
     relatedWork: (studies as CaseStudy[]).map(toWorkView).sort((a, b) => Number(a.sample) - Number(b.sample)),
+    relatedProjects: (projects as Project[]).map(toProjectView),
   };
 };
 
@@ -364,6 +559,20 @@ const FEATURE_DEFAULTS = {
 };
 
 export type FeatureFlags = typeof FEATURE_DEFAULTS;
+
+/** Search Console and Bing ownership codes from Features → Search engines. */
+export const getSiteVerification = async (): Promise<{ google: string | null; bing: string | null }> => {
+  try {
+    const payload = await getCms();
+    const f = (await payload.findGlobal({ slug: "features", depth: 0 })) as {
+      googleVerification?: string | null;
+      bingVerification?: string | null;
+    };
+    return { google: f.googleVerification?.trim() || null, bing: f.bingVerification?.trim() || null };
+  } catch {
+    return { google: null, bing: null };
+  }
+};
 
 /** The owner's GA4 measurement ID from Features → Visitor analytics, or null when unset. */
 export const getGaMeasurementId = async (): Promise<string | null> => {

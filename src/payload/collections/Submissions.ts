@@ -2,13 +2,15 @@ import type { CollectionConfig } from "payload";
 import { isAdmin, isStaff } from "../access";
 import { SITE_URL } from "../../lib/site";
 import { escapeHtml, mailSetup } from "../mailer";
+import { sendAutoReply } from "../auto-reply";
+import { LEAD_STAGES, leadFields } from "../fields/lead";
 
 export const Submissions: CollectionConfig = {
   slug: "submissions",
   labels: { singular: "Enquiry", plural: "Enquiries" },
   admin: {
     useAsTitle: "name",
-    defaultColumns: ["name", "kind", "company", "status", "createdAt"],
+    defaultColumns: ["name", "kind", "company", "status", "followUp", "createdAt"],
     group: "Enquiries",
     description:
       "Everything sent through the website's contact and free-audit forms, in one list. Filter by Type to see audit requests alone.",
@@ -25,6 +27,8 @@ export const Submissions: CollectionConfig = {
     afterChange: [
       async ({ doc, operation, req }) => {
         if (operation !== "create") return doc;
+
+        await sendAutoReply(req.payload, doc.email, String(doc.name ?? ""), doc.kind === "audit" ? "audit" : "enquiry");
 
         const mail = await mailSetup(req.payload);
         const to = mail.teamInbox;
@@ -111,21 +115,6 @@ export const Submissions: CollectionConfig = {
         { name: "referrer", label: "Referring site", type: "text" },
       ],
     },
-    {
-      name: "status",
-      type: "select",
-      defaultValue: "new",
-      options: [
-        { label: "New", value: "new" },
-        { label: "In conversation", value: "open" },
-        { label: "Won", value: "won" },
-        { label: "Closed", value: "closed" },
-      ],
-    },
-    {
-      name: "notes",
-      type: "textarea",
-      admin: { description: "Internal only — never shown on the website." },
-    },
+    ...leadFields(LEAD_STAGES.enquiry),
   ],
 };

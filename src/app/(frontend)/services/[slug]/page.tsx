@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import Header from "@/components/Header";
 import CtaBand from "@/components/CtaBand";
 import WorkCard from "@/components/WorkCard";
+import ProjectCard from "@/components/ProjectCard";
 import JsonLd from "@/components/JsonLd";
 import VideoEmbed, { hasVideo } from "@/components/VideoEmbed";
 import { CheckIcon, ArrowIcon } from "@/components/Icons";
@@ -169,6 +170,19 @@ export default async function ServicePage({ params }: Props) {
                   <h3>{step.name}</h3>
                   <p>{step.description}</p>
                 </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {service.relatedProjects.length > 0 && (
+        <section className="section--flow">
+          <div className="wrap">
+            <h2 className="index-heading">Projects we&rsquo;ve delivered</h2>
+            <div className="project-grid">
+              {service.relatedProjects.map((item) => (
+                <ProjectCard item={item} key={item.slug} />
               ))}
             </div>
           </div>

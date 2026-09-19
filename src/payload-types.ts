@@ -69,7 +69,9 @@ export interface Config {
   collections: {
     services: Service;
     'solution-categories': SolutionCategory;
+    projects: Project;
     'case-studies': CaseStudy;
+    posts: Post;
     'team-members': TeamMember;
     testimonials: Testimonial;
     'process-steps': ProcessStep;
@@ -92,7 +94,9 @@ export interface Config {
   collectionsSelect: {
     services: ServicesSelect<false> | ServicesSelect<true>;
     'solution-categories': SolutionCategoriesSelect<false> | SolutionCategoriesSelect<true>;
+    projects: ProjectsSelect<false> | ProjectsSelect<true>;
     'case-studies': CaseStudiesSelect<false> | CaseStudiesSelect<true>;
+    posts: PostsSelect<false> | PostsSelect<true>;
     'team-members': TeamMembersSelect<false> | TeamMembersSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     'process-steps': ProcessStepsSelect<false> | ProcessStepsSelect<true>;
@@ -306,6 +310,78 @@ export interface SolutionCategory {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Work you have delivered for real clients: websites, logos, campaigns and more. Shown on the Work page, and on the homepage when marked Featured. Only add genuine client work.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects".
+ */
+export interface Project {
+  id: number;
+  /**
+   * e.g. “New website for Bloom Spa”.
+   */
+  name: string;
+  client: string;
+  /**
+   * Short label for the card, e.g. “Website & SEO” or “Logo & brand identity”.
+   */
+  deliverables: string;
+  /**
+   * e.g. Beauty & wellness
+   */
+  industry?: string | null;
+  year?: number | null;
+  /**
+   * One or two sentences for the card and Google results.
+   */
+  summary: string;
+  /**
+   * Optional. What the client needed and what we delivered. Leave a blank line between paragraphs.
+   */
+  description?: string | null;
+  /**
+   * The main picture on the card, e.g. a screenshot or mockup. Landscape works best.
+   */
+  cover: number | Media;
+  /**
+   * Optional screenshots, mockups or photos shown on the project's page.
+   */
+  gallery?:
+    | {
+        image: number | Media;
+        caption?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Links the project to those service pages.
+   */
+  services?: (number | Service)[] | null;
+  /**
+   * Optional, e.g. the website you built. Must start with https://
+   */
+  liveUrl?: string | null;
+  /**
+   * The page address, e.g. /work/projects/bloom-spa-website. Filled in from the project name.
+   */
+  slug?: string | null;
+  /**
+   * Up to three featured projects appear on the homepage.
+   */
+  featured?: boolean | null;
+  /**
+   * Lower numbers appear first.
+   */
+  order?: number | null;
+  /**
+   * Tick once the client has agreed. A project can't be published without it.
+   */
+  clientPermission?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * Client work shown on the homepage, the work page, and each case study's own page.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -384,6 +460,59 @@ export interface CaseStudy {
    * Tick this for anything that is not genuine, documented client work. The site then labels it a Concept Project and hides every result, timeframe and testimonial, so a concept can never read as a client outcome.
    */
   sample?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Articles for the blog. Write, save as a draft, and press Publish when it's ready. The Blog link appears in the menu once the first post is published.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts".
+ */
+export interface Post {
+  id: number;
+  title: string;
+  /**
+   * One or two sentences shown on the blog page and in Google results. Aim for about 120–160 characters.
+   */
+  excerpt: string;
+  /**
+   * Landscape works best (about 1600 × 900). Also used when the post is shared.
+   */
+  cover?: (number | null) | Media;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * The page address, e.g. /blog/why-your-ads-arent-converting. Filled in from the title.
+   */
+  slug?: string | null;
+  publishedAt?: string | null;
+  topic?: ('Advertising' | 'SEO' | 'Social media' | 'Branding' | 'Websites' | 'Automation' | 'Strategy') | null;
+  /**
+   * Optional. Leave empty to credit Zirka Digital Solutions.
+   */
+  author?: (number | null) | TeamMember;
+  /**
+   * Leave empty to use the title and summary.
+   */
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -606,9 +735,18 @@ export interface Submission {
     landingPage?: string | null;
     referrer?: string | null;
   };
-  status?: ('new' | 'open' | 'won' | 'closed') | null;
+  status?: ('new' | 'contacted' | 'open' | 'proposal' | 'won' | 'closed') | null;
   /**
-   * Internal only — never shown on the website.
+   * The dashboard reminds you on this day.
+   */
+  followUp?: string | null;
+  /**
+   * What this client is worth, e.g. the first month plus any project fee. Counts toward “Won this month” on the dashboard.
+   */
+  dealValue?: number | null;
+  wonAt?: string | null;
+  /**
+   * Internal only, never shown on the website. Calls, what was agreed, next steps.
    */
   notes?: string | null;
   updatedAt: string;
@@ -666,9 +804,18 @@ export interface Quote {
   budget?: string | null;
   timeline?: string | null;
   details?: string | null;
-  status?: ('new' | 'quoted' | 'won' | 'closed') | null;
+  status?: ('new' | 'contacted' | 'quoted' | 'won' | 'closed') | null;
   /**
-   * Internal only.
+   * The dashboard reminds you on this day.
+   */
+  followUp?: string | null;
+  /**
+   * What this client is worth, e.g. the first month plus any project fee. Counts toward “Won this month” on the dashboard.
+   */
+  dealValue?: number | null;
+  wonAt?: string | null;
+  /**
+   * Internal only, never shown on the website. Calls, what was agreed, next steps.
    */
   notes?: string | null;
   updatedAt: string;
@@ -755,8 +902,16 @@ export interface PayloadLockedDocument {
         value: number | SolutionCategory;
       } | null)
     | ({
+        relationTo: 'projects';
+        value: number | Project;
+      } | null)
+    | ({
         relationTo: 'case-studies';
         value: number | CaseStudy;
+      } | null)
+    | ({
+        relationTo: 'posts';
+        value: number | Post;
       } | null)
     | ({
         relationTo: 'team-members';
@@ -904,6 +1059,36 @@ export interface SolutionCategoriesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects_select".
+ */
+export interface ProjectsSelect<T extends boolean = true> {
+  name?: T;
+  client?: T;
+  deliverables?: T;
+  industry?: T;
+  year?: T;
+  summary?: T;
+  description?: T;
+  cover?: T;
+  gallery?:
+    | T
+    | {
+        image?: T;
+        caption?: T;
+        id?: T;
+      };
+  services?: T;
+  liveUrl?: T;
+  slug?: T;
+  featured?: T;
+  order?: T;
+  clientPermission?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "case-studies_select".
  */
 export interface CaseStudiesSelect<T extends boolean = true> {
@@ -930,6 +1115,29 @@ export interface CaseStudiesSelect<T extends boolean = true> {
   slug?: T;
   order?: T;
   sample?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts_select".
+ */
+export interface PostsSelect<T extends boolean = true> {
+  title?: T;
+  excerpt?: T;
+  cover?: T;
+  content?: T;
+  slug?: T;
+  publishedAt?: T;
+  topic?: T;
+  author?: T;
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1070,6 +1278,9 @@ export interface SubmissionsSelect<T extends boolean = true> {
         referrer?: T;
       };
   status?: T;
+  followUp?: T;
+  dealValue?: T;
+  wonAt?: T;
   notes?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1106,6 +1317,9 @@ export interface QuotesSelect<T extends boolean = true> {
   timeline?: T;
   details?: T;
   status?: T;
+  followUp?: T;
+  dealValue?: T;
+  wonAt?: T;
   notes?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1431,6 +1645,18 @@ export interface Feature {
    */
   analyticsEnabled?: boolean | null;
   /**
+   * Paste the ID from Google Analytics → Admin → Data streams → your website. Leave empty to keep Google Analytics off. The privacy policy updates itself to match.
+   */
+  gaMeasurementId?: string | null;
+  /**
+   * In Search Console, add a URL-prefix property for https://zirkadigitalsolutions.com and pick the “HTML tag” method. Save here first, then press Verify there.
+   */
+  googleVerification?: string | null;
+  /**
+   * In Bing Webmaster Tools, choose the “Meta tag” option. Or simply import your site from Google Search Console and skip this.
+   */
+  bingVerification?: string | null;
+  /**
    * Email a notification for every new enquiry.
    */
   alertsEnabled?: boolean | null;
@@ -1458,6 +1684,18 @@ export interface Feature {
    * Leave blank to use the username.
    */
   fromAddress?: string | null;
+  /**
+   * Right after someone sends the contact, free-audit or quote form, they get a short email confirming we have it. Booked calls already get their own confirmation.
+   */
+  autoReplyEnabled?: boolean | null;
+  /**
+   * Finishes the sentence “We'll get back to you …”. Only promise what you can keep. Leave blank to say “as soon as we can”.
+   */
+  replyTime?: string | null;
+  /**
+   * Finishes “We'll send your findings …”. Leave blank to say “as soon as we've reviewed it”.
+   */
+  auditReplyTime?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1613,6 +1851,9 @@ export interface FeaturesSelect<T extends boolean = true> {
   quotesEnabled?: T;
   bookingEnabled?: T;
   analyticsEnabled?: T;
+  gaMeasurementId?: T;
+  googleVerification?: T;
+  bingVerification?: T;
   alertsEnabled?: T;
   notifyEmail?: T;
   smtpHost?: T;
@@ -1620,6 +1861,9 @@ export interface FeaturesSelect<T extends boolean = true> {
   smtpUser?: T;
   smtpPass?: T;
   fromAddress?: T;
+  autoReplyEnabled?: T;
+  replyTime?: T;
+  auditReplyTime?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

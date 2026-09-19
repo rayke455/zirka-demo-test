@@ -1,13 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getSettings, getSolutionCategories } from "@/lib/cms";
+import { getSettings, getSolutionCategories, hasPosts } from "@/lib/cms";
 
 /**
  * Brief §27: who Zirka is, the four solutions, the main pages and the legal
  * links. Only real details — no invented address, registrations or badges.
  */
 export default async function Footer() {
-  const [settings, categories] = await Promise.all([getSettings(), getSolutionCategories()]);
+  const [settings, categories, showBlog] = await Promise.all([getSettings(), getSolutionCategories(), hasPosts()]);
 
   return (
     <footer>
@@ -48,6 +48,11 @@ export default async function Footer() {
             <li>
               <Link href="/work">Work</Link>
             </li>
+            {showBlog && (
+              <li>
+                <Link href="/blog">Blog</Link>
+              </li>
+            )}
             <li>
               <Link href="/about">About</Link>
             </li>

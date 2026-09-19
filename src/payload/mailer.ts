@@ -56,5 +56,5 @@ export async function mailSetup(payload: Payload) {
     }
   };
 
-  return { teamInbox, send };
+  return { teamInbox, send, adminSmtp };
 }

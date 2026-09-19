@@ -11,6 +11,8 @@ import { Media } from "./payload/collections/Media";
 import { Services } from "./payload/collections/Services";
 import { SolutionCategories } from "./payload/collections/SolutionCategories";
 import { CaseStudies } from "./payload/collections/CaseStudies";
+import { Projects } from "./payload/collections/Projects";
+import { Posts } from "./payload/collections/Posts";
 import { TeamMembers } from "./payload/collections/TeamMembers";
 import { Testimonials } from "./payload/collections/Testimonials";
 import { Engagements } from "./payload/collections/Engagements";
@@ -49,7 +51,9 @@ export default buildConfig({
   collections: [
     Services,
     SolutionCategories,
+    Projects,
     CaseStudies,
+    Posts,
     TeamMembers,
     Testimonials,
     ProcessSteps,

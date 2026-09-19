@@ -17,7 +17,11 @@ const NAV_LINKS = [
 
 export type NavCategory = { name: string; slug: string; description: string };
 
-export default function HeaderNav({ categories }: { categories: NavCategory[] }) {
+/** The Blog link appears once the first post is published. */
+const BLOG_LINK = { href: "/blog", label: "Blog" };
+
+export default function HeaderNav({ categories, showBlog = false }: { categories: NavCategory[]; showBlog?: boolean }) {
+  const links = showBlog ? [...NAV_LINKS.slice(0, 2), BLOG_LINK, ...NAV_LINKS.slice(2)] : NAV_LINKS;
   const [open, setOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
   const menuId = useId();
@@ -90,7 +94,7 @@ export default function HeaderNav({ categories }: { categories: NavCategory[] })
                 </Link>
               </div>
             </li>
-            {NAV_LINKS.map((link) => (
+            {links.map((link) => (
               <li key={link.href}>
                 <Link href={link.href}>{link.label}</Link>
               </li>
@@ -131,7 +135,7 @@ export default function HeaderNav({ categories }: { categories: NavCategory[] })
                 {c.name}
               </Link>
             ))}
-            {NAV_LINKS.map((link) => (
+            {links.map((link) => (
               <Link key={link.href} href={link.href} onClick={() => setOpen(false)}>
                 {link.label}
               </Link>

@@ -2,13 +2,15 @@ import type { CollectionConfig } from "payload";
 import { isAdmin, isStaff } from "../access";
 import { SITE_URL } from "../../lib/site";
 import { escapeHtml, mailSetup } from "../mailer";
+import { sendAutoReply } from "../auto-reply";
+import { LEAD_STAGES, leadFields } from "../fields/lead";
 
 export const Quotes: CollectionConfig = {
   slug: "quotes",
   labels: { singular: "Quote Request", plural: "Quote Requests" },
   admin: {
     useAsTitle: "name",
-    defaultColumns: ["name", "company", "budget", "status", "createdAt"],
+    defaultColumns: ["name", "company", "budget", "status", "followUp", "createdAt"],
     group: "Enquiries",
     description: "Quote requests from the website, including the services each person asked about.",
   },
@@ -23,6 +25,7 @@ export const Quotes: CollectionConfig = {
     afterChange: [
       async ({ doc, operation, req }) => {
         if (operation !== "create") return doc;
+        await sendAutoReply(req.payload, doc.email, String(doc.name ?? ""), "quote");
         const mail = await mailSetup(req.payload);
         if (!mail.teamInbox) return doc;
 
@@ -83,17 +86,6 @@ export const Quotes: CollectionConfig = {
     },
     { name: "timeline", type: "text" },
     { name: "details", type: "textarea" },
-    {
-      name: "status",
-      type: "select",
-      defaultValue: "new",
-      options: [
-        { label: "New", value: "new" },
-        { label: "Quoted", value: "quoted" },
-        { label: "Won", value: "won" },
-        { label: "Closed", value: "closed" },
-      ],
-    },
-    { name: "notes", type: "textarea", admin: { description: "Internal only." } },
+    ...leadFields(LEAD_STAGES.quote),
   ],
 };

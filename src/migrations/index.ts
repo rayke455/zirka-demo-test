@@ -4,6 +4,7 @@ import * as migration_20260918_192520_free_marketing_audit from './20260918_1925
 import * as migration_20260918_214839_stage3_and_maintenance from './20260918_214839_stage3_and_maintenance';
 import * as migration_20260919_030446_stage4_fields from './20260919_030446_stage4_fields';
 import * as migration_20260919_071342_ga_measurement_id from './20260919_071342_ga_measurement_id';
+import * as migration_20260919_075104_blog_projects_leads from './20260919_075104_blog_projects_leads';
 
 export const migrations = [
   {
@@ -34,6 +35,11 @@ export const migrations = [
   {
     up: migration_20260919_071342_ga_measurement_id.up,
     down: migration_20260919_071342_ga_measurement_id.down,
-    name: '20260919_071342_ga_measurement_id'
+    name: '20260919_071342_ga_measurement_id',
+  },
+  {
+    up: migration_20260919_075104_blog_projects_leads.up,
+    down: migration_20260919_075104_blog_projects_leads.down,
+    name: '20260919_075104_blog_projects_leads'
   },
 ];
