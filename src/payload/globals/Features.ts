@@ -110,6 +110,23 @@ export const Features: GlobalConfig = {
               "Record page views",
               "Anonymous page-view counting for the dashboard charts. Turning this off stops new data; existing data is kept."
             ),
+            {
+              name: "gaMeasurementId",
+              label: "Google Analytics measurement ID",
+              type: "text",
+              admin: {
+                placeholder: "G-XXXXXXXXXX",
+                description:
+                  "Paste the ID from Google Analytics → Admin → Data streams → your website. Leave empty to keep Google Analytics off. The privacy policy updates itself to match.",
+              },
+              validate: (value: unknown) =>
+                !value || /^G-[A-Z0-9]{4,20}$/.test(String(value).trim().toUpperCase())
+                  ? true
+                  : "That doesn't look like a measurement ID. It starts with G-, for example G-AB12CD34EF.",
+              hooks: {
+                beforeChange: [({ value }) => (value ? String(value).trim().toUpperCase() : value)],
+              },
+            },
           ],
         },
         {

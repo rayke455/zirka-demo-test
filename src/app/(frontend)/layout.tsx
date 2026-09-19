@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { Urbanist } from "next/font/google";
 import Footer from "@/components/Footer";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 import PageTracker from "@/components/PageTracker";
 import PreviewBadge from "@/components/PreviewBadge";
 import { SITE_URL } from "@/lib/site";
+import { getGaMeasurementId } from "@/lib/cms";
 import { themeScript } from "@/components/ThemeToggle";
 import "./globals.css";
 
@@ -47,7 +49,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const gaId = await getGaMeasurementId();
   return (
     <html
       lang="en"
@@ -65,6 +68,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Footer />
         <PageTracker />
         <PreviewBadge />
+        {gaId && <GoogleAnalytics id={gaId} />}
       </body>
     </html>
   );

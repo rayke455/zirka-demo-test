@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import PageHeader from "@/components/PageHeader";
-import { getSettings } from "@/lib/cms";
+import { getGaMeasurementId, getSettings } from "@/lib/cms";
 import { pageMeta } from "@/lib/seo";
 
 export const metadata: Metadata = pageMeta({
@@ -13,10 +13,11 @@ export const metadata: Metadata = pageMeta({
 // Written to match what the site actually does. If the site starts collecting
 // something new (email marketing, ad pixels, third-party analytics), update this page —
 // including anything Cloudflare adds from its dashboard, which bypasses this codebase.
+// The Google Analytics wording switches on by itself when a measurement ID is saved.
 const LAST_UPDATED = "September 2026";
 
 export default async function PrivacyPage() {
-  const settings = await getSettings();
+  const [settings, gaId] = await Promise.all([getSettings(), getGaMeasurementId()]);
 
   return (
     <>
@@ -59,6 +60,25 @@ export default async function PrivacyPage() {
             from the same person.
           </p>
 
+          {gaId && (
+            <>
+              <h2>Google Analytics</h2>
+              <p>
+                We also use Google Analytics to understand how visitors find and use the site,
+                such as which pages are viewed, how long for, and which buttons and forms are
+                used. Google Analytics sets cookies to tell visits apart, and Google processes the
+                information under its own privacy policy. Advertising features and Google signals
+                are switched off, so it is not used to show you ads.
+              </p>
+              <p>
+                If you are visiting from the European Economic Area, the UK or Switzerland, no
+                analytics cookies are set. Google receives only anonymous, cookieless signals. You
+                can also block Google Analytics everywhere with Google&rsquo;s opt-out browser
+                add-on or your browser&rsquo;s privacy settings.
+              </p>
+            </>
+          )}
+
           <h2>Our hosting and network providers</h2>
           <p>
             The site is hosted by Vercel and served through Cloudflare, which protect it and make
@@ -77,8 +97,11 @@ export default async function PrivacyPage() {
 
           <h2>Cookies</h2>
           <p>
-            Visitors to the public site receive no cookies from us at all. Our staff receive a
-            login cookie when they sign in to manage the site, which does not affect visitors.
+            {gaId
+              ? "The only cookies visitors receive are the Google Analytics cookies described above, and none at all in the EEA, UK or Switzerland. "
+              : "Visitors to the public site receive no cookies from us at all. "}
+            Our staff receive a login cookie when they sign in to manage the site, which does not
+            affect visitors.
           </p>
           <p>
             One exception is in your hands: if a page shows a video, the player is not loaded until

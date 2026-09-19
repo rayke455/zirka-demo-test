@@ -365,6 +365,18 @@ const FEATURE_DEFAULTS = {
 
 export type FeatureFlags = typeof FEATURE_DEFAULTS;
 
+/** The owner's GA4 measurement ID from Features → Visitor analytics, or null when unset. */
+export const getGaMeasurementId = async (): Promise<string | null> => {
+  try {
+    const payload = await getCms();
+    const f = (await payload.findGlobal({ slug: "features", depth: 0 })) as { gaMeasurementId?: string | null };
+    const id = f.gaMeasurementId?.trim().toUpperCase();
+    return id && /^G-[A-Z0-9]{4,20}$/.test(id) ? id : null;
+  } catch {
+    return null;
+  }
+};
+
 /**
  * Until the Features page is first saved its values are empty, so an unset
  * switch must mean "default" — otherwise every section would vanish on day one.
